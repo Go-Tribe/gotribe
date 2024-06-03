@@ -22,7 +22,9 @@ GoTribe 是一款专为现代网站构建而设计的开源解决方案。它利
 
 
 ## 🍁 致谢
-- 感谢[FlowGPT](https://flowgpt.com/)，在这里我找到了许多值得分享的优质Prompt！
+- 感谢[onex](https://github.com/superproj/onex)，在这里我找到了许多值得学习的地方！
+
+
 
 ## 🌎 License
 
