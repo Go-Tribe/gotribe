@@ -1,0 +1,1125 @@
+# Copyright 2024 Innkeeper GoTribe <https://ww.gotribe.cn>. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file. The original repo for
+# this file is https://www.gotribe.cn
+
+{
+  "info": {
+    "title": "GoTribe",
+    "description": "gotribe api 文档",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "GoTribe"
+    },
+    {
+      "name": "GoTribe/用户"
+    },
+    {
+      "name": "GoTribe/内容"
+    },
+    {
+      "name": "GoTribe/配置"
+    },
+    {
+      "name": "GoTribe/专栏"
+    },
+    {
+      "name": "GoTribe/分类"
+    },
+    {
+      "name": "GoTribe/tag"
+    },
+    {
+      "name": "GoTribe/项目"
+    }
+  ],
+  "paths": {
+    "/api/healthz": {
+      "get": {
+        "summary": "监控检测接口",
+        "x-apifox-folder": "GoTribe",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380826-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/login": {
+      "post": {
+        "summary": "前台用户登陆",
+        "x-apifox-folder": "GoTribe",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              },
+              "x-apifox-orders": [
+                "username",
+                "password"
+              ],
+              "required": [
+                "username",
+                "password"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380827-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "post": {
+        "summary": "用户注册",
+        "x-apifox-folder": "GoTribe/用户",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/用户"
+        ],
+        "parameters": [
+          {
+            "name": "X-Project-ID",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "24qfot"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "nickname": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "username",
+                "password",
+                "nickname",
+                "email",
+                "phone"
+              ],
+              "x-apifox-orders": [
+                "username",
+                "password",
+                "nickname",
+                "email",
+                "phone"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380828-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      },
+      "get": {
+        "summary": "获取用户列表",
+        "x-apifox-folder": "GoTribe/用户",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/用户"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "x-example": "2"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "x-example": "4"
+          },
+          {
+            "name": "X-Project-ID",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "24foqg"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380833-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/v1/users/{name}": {
+      "get": {
+        "summary": "获取用户详情",
+        "x-apifox-folder": "GoTribe/用户",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/用户"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "dengmengmian"
+          },
+          {
+            "name": "X-Project-ID",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "24foqg"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380829-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      },
+      "put": {
+        "summary": "更新用户信息",
+        "x-apifox-folder": "GoTribe/用户",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/用户"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "dengmengmian"
+          },
+          {
+            "name": "X-Project-ID",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "24foqg"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nickname": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                }
+              },
+              "x-apifox-orders": [
+                "nickname",
+                "email",
+                "phone"
+              ],
+              "required": [
+                "nickname",
+                "email",
+                "phone"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380830-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      },
+      "delete": {
+        "summary": "注销用户",
+        "x-apifox-folder": "GoTribe/用户",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/用户"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "dengmengmian"
+          },
+          {
+            "name": "X-Project-ID",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "24foqg"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380831-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/v1/users/{name}/change-password": {
+      "put": {
+        "summary": "修改用户密码",
+        "x-apifox-folder": "GoTribe/用户",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/用户"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "dengmengmian"
+          },
+          {
+            "name": "X-Project-ID",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "24foqg"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "oldPassword": {
+                  "type": "string"
+                },
+                "newPassword": {
+                  "type": "string"
+                }
+              },
+              "x-apifox-orders": [
+                "oldPassword",
+                "newPassword"
+              ],
+              "required": [
+                "oldPassword",
+                "newPassword"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380832-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/v1/posts": {
+      "post": {
+        "summary": "创建内容",
+        "x-apifox-folder": "GoTribe/内容",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/内容"
+        ],
+        "parameters": [
+          {
+            "name": "X-Project-ID",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "24qfot"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "content"
+              ],
+              "x-apifox-orders": [
+                "title",
+                "content"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380834-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      },
+      "get": {
+        "summary": "获取内容列表 ",
+        "x-apifox-folder": "GoTribe/内容",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/内容"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "x-example": "2"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "x-example": "4"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "2"
+          },
+          {
+            "name": "categoryID",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "chart"
+          },
+          {
+            "name": "columnID",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "postID",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "type": "string",
+            "x-example": ""
+          },
+          {
+            "name": "tagID",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "24xxud"
+          },
+          {
+            "name": "isTop",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "x-example": "2"
+          },
+          {
+            "name": "X-Project-ID",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "24foqg"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380836-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/v1/posts/{postID}": {
+      "get": {
+        "summary": "获取内容详情 ",
+        "x-apifox-folder": "GoTribe/内容",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/内容"
+        ],
+        "parameters": [
+          {
+            "name": "postID",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "24thdb"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "3"
+          },
+          {
+            "name": "X-Project-ID",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "245eko"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380835-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/v1/configs/{alias}": {
+      "get": {
+        "summary": "获取配置信息",
+        "x-apifox-folder": "GoTribe/配置",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/配置"
+        ],
+        "parameters": [
+          {
+            "name": "alias",
+            "in": "path",
+            "description": "别称",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380837-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/v1/columns/{columnID}": {
+      "get": {
+        "summary": "获取专栏信息",
+        "x-apifox-folder": "GoTribe/专栏",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/专栏"
+        ],
+        "parameters": [
+          {
+            "name": "columnID",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380838-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/v1/columns": {
+      "get": {
+        "summary": "获取专栏列表",
+        "x-apifox-folder": "GoTribe/专栏",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/专栏"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "x-example": "4"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "x-example": "1"
+          },
+          {
+            "name": "postLimit",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "X-Project-ID",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "24foqg"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380839-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/v1/categorys/{categoryID}": {
+      "get": {
+        "summary": "获取专栏信息",
+        "x-apifox-folder": "GoTribe/分类",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/分类"
+        ],
+        "parameters": [
+          {
+            "name": "categoryID",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380840-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/v1/tags/{tagID}": {
+      "get": {
+        "summary": "获取tag信息",
+        "x-apifox-folder": "GoTribe/tag",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/tag"
+        ],
+        "parameters": [
+          {
+            "name": "tagID",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "X-Project-ID",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "249aax"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380841-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/v1/projects/{alias}": {
+      "get": {
+        "summary": "获取项目详情",
+        "x-apifox-folder": "GoTribe/项目",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "GoTribe/项目"
+        ],
+        "parameters": [
+          {
+            "name": "alias",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "X-Project-ID",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "x-example": "249aax"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-orders": [],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/4598101/apis/api-180380842-run",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    }
+  },
+  "swagger": "2.0",
+  "host": "8080",
+  "schemes": [
+    "127.0.0.1"
+  ],
+  "basePath": null,
+  "definitions": {},
+  "securityDefinitions": {
+    "bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "x-components": {}
+}

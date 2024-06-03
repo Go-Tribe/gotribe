@@ -1,0 +1,31 @@
+# Copyright 2024 Innkeeper GoTribe <https://ww.gotribe.cn>. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file. The original repo for
+# this file is https://www.gotribe.cn
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: gotribe
+  name: gotribe
+spec:
+  ports:
+  - name: https
+    protocol: TCP
+    port: 8443
+    targetPort: 8443
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  - name: rpc
+    protocol: TCP
+    port: 9090
+    targetPort: 9090
+  selector:
+    app: gotribe
+  sessionAffinity: None
+  type: ClusterIP
