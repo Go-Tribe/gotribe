@@ -1,4 +1,4 @@
-// Copyright 2023 Innkeeper GoTribe <https://ww.gotribe.cn>. All rights reserved.
+// Copyright 2023 Innkeeper GoTribe <https://www.gotribe.cn>. All rights reserved.
 // Use of this source code is governed by a Apache style
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/solocms
