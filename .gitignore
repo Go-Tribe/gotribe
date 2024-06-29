@@ -69,4 +69,4 @@ tags
 # Custom
 /_output
 configs/gotribe.yaml
-
+.vscode

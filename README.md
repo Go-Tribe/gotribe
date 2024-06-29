@@ -1,12 +1,12 @@
-<h1 align="center">gotribe-admin</h1>
+<h1 align="center">gotribe</h1>
 
 <div align="center">
 Go + Vue开发的小型 cms 解决方案, 主题丰富，开箱即用，企业级架构。适合个人、团队、中小企业等使用。
 <p align="center">
-<img src="https://img.shields.io/github/go-mod/go-version/go-tribe/gotribe-admin" alt="Go version"/>
+<img src="https://img.shields.io/github/go-mod/go-version/go-tribe/gotribe" alt="Go version"/>
 <img src="https://img.shields.io/badge/Gin-1.9.1-brightgreen" alt="Gin version"/>
 <img src="https://img.shields.io/badge/Gorm-1.25.8-brightgreen" alt="Gorm version"/>
-<img src="https://img.shields.io/github/license/go-tribe/gotribe-admin" alt="License"/>
+<img src="https://img.shields.io/github/license/go-tribe/gotribe" alt="License"/>
 </p>
 </div>
 
@@ -41,9 +41,9 @@ Go + Vue开发的小型 cms 解决方案, 主题丰富，开箱即用，企业�
 | gotribe-ui | 管理后台 UI  | https://github.com/go-tribe/gotribe-admin-vue.git |
 
 ### 业务主题
-| 主题          | 描述        | 地址                                           |
-|-------------|-----------|----------------------------------------------| 
-| gotrbe-blog | 一个简单的博客主题 | https://github.com/go-tribe/gotribe-blog.git  |
+| 主题           | 描述        | 地址                                           |
+|--------------|-----------|----------------------------------------------| 
+| gotribe-blog | 一个简单的博客主题 | https://github.com/go-tribe/gotribe-blog.git  |
 
 ## 🍁 TODO
 
