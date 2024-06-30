@@ -43,6 +43,24 @@ func New(ds store.IStore) *exampleBiz {
 	return &exampleBiz{ds: ds}
 }
 
+// CreateTx 实现事务的示例
+func (b *exampleBiz) CreateTx(ctx context.Context, username string, r *v1.CreateExampleRequest) error {
+	err := b.ds.TX(ctx, func(ctx context.Context) error {
+		var exampleM model.ExampleM
+		_ = copier.Copy(&exampleM, r)
+		exampleM.Username = username
+
+		if err := b.ds.Examples().Create(ctx, &exampleM); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // Create is the implementation of the `Create` method in ExampleBiz interface.
 func (b *exampleBiz) Create(ctx context.Context, username string, r *v1.CreateExampleRequest) (*v1.CreateExampleResponse, error) {
 	var exampleM model.ExampleM

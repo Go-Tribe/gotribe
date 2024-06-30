@@ -13,8 +13,8 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gosuri/uitable v0.0.4
 	github.com/jinzhu/copier v0.4.0
-	github.com/likexian/gokit v0.25.9
 	github.com/qiniu/go-sdk/v7 v7.19.0
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.18.2

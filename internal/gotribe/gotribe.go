@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"gotribe/internal/gotribe/jobs"
 	"net/http"
 	"os"
 	"os/signal"
@@ -39,7 +40,7 @@ func NewGoTribeCommand() *cobra.Command {
 		Long: `A good Go practical project, used to create user with basic information.
 
 Find more gotribe information at:
-	https://www.gotribe.cnreadme`,
+	https://www.gotribe.cn`,
 
 		// 命令出错时，不打印帮助信息。不需要打印帮助信息，设置为 true 可以保持命令出错时一眼就能看到错误信息
 		SilenceUsage: true,
@@ -51,6 +52,11 @@ Find more gotribe information at:
 			// 初始化日志
 			log.Init(logOptions())
 			defer log.Sync() // Sync 将缓存中的日志刷新到磁盘文件中
+
+			//初始化定时任务
+			jobs.InitCron()
+			jobs.Cron.Start()
+			defer jobs.Cron.Stop()
 
 			return run()
 		},
