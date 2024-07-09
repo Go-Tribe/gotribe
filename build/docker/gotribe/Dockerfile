@@ -11,7 +11,7 @@ WORKDIR /opt/gotribe
 
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
       echo "Asia/Shanghai" > /etc/timezone && \
-      mkdir -p /var/log/gotribe
+      mkdir -p /var/log/app
 
 COPY gotribe /opt/gotribe/bin/
 

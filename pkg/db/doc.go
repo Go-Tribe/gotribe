@@ -4,4 +4,4 @@
 // this file is https://www.gotribe.cn
 
 // Package db provide useful functions to create mysql instance.
-package db // import "gotribe/pkg/db"
+package db // import "app/pkg/db"

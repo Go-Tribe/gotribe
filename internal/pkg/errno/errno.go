@@ -7,7 +7,7 @@ package errno
 
 import "fmt"
 
-// Errno 定义了 gotribe 使用的错误类型.
+// Errno 定义了 app 使用的错误类型.
 type Errno struct {
 	HTTP    int
 	Code    string

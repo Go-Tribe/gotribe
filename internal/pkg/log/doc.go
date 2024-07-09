@@ -3,4 +3,4 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://www.gotribe.cn
 
-package log // import "gotribe/internal/pkg/log"
+package log // import "app/internal/pkg/log"

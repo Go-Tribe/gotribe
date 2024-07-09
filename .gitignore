@@ -68,5 +68,5 @@ tags
 .DS_Store
 # Custom
 /_output
-configs/gotribe.yaml
+configs/app.yaml
 .vscode

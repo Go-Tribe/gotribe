@@ -8,14 +8,14 @@ package main
 import (
 	"os"
 
-	"gotribe/internal/gotribe"
+	"gotribe/internal/app"
 
 	_ "go.uber.org/automaxprocs"
 )
 
 // Go 程序的默认入口函数(主函数).
 func main() {
-	command := gotribe.NewGoTribeCommand()
+	command := app.NewGoTribeCommand()
 	if err := command.Execute(); err != nil {
 		os.Exit(1)
 	}

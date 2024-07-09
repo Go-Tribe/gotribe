@@ -4,4 +4,4 @@
 // this file is https://www.gotribe.cn
 
 // Package core implements some core functions used by apimachinery.
-package core // import "gotribe/internal/pkg/core"
+package core // import "app/internal/pkg/core"

@@ -6,7 +6,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-    name: gotribe
+    name: app
 data:
     gotribe.yaml:
         # 通用配置
@@ -27,9 +27,9 @@ data:
         # MySQL 数据库相关配置
         db:
             host: 127.0.0.1 # MySQL 机器 IP 和端口，默认 127.0.0.1:3306
-            username: gotribe # MySQL 用户名(建议授权最小权限集)
+            username: app # MySQL 用户名(建议授权最小权限集)
             password: gotribe1234 # MySQL 用户密码
-            database: gotribe # gotribe 系统所用的数据库名
+            database: app # app 系统所用的数据库名
             max-idle-connections: 100 # MySQL 最大空闲连接数，默认 100
             max-open-connections: 100 # MySQL 最大打开的连接数，默认 100
             max-connection-life-time: 10s # 空闲连接最大存活时间，默认 10s
@@ -41,4 +41,4 @@ data:
             disable-stacktrace: false # 是否禁止在 panic 及以上级别打印堆栈信息
             level: debug # 指定日志级别，可选值：debug, info, warn, error, dpanic, panic, fatal
             format: console # 指定日志显示格式，可选值：console, json
-            output-paths: [/tmp/gotribe.log, stdout] # 指定日志输出位置，多个输出，用 `逗号 + 空格` 分开。stdout：标准输出，
+            output-paths: [/tmp/app.log, stdout] # 指定日志输出位置，多个输出，用 `逗号 + 空格` 分开。stdout：标准输出，

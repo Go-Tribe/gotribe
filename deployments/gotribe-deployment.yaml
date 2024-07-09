@@ -9,15 +9,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: gotribe # 资源标签
-  name: gotribe # 资源名称
+    app: app # 资源标签
+  name: app # 资源名称
 spec:
   replicas: 2 # 副本数
   progressDeadlineSeconds: 10
   revisionHistoryLimit: 5
   selector:
     matchLabels:
-      app: gotribe
+      app: app
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -26,7 +26,7 @@ spec:
   template:
     metadata:
       labels:
-        app: gotribe
+        app: app
     spec:
       affinity:
         podAntiAffinity:
@@ -34,18 +34,18 @@ spec:
           - podAffinityTerm:
               labelSelector:
                 matchExpressions:
-                - key: gotribe
+                - key: app
                   operator: In
                   values:
-                  - gotribe
+                  - app
               topologyKey: kubernetes.io/hostname
             weight: 100
       containers:
       - command:
-        - /opt/gotribe/bin/gotribe
-        - --config=/etc/gotribe/gotribe.yaml
-        image: "dengmengmian/gotribe-amd64:v1.0.0"
-        name: gotribe
+        - /opt/app/bin/app
+        - --config=/etc/app/app.yaml
+        image: "dengmengmian/app-amd64:v1.0.0"
+        name: app
         ports:
         - containerPort: 8443
           name: secure
@@ -54,7 +54,7 @@ spec:
           name: insecure
           protocol: TCP
         - containerPort: 9090
-          name: rpc 
+          name: rpc
           protocol: TCP
         livenessProbe:
           httpGet:
@@ -97,11 +97,11 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-        - mountPath: /etc/gotribe/gotribe.yaml
-          name: gotribe
-          subPath: gotribe.yaml
-        - mountPath: /etc/gotribe/cert
-          name: gotribe-cert
+        - mountPath: /etc/app/app.yaml
+          name: app
+          subPath: app.yaml
+        - mountPath: /etc/app/cert
+          name: app-cert
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -112,11 +112,11 @@ spec:
       - configMap:
           defaultMode: 420
           items:
-          - key: gotribe.yaml
-            path: gotribe.yaml
-          name: gotribe
-        name: gotribe
+          - key: app.yaml
+            path: app.yaml
+          name: app
+        name: app
       - configMap:
           defaultMode: 420
-          name: gotribe-cert
-        name: gotribe-cert
+          name: app-cert
+        name: app-cert

@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://www.gotribe.cn
 
-// Package log is a log package used by gotribe project.
+// Package log is a log package used by app project.
 package log
 
 import (
@@ -17,7 +17,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// Logger 定义了 gotribe 项目的日志接口. 该接口只包含了支持的日志记录方法.
+// Logger 定义了 app 项目的日志接口. 该接口只包含了支持的日志记录方法.
 type Logger interface {
 	Debugw(msg string, keysAndValues ...interface{})
 	Infow(msg string, keysAndValues ...interface{})
@@ -82,7 +82,7 @@ func NewLogger(opts *Options) *zapLogger {
 
 	// 创建构建 zap.Logger 需要的配置
 	cfg := &zap.Config{
-		// 是否在日志中显示调用日志所在的文件和行号，例如：`"caller":"gotribe/gotribe.go:75"`
+		// 是否在日志中显示调用日志所在的文件和行号，例如：`"caller":"app/app.go:75"`
 		DisableCaller: opts.DisableCaller,
 		// 是否禁止在 panic 及以上级别打印堆栈信息
 		DisableStacktrace: opts.DisableStacktrace,

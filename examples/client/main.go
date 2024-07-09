@@ -10,11 +10,10 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"gotribe/pkg/proto/v1"
 	"time"
 
 	"gotribe/internal/pkg/log"
-
-	pb "gotribe/pkg/proto/gotribe/v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -33,13 +32,13 @@ func main() {
 		log.Fatalw("Did not connect", "err", err)
 	}
 	defer conn.Close()
-	c := pb.NewGoTribeClient(conn)
+	c := v1.NewGoTribeClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	// 请求 ListUser 接口
-	r, err := c.ListUser(ctx, &pb.ListUserRequest{Offset: 0, Limit: *limit})
+	r, err := c.ListUser(ctx, &v1.ListUserRequest{Offset: 0, Limit: *limit})
 	if err != nil {
 		log.Fatalw("could not greet: %v", err)
 	}
