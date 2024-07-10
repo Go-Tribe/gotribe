@@ -8,26 +8,27 @@ package post
 import (
 	"context"
 	"errors"
-	v12 "gotribe/pkg/api/v1"
 	"strings"
 
-	"github.com/jinzhu/copier"
-	"gorm.io/gorm"
 	"gotribe/internal/app/store"
 	"gotribe/internal/pkg/errno"
 	"gotribe/internal/pkg/known"
 	"gotribe/internal/pkg/log"
 	"gotribe/internal/pkg/model"
+	v1 "gotribe/pkg/api/v1"
+
+	"github.com/jinzhu/copier"
+	"gorm.io/gorm"
 )
 
 // PostBiz defines functions used to handle post request.
 type PostBiz interface {
-	Create(ctx context.Context, username string, r *v12.CreatePostRequest) (*v12.CreatePostResponse, error)
-	Update(ctx context.Context, username, postID string, r *v12.UpdatePostRequest) error
+	Create(ctx context.Context, username string, r *v1.CreatePostRequest) (*v1.CreatePostResponse, error)
+	Update(ctx context.Context, username, postID string, r *v1.UpdatePostRequest) error
 	Delete(ctx context.Context, username, postID string) error
 	DeleteCollection(ctx context.Context, username string, postIDs []string) error
-	Get(ctx context.Context, postID string) (*v12.GetPostResponse, error)
-	List(ctx context.Context, r *v12.ListPostRequest) (*v12.ListPostResponse, error)
+	Get(ctx context.Context, postID string) (*v1.GetPostResponse, error)
+	List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPostResponse, error)
 }
 
 // The implementation of PostBiz interface.
@@ -44,7 +45,7 @@ func New(ds store.IStore) *postBiz {
 }
 
 // Create is the implementation of the `Create` method in PostBiz interface.
-func (b *postBiz) Create(ctx context.Context, username string, r *v12.CreatePostRequest) (*v12.CreatePostResponse, error) {
+func (b *postBiz) Create(ctx context.Context, username string, r *v1.CreatePostRequest) (*v1.CreatePostResponse, error) {
 	var postM model.PostM
 	_ = copier.Copy(&postM, r)
 	postM.Author = username
@@ -53,7 +54,7 @@ func (b *postBiz) Create(ctx context.Context, username string, r *v12.CreatePost
 		return nil, err
 	}
 
-	return &v12.CreatePostResponse{PostID: postM.PostID}, nil
+	return &v1.CreatePostResponse{PostID: postM.PostID}, nil
 }
 
 // Delete is the implementation of the `Delete` method in PostBiz interface.
@@ -75,8 +76,8 @@ func (b *postBiz) DeleteCollection(ctx context.Context, username string, postIDs
 }
 
 // Get is the implementation of the `Get` method in PostBiz interface.
-func (b *postBiz) Get(ctx context.Context, postID string) (*v12.GetPostResponse, error) {
-	post, err := b.ds.Posts().Get(ctx, v12.PostQueryParams{PostID: postID})
+func (b *postBiz) Get(ctx context.Context, postID string) (*v1.GetPostResponse, error) {
+	post, err := b.ds.Posts().Get(ctx, v1.PostQueryParams{PostID: postID})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errno.ErrPostNotFound
@@ -85,11 +86,11 @@ func (b *postBiz) Get(ctx context.Context, postID string) (*v12.GetPostResponse,
 		return nil, err
 	}
 
-	var resp v12.GetPostResponse
+	var resp v1.GetPostResponse
 	_ = copier.Copy(&resp, post)
 	// tag信息
 	tagsM, err := b.ds.Tags().GetTags(ctx, strings.Split(post.Tag, ","))
-	var tags []*v12.TagInfo
+	var tags []*v1.TagInfo
 	_ = copier.Copy(&tags, tagsM)
 	resp.Tags = tags
 
@@ -99,7 +100,7 @@ func (b *postBiz) Get(ctx context.Context, postID string) (*v12.GetPostResponse,
 		log.C(ctx).Errorw("Failed to get category from storage", "err", err)
 		return nil, err
 	}
-	var category v12.CategoryInfo
+	var category v1.CategoryInfo
 	_ = copier.Copy(&category, categoryM)
 	resp.Category = category
 	resp.CreatedAt = post.CreatedAt.Format(known.TimeFormat)
@@ -109,8 +110,8 @@ func (b *postBiz) Get(ctx context.Context, postID string) (*v12.GetPostResponse,
 }
 
 // Update is the implementation of the `Update` method in PostBiz interface.
-func (b *postBiz) Update(ctx context.Context, username, postID string, r *v12.UpdatePostRequest) error {
-	postM, err := b.ds.Posts().Get(ctx, v12.PostQueryParams{PostID: postID, Author: username})
+func (b *postBiz) Update(ctx context.Context, username, postID string, r *v1.UpdatePostRequest) error {
+	postM, err := b.ds.Posts().Get(ctx, v1.PostQueryParams{PostID: postID, Author: username})
 	if err != nil {
 		return err
 	}
@@ -131,14 +132,14 @@ func (b *postBiz) Update(ctx context.Context, username, postID string, r *v12.Up
 }
 
 // List is the implementation of the `List` method in PostBiz interface.
-func (b *postBiz) List(ctx context.Context, r *v12.ListPostRequest) (*v12.ListPostResponse, error) {
+func (b *postBiz) List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPostResponse, error) {
 	count, list, err := b.ds.Posts().List(ctx, r)
 	if err != nil {
 		log.C(ctx).Errorw("Failed to list posts from storage", "err", err)
 		return nil, err
 	}
 
-	posts := make([]*v12.PostInfo, 0, len(list))
+	posts := make([]*v1.PostInfo, 0, len(list))
 	for _, item := range list {
 		post := item
 		// 分类信息
@@ -147,15 +148,15 @@ func (b *postBiz) List(ctx context.Context, r *v12.ListPostRequest) (*v12.ListPo
 			log.C(ctx).Errorw("Failed to get category from storage", "err", err)
 			return nil, err
 		}
-		var category v12.CategoryInfo
+		var category v1.CategoryInfo
 		_ = copier.Copy(&category, categoryM)
 		// 用户信息
-		userM, err := b.ds.Users().Get(ctx, v12.UserWhere{UserID: post.UserID})
+		userM, err := b.ds.Users().Get(ctx, v1.UserWhere{UserID: post.UserID})
 		if err != nil {
 			log.C(ctx).Errorw("Failed to get user from storage", "err", err)
 			return nil, err
 		}
-		posts = append(posts, &v12.PostInfo{
+		posts = append(posts, &v1.PostInfo{
 			Author:      userM.Nickname,
 			PostID:      post.PostID,
 			Title:       post.Title,
@@ -171,5 +172,5 @@ func (b *postBiz) List(ctx context.Context, r *v12.ListPostRequest) (*v12.ListPo
 		})
 	}
 
-	return &v12.ListPostResponse{TotalCount: count, Posts: posts}, nil
+	return &v1.ListPostResponse{TotalCount: count, Posts: posts}, nil
 }
