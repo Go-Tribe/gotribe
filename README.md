@@ -121,5 +121,3 @@ The database will be migrated automatically upon startup, and the default userna
 [MIT](https://choosealicense.com/licenses/mit/)
 
 ---
-
-Please note that the image and link references in the documentation are placeholders and should be replaced with the actual URLs when the document is compiled.
