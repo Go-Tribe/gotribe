@@ -15,11 +15,11 @@ Go + Vue开发的小型 cms 解决方案, 主题丰富，开箱即用，企业�
 
 ## 🚀 核心优势：
 
-性能卓越：基于 Golang 的高效并发处理能力，GoTribe 能够轻松应对高流量网站的需求。
-易于使用：简洁直观的用户界面和文档，让即使是初学者也能快速上手。
-高度可定制：提供丰富的API和插件支持，满足个性化的建站需求。
-社区支持：活跃的开源社区，持续提供更新和技术支持。
-安全稳定：遵循最佳安全实践，保障网站数据的安全和稳定运行。
+性能卓越：基于 Golang 的高效并发处理能力，GoTribe 能够轻松应对高流量网站的需求。 
+易于使用：简洁直观的用户界面和文档，让即使是初学者也能快速上手。 
+高度可定制：提供丰富的API和插件支持，满足个性化的建站需求。 
+社区支持：活跃的开源社区，持续提供更新和技术支持。 
+安全稳定：遵循最佳安全实践，保障网站数据的安全和稳定运行。 
 
 ## 💥 适用场景：
 无论是个人博客、团队，还是企业网站，GoTribe 都能提供强大的支持和灵活的定制选项。
@@ -85,26 +85,24 @@ Go + Vue开发的小型 cms 解决方案, 主题丰富，开箱即用，企业�
 1. 下载项目
 
 ```
-git clone --recursive https://github.com/go-tribe/gotribe-admin.git
+git clone https://github.com/go-tribe/gotribe.git
 ```
 2. 修改配置文件,参数说明详见：`config.tmp.yml`。
 
 ```
-cp config.tmp.yml config.yml
+cp configs/config.tem.yaml configs/config.yaml
 ```
-3. 开发运行：
+3. 编译：
 
 ```
-make run
+make build
 ```
-4. 编译打包:
+4. 运行:
 
 ```
-make
+_output/platforms/darwin/arm64/gotribe -c configs/config.yaml
 ```
-编译完成后,可执行文件在`_output`目录下。
-
-启动后会自动迁移数据库，管理后台默认用户名：admin 密码：123456
+**tips:** 编译完后会在_output目录下生成可执行文件,子目录根据系统略有不同。
 
 ## 🍁 TODO
 
