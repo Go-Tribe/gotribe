@@ -8,17 +8,16 @@ package user
 import (
 	"context"
 	"errors"
-	"gotribe/pkg/api/v1"
-	"regexp"
-	"sync"
-
 	"gotribe/internal/app/store"
 	"gotribe/internal/pkg/errno"
 	"gotribe/internal/pkg/known"
 	"gotribe/internal/pkg/log"
 	"gotribe/internal/pkg/model"
+	"gotribe/pkg/api/v1"
 	"gotribe/pkg/auth"
 	"gotribe/pkg/token"
+	"regexp"
+	"sync"
 
 	"github.com/jinzhu/copier"
 	"golang.org/x/sync/errgroup"
@@ -35,6 +34,7 @@ type UserBiz interface {
 	Update(ctx context.Context, username string, r *v1.UpdateUserRequest) error
 	Delete(ctx context.Context, username string) error
 	DeleteToTx(ctx context.Context, username string) error
+	WxMiniLogin(ctx context.Context, r *v1.WechatMiniLoginRequest, openID string) (*v1.LoginResponse, error)
 }
 
 // UserBiz 接口的实现.
@@ -229,4 +229,29 @@ func (b *userBiz) DeleteToTx(ctx context.Context, username string) error {
 		return err
 	}
 	return nil
+}
+
+func (b *userBiz) WxMiniLogin(ctx context.Context, r *v1.WechatMiniLoginRequest, openID string) (*v1.LoginResponse, error) {
+	log.C(ctx).Infow("WxMiniLogin function called")
+	if openID == "" {
+		return nil, errno.ErrUserNotFound
+	}
+
+	// 获取拓展用户信息
+	accountM, err := b.ds.ThirdPartyAccounts().Get(ctx, v1.AccountWhere{OpenID: openID})
+	log.C(ctx).Infow("get account info", accountM, "err:", err)
+	if err != nil {
+		// 如果不存在则新建
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return b.createUserAndAccount(ctx, openID, r.Type)
+		} else {
+			return nil, err // 其他错误直接返回。
+		}
+	}
+	// 如果匹配成功，说明登录成功，签发 token 并返回
+	t, err := token.Sign(accountM.UserID)
+	if err != nil {
+		return nil, errno.ErrSignToken
+	}
+	return &v1.LoginResponse{Token: t}, nil
 }

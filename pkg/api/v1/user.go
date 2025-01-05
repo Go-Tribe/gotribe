@@ -73,3 +73,16 @@ type UserWhere struct {
 	Username  string
 	ProjectID string
 }
+
+type WechatMiniLoginRequest struct {
+	Code string `json:"code"`
+	Type string `json:"type"`
+}
+
+type GetUserWxPhoneRequest struct {
+	Code string `json:"code"`
+}
+
+type AccountWhere struct {
+	OpenID string `json:"openID"`
+}
