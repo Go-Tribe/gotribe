@@ -119,7 +119,7 @@ func (b *userBiz) Get(ctx context.Context, username string) (*v1.GetUserResponse
 
 	var resp v1.GetUserResponse
 	_ = copier.Copy(&resp, user)
-
+	resp.Birthday = user.Birthday.Format(known.TimeFormatShort)
 	resp.CreatedAt = user.CreatedAt.Format(known.TimeFormat)
 	resp.UpdatedAt = user.UpdatedAt.Format(known.TimeFormat)
 
@@ -248,10 +248,14 @@ func (b *userBiz) WxMiniLogin(ctx context.Context, r *v1.WechatMiniLoginRequest,
 			return nil, err // 其他错误直接返回。
 		}
 	}
+	userInfo, err := b.ds.Users().Get(ctx, v1.UserWhere{UserID: accountM.UserID})
+	if err != nil {
+		return nil, err
+	}
 	// 如果匹配成功，说明登录成功，签发 token 并返回
-	t, err := token.Sign(accountM.UserID)
+	t, err := token.Sign(userInfo.Username)
 	if err != nil {
 		return nil, errno.ErrSignToken
 	}
-	return &v1.LoginResponse{Token: t, UserID: accountM.UserID}, nil
+	return &v1.LoginResponse{Token: t, Username: userInfo.Username}, nil
 }

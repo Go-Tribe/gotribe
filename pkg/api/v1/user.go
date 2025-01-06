@@ -13,8 +13,8 @@ type LoginRequest struct {
 
 // LoginResponse 指定了 `POST /login` 接口的返回参数.
 type LoginResponse struct {
-	Token  string `json:"token"`
-	UserID string `json:"userID"`
+	Token    string `json:"token"`
+	Username string `json:"username"`
 }
 
 // ChangePasswordRequest 指定了 `POST /v1/users/{name}/change-password` 接口的请求参数.
@@ -45,7 +45,8 @@ type UserInfo struct {
 	Nickname  string `json:"nickname"`
 	Email     string `json:"email"`
 	Phone     string `json:"phone"`
-	PostCount int64  `json:"postCount"`
+	AvatarURL string `json:"avatarURL"`
+	Birthday  string `json:"birthday"`
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
 }

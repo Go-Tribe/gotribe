@@ -16,8 +16,9 @@ const (
 	XUsernameKey = "X-Username"
 
 	// 日期格式化.
-	TimeFormatDay = "20060102"
-	TimeFormat    = "2006-01-02 15:04:05"
+	TimeFormatDay   = "20060102"
+	TimeFormat      = "2006-01-02 15:04:05"
+	TimeFormatShort = "2006-01-02"
 
 	// 公用状态.
 	STATUS_OK      = 1

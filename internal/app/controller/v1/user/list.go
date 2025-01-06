@@ -52,11 +52,11 @@ func (ctrl *UserController) ListUser(ctx context.Context, r *pb.ListUserRequest)
 		createdAt, _ := time.Parse("2006-01-02 15:04:05", u.CreatedAt)
 		updatedAt, _ := time.Parse("2006-01-02 15:04:05", u.UpdatedAt)
 		users = append(users, &pb.UserInfo{
-			Username:  u.Username,
-			Nickname:  u.Nickname,
-			Email:     u.Email,
-			Phone:     u.Phone,
-			PostCount: u.PostCount,
+			Username: u.Username,
+			Nickname: u.Nickname,
+			Email:    u.Email,
+			Phone:    u.Phone,
+			//PostCount: u.PostCount,
 			CreatedAt: timestamppb.New(createdAt),
 			UpdatedAt: timestamppb.New(updatedAt),
 		})

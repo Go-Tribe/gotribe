@@ -8,6 +8,7 @@ package user
 import (
 	"gotribe/internal/pkg/core"
 	"gotribe/internal/pkg/errno"
+	"gotribe/internal/pkg/known"
 	"gotribe/internal/pkg/log"
 	"gotribe/pkg/api/v1"
 
@@ -32,7 +33,7 @@ func (ctrl *UserController) Update(c *gin.Context) {
 		return
 	}
 
-	if err := ctrl.b.Users().Update(c, c.Param("name"), &r); err != nil {
+	if err := ctrl.b.Users().Update(c, c.GetString(known.XUsernameKey), &r); err != nil {
 		core.WriteResponse(c, err, nil)
 
 		return
