@@ -13,7 +13,8 @@ type LoginRequest struct {
 
 // LoginResponse 指定了 `POST /login` 接口的返回参数.
 type LoginResponse struct {
-	Token string `json:"token"`
+	Token  string `json:"token"`
+	UserID string `json:"userID"`
 }
 
 // ChangePasswordRequest 指定了 `POST /v1/users/{name}/change-password` 接口的请求参数.
@@ -76,7 +77,6 @@ type UserWhere struct {
 
 type WechatMiniLoginRequest struct {
 	Code string `json:"code"`
-	Type string `json:"type"`
 }
 
 type GetUserWxPhoneRequest struct {

@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"fmt"
-	"github.com/dengmengmian/ghelper/gid"
 	"gotribe/internal/pkg/errno"
 	"gotribe/internal/pkg/known"
 	"gotribe/internal/pkg/model"
@@ -13,20 +12,18 @@ import (
 )
 
 func (b *userBiz) createUserAndAccount(ctx context.Context, openID, platformType string) (*v1.LoginResponse, error) {
-	userid := gid.GenShortID()
 	// 先建用户，再新增拓展用户信息
 	userM := model.UserM{
-		UserID:    userid,
 		ProjectID: ctx.Value(known.XPrjectIDKey).(string),
 		Username:  generateRandomUserName(),
 	}
-	err := b.ds.Users().Create(ctx, &userM)
+	userInfo, err := b.ds.Users().Create(ctx, &userM)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
 	accountM := model.ThirdPartyAccountsM{
-		UserID:   userid,
+		UserID:   userInfo.UserID,
 		OpenID:   openID,
 		Platform: platformType,
 	}
@@ -35,7 +32,7 @@ func (b *userBiz) createUserAndAccount(ctx context.Context, openID, platformType
 		return nil, fmt.Errorf("failed to create third party account: %w", err)
 	}
 
-	t, err := token.Sign(userid)
+	t, err := token.Sign(userInfo.UserID)
 	if err != nil {
 		return nil, errno.ErrSignToken
 	}

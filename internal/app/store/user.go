@@ -18,7 +18,7 @@ import (
 
 // UserStore 定义了 user 模块在 store 层所实现的方法.
 type UserStore interface {
-	Create(ctx context.Context, user *model.UserM) error
+	Create(ctx context.Context, user *model.UserM) (*model.UserM, error)
 	Get(ctx context.Context, userWhere v1.UserWhere) (*model.UserM, error)
 	Update(ctx context.Context, user *model.UserM) error
 	List(ctx context.Context, offset, limit int, userWhere v1.UserWhere) (int64, []*model.UserM, error)
@@ -38,9 +38,14 @@ func newUsers(db *gorm.DB) *users {
 }
 
 // Create 插入一条 user 记录.
-func (u *users) Create(ctx context.Context, user *model.UserM) error {
+func (u *users) Create(ctx context.Context, user *model.UserM) (*model.UserM, error) {
 	user.ProjectID = ctx.Value(known.XPrjectIDKey).(string)
-	return u.db.Create(&user).Error
+	result := u.db.Create(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	// 返回创建好的用户信息
+	return user, nil
 }
 
 // Get 根据用户名查询指定 user 的数据库记录.

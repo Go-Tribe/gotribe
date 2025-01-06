@@ -45,22 +45,21 @@ func (ctrl *UserController) GetWxPhone(c *gin.Context) {
 		core.WriteResponse(c, errno.ErrBind, nil)
 		return
 	}
+
 	if _, err := govalidator.ValidateStruct(r); err != nil {
 		core.WriteResponse(c, errno.ErrInvalidParameter.SetMessage(err.Error()), nil)
-
 		return
 	}
 	appID := viper.GetString("wechat.mini-app-id")
 	appSecret := viper.GetString("wechat.mini-app-secret")
 	accessTokenRes, err := wechat.GetWechatAccessToken(appID, appSecret)
 	if err != nil {
-		log.C(c).Errorw("Get GetWxPhone function called", "error", err.Error())
-		core.WriteResponse(c, errno.ErrInvalidParameter, nil)
+		core.WriteResponse(c, errno.ErrTokenInvalid.SetMessage(err.Error()), nil)
 		return
 	}
 	rs, err := wechat.GetPhoneNumber(accessTokenRes.AccessToken, r.Code)
 	if err != nil {
-		core.WriteResponse(c, errno.ErrInvalidParameter, nil)
+		core.WriteResponse(c, errno.ErrInvalidParameter.SetMessage(err.Error()), nil)
 		return
 	}
 	core.WriteResponse(c, nil, rs)

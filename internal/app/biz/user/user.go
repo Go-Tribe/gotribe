@@ -95,7 +95,7 @@ func (b *userBiz) Login(ctx context.Context, r *v1.LoginRequest) (*v1.LoginRespo
 func (b *userBiz) Create(ctx context.Context, r *v1.CreateUserRequest) error {
 	var userM model.UserM
 	_ = copier.Copy(&userM, r)
-	if err := b.ds.Users().Create(ctx, &userM); err != nil {
+	if _, err := b.ds.Users().Create(ctx, &userM); err != nil {
 		if match, _ := regexp.MatchString("Duplicate entry '.*' for key 'username'", err.Error()); match {
 			return errno.ErrUserAlreadyExist
 		}
@@ -243,7 +243,7 @@ func (b *userBiz) WxMiniLogin(ctx context.Context, r *v1.WechatMiniLoginRequest,
 	if err != nil {
 		// 如果不存在则新建
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return b.createUserAndAccount(ctx, openID, r.Type)
+			return b.createUserAndAccount(ctx, openID, known.LOGIN_TYPE_WXMINI)
 		} else {
 			return nil, err // 其他错误直接返回。
 		}
@@ -253,5 +253,5 @@ func (b *userBiz) WxMiniLogin(ctx context.Context, r *v1.WechatMiniLoginRequest,
 	if err != nil {
 		return nil, errno.ErrSignToken
 	}
-	return &v1.LoginResponse{Token: t}, nil
+	return &v1.LoginResponse{Token: t, UserID: accountM.UserID}, nil
 }

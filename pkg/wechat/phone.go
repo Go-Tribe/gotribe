@@ -11,7 +11,7 @@ import (
 type PhoneInfo struct {
 	PhoneNumber     string `json:"phoneNumber"`
 	PurePhoneNumber string `json:"purePhoneNumber"`
-	CountryCode     int    `json:"countryCode"`
+	CountryCode     string `json:"countryCode"` // 修改为 string 类型
 	Watermark       struct {
 		Timestamp int    `json:"timestamp"`
 		Appid     string `json:"appid"`
