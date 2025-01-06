@@ -17,6 +17,8 @@ import (
 func UserRoutes(g *gin.RouterGroup) gin.IRoutes {
 	uc := user.New(store.S)
 	g.POST("/login", uc.Login)
+	g.POST("/wxmini/login", uc.WxMiniLogin)
+	g.POST("/wxmini/phone", uc.GetWxPhone)
 	// 创建 v1 路由分组
 	v1 := g.Group("/v1")
 	{
