@@ -54,6 +54,7 @@ func (ctrl *UserController) GetWxPhone(c *gin.Context) {
 	appSecret := viper.GetString("wechat.mini-app-secret")
 	accessTokenRes, err := wechat.GetWechatAccessToken(appID, appSecret)
 	if err != nil {
+		log.C(c).Errorw("Get GetWxPhone function called", "error", err.Error())
 		core.WriteResponse(c, errno.ErrInvalidParameter, nil)
 		return
 	}
