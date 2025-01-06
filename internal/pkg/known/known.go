@@ -22,4 +22,7 @@ const (
 	// 公用状态.
 	STATUS_OK      = 1
 	STATUS_DISABLE = 2
+
+	// 用户来源
+	LOGIN_TYPE_WXMINI = "wxmini"
 )

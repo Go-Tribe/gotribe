@@ -7,6 +7,7 @@ package model
 
 import (
 	"gotribe/pkg/auth"
+	"time"
 
 	"github.com/dengmengmian/ghelper/gid"
 	"gorm.io/gorm"
@@ -15,15 +16,18 @@ import (
 // UserM 是数据库中 user 记录 struct 格式的映射.
 type UserM struct {
 	gorm.Model
-	UserID    string `gorm:"type:char(10);not null;uniqueIndex;comment:字符ID，分布式 ID;" json:"userID"`
-	ProjectID string `gorm:"type:char(10);not null;index;comment:项目ID;" json:"projectID"`
-	Username  string `gorm:"type:varchar(30);not null;uniqueIndex;comment:用户名" json:"username"`
-	Password  string `gorm:"type:varchar(255);not null;comment:密码" json:"-"`
-	Nickname  string `gorm:"type:varchar(30);not null;comment:昵称" json:"nickname"`
-	Email     string `gorm:"type:varchar(30);not null;comment:邮箱" json:"email"`
-	Phone     string `gorm:"type:varchar(21);not null;comment:电话" json:"phone"`
-	Sex       string `gorm:"type:char(1);not null;default:M;comment:M:男 F:女" json:"sex"`
-	Status    uint8  `gorm:"type:tinyint(1);not null;default:1;comment:用户状态，1-正常；2-禁用" json:"status"`
+	UserID    string     `gorm:"type:char(10);not null;uniqueIndex;comment:字符ID，分布式 ID;" json:"user_id"`
+	Username  string     `gorm:"type:varchar(30);not null;uniqueIndex;comment:用户名" json:"username"`
+	ProjectID string     `gorm:"type:char(10);not null;index;comment:项目ID;" json:"project_id"`
+	Password  string     `gorm:"type:varchar(255);not null;comment:密码" json:"-"`
+	Nickname  string     `gorm:"type:varchar(30);not null;comment:昵称" json:"nickname"`
+	Email     string     `gorm:"type:varchar(30);not null;uniqueIndex;comment:邮箱" json:"email"`
+	Phone     string     `gorm:"type:varchar(21);not null;uniqueIndex;comment:电话" json:"phone"`
+	Sex       string     `gorm:"type:char(1);not null;default:M;comment:M:男 F:女" json:"sex"`
+	Point     float64    `gorm:"-" json:"point"`
+	Status    uint8      `gorm:"type:tinyint(1);not null;default:1;comment:用户状态，1-正常；2-禁用" json:"status"`
+	Birthday  *time.Time `gorm:"type:date;comment:'用户生日，格式为YYYY-MM-DD'" json:"birthday"`
+	AvatarURL string     `gorm:"type:varchar(255);comment:头像地址" json:"avatar_url"`
 }
 
 // TableName 用来指定映射的 MySQL 表名.

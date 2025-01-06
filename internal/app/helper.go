@@ -20,10 +20,10 @@ import (
 
 const (
 	// recommendedHomeDir 定义放置 app 服务配置的默认目录.
-	recommendedHomeDir = ".app"
+	recommendedHomeDir = ".configs"
 
 	// defaultConfigName 指定了 app 服务的默认配置文件名.
-	defaultConfigName = "app.yaml"
+	defaultConfigName = "config.yaml"
 )
 
 // initConfig 设置需要读取的配置文件名、环境变量，并读取配置文件内容到 viper 中.
