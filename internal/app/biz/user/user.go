@@ -8,6 +8,7 @@ package user
 import (
 	"context"
 	"errors"
+	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe/internal/app/store"
 	"gotribe/internal/pkg/errno"
 	"gotribe/internal/pkg/known"
@@ -119,7 +120,9 @@ func (b *userBiz) Get(ctx context.Context, username string) (*v1.GetUserResponse
 
 	var resp v1.GetUserResponse
 	_ = copier.Copy(&resp, user)
-	resp.Birthday = user.Birthday.Format(known.TimeFormatShort)
+	if !gconvert.IsEmpty(user.Birthday) {
+		resp.Birthday = user.Birthday.Format(known.TimeFormatShort)
+	}
 	resp.CreatedAt = user.CreatedAt.Format(known.TimeFormat)
 	resp.UpdatedAt = user.UpdatedAt.Format(known.TimeFormat)
 
