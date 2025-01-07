@@ -31,6 +31,7 @@ type IStore interface {
 	Tags() TagStore
 	Projects() ProjectStore
 	ThirdPartyAccounts() AccountStore
+	Ad() AdStore
 }
 
 // datastore 是 IStore 的一个具体实现.
@@ -118,4 +119,8 @@ func (ds *datastore) Projects() ProjectStore {
 
 func (ds *datastore) ThirdPartyAccounts() AccountStore {
 	return newAccounts(ds.db)
+}
+
+func (ds *datastore) Ad() AdStore {
+	return newAds(ds.db)
 }

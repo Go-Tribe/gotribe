@@ -8,6 +8,7 @@ package biz
 //go:generate mockgen -destination mock_biz.go -package biz app/internal/app/biz IBiz
 
 import (
+	"gotribe/internal/app/biz/ad"
 	"gotribe/internal/app/biz/category"
 	"gotribe/internal/app/biz/column"
 	"gotribe/internal/app/biz/config"
@@ -29,6 +30,7 @@ type IBiz interface {
 	Categoyies() category.CategoryBiz
 	Tags() tag.TagBiz
 	Projects() project.ProjectBiz
+	Ads() ad.AdBiz
 }
 
 // 确保 biz 实现了 IBiz 接口.
@@ -85,4 +87,8 @@ func (b *biz) Tags() tag.TagBiz {
 // Projects 返回一个实现了 projectBiz 接口的实例.
 func (b *biz) Projects() project.ProjectBiz {
 	return project.New(b.ds)
+}
+
+func (b *biz) Ads() ad.AdBiz {
+	return ad.New(b.ds)
 }
