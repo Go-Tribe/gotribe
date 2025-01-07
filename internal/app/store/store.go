@@ -32,6 +32,8 @@ type IStore interface {
 	Projects() ProjectStore
 	ThirdPartyAccounts() AccountStore
 	Ad() AdStore
+	Products() ProductStore
+	ProductSKUs() ProductSKUStore
 }
 
 // datastore 是 IStore 的一个具体实现.
@@ -123,4 +125,14 @@ func (ds *datastore) ThirdPartyAccounts() AccountStore {
 
 func (ds *datastore) Ad() AdStore {
 	return newAds(ds.db)
+}
+
+// Products 返回一个实现了 productStore 接口的实例.
+func (ds *datastore) Products() ProductStore {
+	return newProducts(ds.db)
+}
+
+// ProductSKUs 返回一个实现了 productSKUStore 接口的实例.
+func (ds *datastore) ProductSKUs() ProductSKUStore {
+	return newProductSKUs(ds.db)
 }

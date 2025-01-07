@@ -59,5 +59,7 @@ func installRouters(g *gin.Engine) error {
 	routes.TagRoutes(apiGroup)
 	// 广告
 	routes.AdRoutes(apiGroup)
+	// 商品
+	routes.ProductRoutes(apiGroup)
 	return nil
 }

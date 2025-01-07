@@ -14,6 +14,7 @@ import (
 	"gotribe/internal/app/biz/config"
 	"gotribe/internal/app/biz/example"
 	"gotribe/internal/app/biz/post"
+	"gotribe/internal/app/biz/product"
 	"gotribe/internal/app/biz/project"
 	"gotribe/internal/app/biz/tag"
 	"gotribe/internal/app/biz/user"
@@ -31,6 +32,7 @@ type IBiz interface {
 	Tags() tag.TagBiz
 	Projects() project.ProjectBiz
 	Ads() ad.AdBiz
+	Products() product.ProductBiz
 }
 
 // 确保 biz 实现了 IBiz 接口.
@@ -91,4 +93,7 @@ func (b *biz) Projects() project.ProjectBiz {
 
 func (b *biz) Ads() ad.AdBiz {
 	return ad.New(b.ds)
+}
+func (b *biz) Products() product.ProductBiz {
+	return product.New(b.ds)
 }
