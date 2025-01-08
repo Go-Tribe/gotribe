@@ -44,6 +44,7 @@ type UserInfo struct {
 	Username  string `json:"username"`
 	Nickname  string `json:"nickname"`
 	Email     string `json:"email"`
+	Sex       string `json:"sex"`
 	Phone     string `json:"phone"`
 	AvatarURL string `json:"avatarURL"`
 	Birthday  string `json:"birthday"`
@@ -67,6 +68,7 @@ type ListUserResponse struct {
 type UpdateUserRequest struct {
 	Nickname  *string `json:"nickname" valid:"stringlength(2|30)"`
 	Email     *string `json:"email" valid:"email"`
+	Sex       *string `json:"sex" valid:"stringlength(1|2)"`
 	AvatarURL *string `json:"avatarURL"`
 	Birthday  *string `json:"birthday"`
 	Phone     *string `json:"phone" valid:"stringlength(11|11)"`

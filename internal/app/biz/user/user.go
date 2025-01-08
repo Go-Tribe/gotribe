@@ -208,6 +208,11 @@ func (b *userBiz) Update(ctx context.Context, username string, user *v1.UpdateUs
 	if user.AvatarURL != nil {
 		userM.AvatarURL = *user.AvatarURL
 	}
+
+	if user.Sex != nil {
+		userM.Sex = *user.Sex
+	}
+
 	if user.Birthday != nil {
 		birthday, err := time.Parse(known.TimeFormatShort, *user.Birthday)
 		if err != nil {
