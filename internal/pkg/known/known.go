@@ -30,4 +30,7 @@ const (
 
 	// 用户来源
 	LOGIN_TYPE_WXMINI = "wxmini"
+
+	// 上传资源大小 (默认 10MB)
+	DEFAULT_UPLOAD_SIZE int64 = 10 * 1024 * 1024
 )
