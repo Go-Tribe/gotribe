@@ -65,9 +65,11 @@ type ListUserResponse struct {
 
 // UpdateUserRequest 指定了 `PUT /v1/users/{name}` 接口的请求参数.
 type UpdateUserRequest struct {
-	Nickname *string `json:"nickname" valid:"stringlength(2|30)"`
-	Email    *string `json:"email" valid:"email"`
-	Phone    *string `json:"phone" valid:"stringlength(11|11)"`
+	Nickname  *string `json:"nickname" valid:"stringlength(2|30)"`
+	Email     *string `json:"email" valid:"email"`
+	AvatarURL *string `json:"avatarURL"`
+	Birthday  *string `json:"birthday"`
+	Phone     *string `json:"phone" valid:"stringlength(11|11)"`
 }
 
 type UserWhere struct {

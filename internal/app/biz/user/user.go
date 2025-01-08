@@ -19,6 +19,7 @@ import (
 	"gotribe/pkg/token"
 	"regexp"
 	"sync"
+	"time"
 
 	"github.com/jinzhu/copier"
 	"golang.org/x/sync/errgroup"
@@ -202,6 +203,18 @@ func (b *userBiz) Update(ctx context.Context, username string, user *v1.UpdateUs
 
 	if user.Phone != nil {
 		userM.Phone = *user.Phone
+	}
+
+	if user.AvatarURL != nil {
+		userM.AvatarURL = *user.AvatarURL
+	}
+	if user.Birthday != nil {
+		birthday, err := time.Parse(known.TimeFormatShort, *user.Birthday)
+		if err != nil {
+			return err
+		}
+
+		userM.Birthday = &birthday
 	}
 
 	if err := b.ds.Users().Update(ctx, userM); err != nil {
