@@ -12,9 +12,9 @@ type Uploader interface {
 }
 
 type UploadResource struct {
-	FileExt string
-	Key     string
-	Domain  string
+	FileExt string `json:"file_ext"`
+	Key     string `json:"key"`
+	Domain  string `json:"domain"`
 }
 
 // Service 提供上传和删除文件的功能
