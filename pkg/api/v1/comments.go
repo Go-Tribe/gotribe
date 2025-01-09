@@ -9,16 +9,16 @@ package v1
 type CreateCommentRequest struct {
 	Content    string `json:"content" valid:"required,stringlength(1|10240)"`
 	ObjectID   string `json:"objectID" valid:"required,stringlength(1|10)"`
-	ObjectType string `json:"objectType" valid:"required,stringlength(1|10)"`
+	ObjectType *uint  `json:"objectType" valid:"required"`
 }
 
 type ReplyCommentRequest struct {
 	Content    string `json:"content" valid:"required,stringlength(1|10240)"`
 	ObjectID   string `json:"objectID" valid:"required,stringlength(1|10)"`
-	ObjectType string `json:"objectType" valid:"required,stringlength(1|10)"`
+	ObjectType uint   `json:"objectType"`
 	ToUserID   string `json:"toUserID" valid:"required,stringlength(1|10)"`
-	PID        int    `json:"pid" valid:"required,stringlength(1|10)"`
-	ReplyToID  int    `json:"replyToID" valid:"required,stringlength(1|10)"`
+	ParentID   *int   `json:"parentID" valid:"required"`
+	ReplyToID  *int   `json:"replyToID""`
 }
 
 // CreateCommentResponse 指定了 `POST /v1/comment` 接口的返回参数.
@@ -41,9 +41,9 @@ type CommentInfo struct {
 	Content     string         `json:"content" `
 	HtmlContent string         `json:"htmlContent"`
 	ObjectID    string         `json:"objectID"`
-	ObjectType  string         `json:"objectType"`
+	ObjectType  uint           `json:"objectType"`
 	ToUserID    string         `json:"toUserID" `
-	PID         int            `json:"pid" `
+	ParentID    int            `json:"parent_id" `
 	ReplyToID   int            `json:"replyToID"`
 	CreatedAt   string         `json:"createdAt"`
 	UpdatedAt   string         `json:"updatedAt"`
@@ -51,6 +51,9 @@ type CommentInfo struct {
 	Nickname    string         `json:"nickname"`
 	Avatar      string         `json:"avatar"`
 	Replies     []*CommentInfo `json:"replies"`
+	Country     string         `json:"country"`
+	RegionName  string         `json:"regionName"`
+	City        string         `json:"city"`
 }
 
 // ListCommentRequest 指定了 `GET /v1/comment` 接口的请求参数.

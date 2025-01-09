@@ -20,7 +20,7 @@ type CommentStore interface {
 	Get(ctx context.Context, commentID string) (*model.CommentM, error)
 	Update(ctx context.Context, comment *model.CommentM) error
 	List(ctx context.Context, objectID string, offset, limit int) (int64, []*model.CommentM, error)
-	ListReplies(ctx context.Context, topLevelCommentIDs []string) ([]*model.CommentM, error)
+	ListReplies(ctx context.Context, topLevelCommentIDs []uint) ([]*model.CommentM, error)
 }
 
 // CommentStore 接口的实现.
@@ -57,7 +57,7 @@ func (u *comments) Update(ctx context.Context, comment *model.CommentM) error {
 
 // List 根据 offset 和 limit 返回列表.
 func (u *comments) List(ctx context.Context, objectID string, offset, limit int) (count int64, ret []*model.CommentM, err error) {
-	err = u.db.Where("object_id = ? and status = ? and pid = 0", objectID, known.AuditPass).Offset(offset).Limit(defaultLimit(limit)).Order("id desc").Find(&ret).
+	err = u.db.Where("object_id = ? and status = ? and parent_id = 0", objectID, known.AuditPass).Offset(offset).Limit(defaultLimit(limit)).Order("id desc").Find(&ret).
 		Offset(-1).
 		Limit(-1).
 		Count(&count).
@@ -66,9 +66,9 @@ func (u *comments) List(ctx context.Context, objectID string, offset, limit int)
 	return
 }
 
-func (c *comments) ListReplies(ctx context.Context, topLevelCommentIDs []string) ([]*model.CommentM, error) {
+func (c *comments) ListReplies(ctx context.Context, topLevelCommentIDs []uint) ([]*model.CommentM, error) {
 	var replies []*model.CommentM
-	if err := c.db.WithContext(ctx).Where("pid IN ?", topLevelCommentIDs).Find(&replies).Error; err != nil {
+	if err := c.db.WithContext(ctx).Where("parent_id IN ?", topLevelCommentIDs).Find(&replies).Error; err != nil {
 		return nil, err
 	}
 	return replies, nil

@@ -32,7 +32,6 @@ func (ctrl *CommentController) Create(c *gin.Context) {
 
 		return
 	}
-
 	resp, err := ctrl.b.Comments().Create(c, c.GetString(known.XUsernameKey), &r)
 	if err != nil {
 		core.WriteResponse(c, err, nil)

@@ -10,6 +10,7 @@ import (
 	"errors"
 	"github.com/dengmengmian/ghelper/gmarkdown"
 	"gotribe/pkg/api/v1"
+	"gotribe/pkg/ip"
 
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
@@ -49,6 +50,11 @@ func (b *commentBiz) Create(ctx context.Context, username string, r *v1.CreateCo
 	commentM.Type = known.CommentPublish
 	commentM.HtmlContent = gmarkdown.MdToHTML(commentM.Content)
 	commentM.ProjectID = ctx.Value(known.XPrjectIDKey).(string)
+	commentM.IP = ctx.Value(known.XClientIPKey).(string)
+	country, city, regionName := ip.GetIPInfo(ctx, commentM.IP)
+	commentM.Country = country
+	commentM.RegionName = regionName
+	commentM.City = city
 	userM, err := b.ds.Users().Get(ctx, v1.UserWhere{Username: username})
 	if err != nil {
 		return nil, errno.ErrUserNotFound
@@ -67,6 +73,13 @@ func (b *commentBiz) Reply(ctx context.Context, username string, r *v1.ReplyComm
 	commentM.Type = known.CommentReply
 	commentM.HtmlContent = gmarkdown.MdToHTML(commentM.Content)
 	commentM.ProjectID = ctx.Value(known.XPrjectIDKey).(string)
+	commentM.ParentID = *r.ParentID
+	commentM.IP = ctx.Value(known.XClientIPKey).(string)
+	commentM.IP = ctx.Value(known.XClientIPKey).(string)
+	country, city, regionName := ip.GetIPInfo(ctx, commentM.IP)
+	commentM.Country = country
+	commentM.RegionName = regionName
+	commentM.City = city
 	userM, err := b.ds.Users().Get(ctx, v1.UserWhere{Username: username})
 	if err != nil {
 		return nil, errno.ErrUserNotFound
@@ -133,9 +146,9 @@ func (b *commentBiz) List(ctx context.Context, r *v1.ListCommentRequest) (*v1.Li
 	}
 
 	// Step 2: Extract top-level comment IDs
-	topLevelCommentIDs := make([]string, 0, count)
+	topLevelCommentIDs := make([]uint, 0, count)
 	for _, comment := range topLevelComments {
-		topLevelCommentIDs = append(topLevelCommentIDs, comment.CommentID)
+		topLevelCommentIDs = append(topLevelCommentIDs, comment.ID)
 	}
 
 	// Step 3: Query replies for top-level comments
@@ -148,7 +161,7 @@ func (b *commentBiz) List(ctx context.Context, r *v1.ListCommentRequest) (*v1.Li
 	// Step 4: Build a map of replies for each top-level comment
 	replyMap := make(map[int][]*model.CommentM)
 	for _, reply := range replies {
-		replyMap[reply.PID] = append(replyMap[reply.PID], reply)
+		replyMap[reply.ParentID] = append(replyMap[reply.ParentID], reply)
 	}
 
 	// Step 5: Query user information for all comments and replies

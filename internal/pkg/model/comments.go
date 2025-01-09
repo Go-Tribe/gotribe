@@ -22,15 +22,19 @@ type CommentM struct {
 	Type        uint   `gorm:"type:tinyint;not null;default:1;example:评论类型，1-评论；2-回复" json:"type"`
 	UserID      string `gorm:"type:char(10);not null;index;example:用户ID" json:"userID"`
 	ToUserID    string `gorm:"type:char(10);not null;index;example:被评论用户ID" json:"toUserID"`
-	PID         int    `gorm:"type:int;not null;default:0;example:父评论ID" json:"pid"`
+	ParentID    int    `gorm:"type:int;not null;default:0;example:父评论ID" json:"parentID"`
 	ReplyToID   int    `gorm:"type:int;not null;default:0;example:回复的评论ID" json:"ReplyToID"`
 	Hot         int    `gorm:"type:int;default:0;example:热度" json:"hot"`
 	Like        int    `gorm:"type:int;default:0;example:点赞数" json:"like"`
 	Dislike     int    `gorm:"type:int;default:0;example:踩数" json:"dislike"`
+	IP          string `gorm:"type:varchar(255);not null;comment:IP" json:"ip"`
+	Country     string `gorm:"type:varchar(255);not null;comment:国家" json:"country"`
+	RegionName  string `gorm:"type:varchar(255);not null;comment:地区" json:"regionName"`
+	City        string `gorm:"type:varchar(255);not null;comment:城市" json:"city"`
 }
 
 func (c *CommentM) TableName() string {
-	return "example"
+	return "comment"
 }
 
 func (c *CommentM) BeforeCreate(tx *gorm.DB) (err error) {

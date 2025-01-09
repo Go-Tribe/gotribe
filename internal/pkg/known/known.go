@@ -14,6 +14,8 @@ const (
 
 	// XUsernameKey 用来定义 Gin 上下文的键，代表请求的所有者.
 	XUsernameKey = "X-Username"
+	// 客户端 IP
+	XClientIPKey = "X-Client-IP"
 
 	// 日期格式化.
 	TimeFormatDay   = "20060102"
