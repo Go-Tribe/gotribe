@@ -23,6 +23,7 @@ type UserStore interface {
 	Update(ctx context.Context, user *model.UserM) error
 	List(ctx context.Context, offset, limit int, userWhere v1.UserWhere) (int64, []*model.UserM, error)
 	Delete(ctx context.Context, username string) error
+	ListInUserID(ctx context.Context, userID []string) ([]*model.UserM, error)
 }
 
 // UserStore 接口的实现.
@@ -90,4 +91,12 @@ func (u *users) Delete(ctx context.Context, username string) error {
 		return err
 	}
 	return nil
+}
+
+func (c *users) ListInUserID(ctx context.Context, userID []string) ([]*model.UserM, error) {
+	var usersM []*model.UserM
+	if err := c.db.WithContext(ctx).Where("user_id IN ?", userID).Find(&usersM).Error; err != nil {
+		return nil, err
+	}
+	return usersM, nil
 }

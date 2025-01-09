@@ -61,5 +61,8 @@ func installRouters(g *gin.Engine) error {
 	routes.AdRoutes(apiGroup)
 	// 商品
 	routes.ProductRoutes(apiGroup)
+	// 评论
+	routes.CommentRoutes(apiGroup)
+
 	return nil
 }

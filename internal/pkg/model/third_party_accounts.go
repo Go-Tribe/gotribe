@@ -9,10 +9,10 @@ import "gorm.io/gorm"
 
 type ThirdPartyAccountsM struct {
 	gorm.Model
-	UserID   string `gorm:"type:char(10);Index;comment:用户ID" json:"userID"`
-	Platform string `gorm:"type:varchar(50);not null;comment:平台" json:"platform"`
-	BindFlag uint   `gorm:"type:tinyint;default:1;comment:是否绑定,2绑定" json:"bindFlag"`
-	OpenID   string `gorm:"type:varchar(255);uniqueIndex;not null;comment:openID" json:"openID"`
+	UserID   string `gorm:"type:char(10);Index;example:用户ID" json:"userID"`
+	Platform string `gorm:"type:varchar(50);not null;example:平台" json:"platform"`
+	BindFlag uint   `gorm:"type:tinyint;default:1;example:是否绑定,2绑定" json:"bindFlag"`
+	OpenID   string `gorm:"type:varchar(255);uniqueIndex;not null;example:openID" json:"openID"`
 }
 
 func (u *ThirdPartyAccountsM) TableName() string {

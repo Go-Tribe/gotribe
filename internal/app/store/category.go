@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// CategoryStore 定义了 example 模块在 store 层所实现的方法.
+// CategoryStore 定义了 comment 模块在 store 层所实现的方法.
 type CategoryStore interface {
 	Get(ctx context.Context, categoryID string) (*model.CategoryM, error)
 }
@@ -30,7 +30,7 @@ func newCategories(db *gorm.DB) *categories {
 	return &categories{db}
 }
 
-// Get 根据 exampleID 查询指定用户的 example 数据库记录.
+// Get 根据 exampleID 查询指定用户的 comment 数据库记录.
 func (u *categories) Get(ctx context.Context, categoryID string) (*model.CategoryM, error) {
 	var category model.CategoryM
 	if err := u.db.Where("category_id = ?", categoryID).First(&category).Error; err != nil {

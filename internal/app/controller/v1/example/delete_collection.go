@@ -15,7 +15,7 @@ import (
 
 // DeleteCollection 批量删除示例.
 func (ctrl *ExampleController) DeleteCollection(c *gin.Context) {
-	log.C(c).Infow("Batch delete example function called")
+	log.C(c).Infow("Batch delete comment function called")
 
 	exampleIDs := c.QueryArray("exampleID")
 	if err := ctrl.b.Examples().DeleteCollection(c, c.GetString(known.XUsernameKey), exampleIDs); err != nil {

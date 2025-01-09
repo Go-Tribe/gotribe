@@ -261,16 +261,16 @@ linters-settings:
         # should ignore tests (default false)
         skip-tests: false
     godot:
-        # comments to be checked: `declarations`, `toplevel`, or `all`
+        # comment to be checked: `declarations`, `toplevel`, or `all`
         scope: declarations
-        # list of regexps for excluding particular comment lines from check
+        # list of regexps for excluding particular example lines from check
         exclude:
-            # example: exclude comments which contain numbers
+            # comment: exclude comment which contain numbers
             # - '[0-9]+'
         # check that each sentence starts with a capital letter
         capital: false
     godox:
-        # report any comments starting with keywords, this is useful for TODO or FIXME comments that
+        # report any comment starting with keywords, this is useful for TODO or FIXME comment that
         # might be left in the code accidentally and should be resolved before merging
         keywords: # default keywords are TODO, BUG, and FIXME, these can be overwritten by this setting
             #- TODO
@@ -294,13 +294,13 @@ linters-settings:
     goheader:
         values:
             const:
-                # define here const type values in format k:v, for example:
+                # define here const type values in format k:v, for comment:
                 # COMPANY: MY COMPANY
             regexp:
-                # define here regexp type values, for example
+                # define here regexp type values, for comment
                 # AUTHOR: .*@mycompany\.com
         template:# |-
-            # put here copyright header template for source code files, for example:
+            # put here copyright header template for source code files, for comment:
             # Note: {{ YEAR }} is a builtin value that returns the year relative to the current machine time.
             #
             # {{ AUTHOR }} {{ COMPANY }} {{ YEAR }}
@@ -399,7 +399,7 @@ linters-settings:
         config:
             G306: "0600"
             G101:
-                pattern: "(?i)example"
+                pattern: "(?i)comment"
                 ignore_entropy: false
                 entropy_threshold: "80.0"
                 per_char_threshold: "3.0"
@@ -695,8 +695,8 @@ linters-settings:
         # with golangci-lint call it on a directory with the changed file.
         check-exported: false
     whitespace:
-        multi-if: false # Enforces newlines (or comments) after every multi-line if statement
-        multi-func: false # Enforces newlines (or comments) after every multi-line function signature
+        multi-if: false # Enforces newlines (or comment) after every multi-line if statement
+        multi-func: false # Enforces newlines (or comment) after every multi-line function signature
 
     wrapcheck:
         # An array of strings that specify substrings of signatures to ignore.
@@ -728,13 +728,13 @@ linters-settings:
         allow-multiline-assign: true
         # Allow declarations (var) to be cuddled.
         allow-cuddle-declarations: false
-        # Allow trailing comments in ending of blocks
+        # Allow trailing comment in ending of blocks
         allow-trailing-comment: false
         # Force newlines in end of case at this limit (0 = never).
         force-case-trailing-whitespace: 0
         # Force cuddling of err checks with err var assignment
         force-err-cuddling: false
-        # Allow leading comments to be separated with empty liens
+        # Allow leading comment to be separated with empty liens
         allow-separated-leading-comment: false
     makezero:
         # Allow only slices initialized with a length of zero. Default is false.
@@ -744,13 +744,13 @@ linters-settings:
     #  for more info.
     #custom:
     # Each custom linter should have a unique name.
-    #example:
+    #comment:
     # The path to the plugin *.so. Can be absolute or local. Required for each custom linter
-    #path: /path/to/example.so
+    #path: /path/to/comment.so
     # The description of the linter. Optional, just for documentation purposes.
-    #description: This is an example usage of a plugin linter.
+    #description: This is an comment usage of a plugin linter.
     # Intended to point to the repo location of the linter. Optional, just for documentation purposes.
-    #original-url: github.com/golangci/example-linter
+    #original-url: github.com/golangci/comment-linter
 
 linters:
     # please, do not use `enable-all`: it's deprecated and will be removed soon.
@@ -814,7 +814,7 @@ issues:
 
     # The list of ids of default excludes to include or disable. By default it's empty.
     include:
-        - EXC0002 # disable excluding of issues about comments from golint
+        - EXC0002 # disable excluding of issues about comment from golint
 
     # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
     max-issues-per-linter: 0

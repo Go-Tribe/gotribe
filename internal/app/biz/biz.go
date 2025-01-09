@@ -11,6 +11,7 @@ import (
 	"gotribe/internal/app/biz/ad"
 	"gotribe/internal/app/biz/category"
 	"gotribe/internal/app/biz/column"
+	"gotribe/internal/app/biz/comment"
 	"gotribe/internal/app/biz/config"
 	"gotribe/internal/app/biz/example"
 	"gotribe/internal/app/biz/post"
@@ -33,6 +34,7 @@ type IBiz interface {
 	Projects() project.ProjectBiz
 	Ads() ad.AdBiz
 	Products() product.ProductBiz
+	Comments() comment.CommentBiz
 }
 
 // 确保 biz 实现了 IBiz 接口.
@@ -96,4 +98,7 @@ func (b *biz) Ads() ad.AdBiz {
 }
 func (b *biz) Products() product.ProductBiz {
 	return product.New(b.ds)
+}
+func (b *biz) Comments() comment.CommentBiz {
+	return comment.New(b.ds)
 }

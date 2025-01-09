@@ -6,11 +6,9 @@
 package routes
 
 import (
+	"github.com/gin-gonic/gin"
 	"gotribe/internal/app/controller/v1/ad"
 	"gotribe/internal/app/store"
-	mw "gotribe/internal/pkg/middleware"
-
-	"github.com/gin-gonic/gin"
 )
 
 // 注册ad路由.
@@ -21,7 +19,7 @@ func AdRoutes(g *gin.RouterGroup) gin.IRoutes {
 	v1 := g.Group("/v1")
 	{
 		// 创建 ads 路由分组
-		adv1 := v1.Group("/ads", mw.Authn())
+		adv1 := v1.Group("/ads")
 		{
 			adv1.GET(":sceneID", pc.List)
 		}

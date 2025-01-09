@@ -28,6 +28,10 @@ const (
 	// 公开
 	STATUS_PUBLIC = 2
 
+	// 审核状态
+	AuditPass = 2
+	AuditFail = 1
+
 	// 用户来源
 	LOGIN_TYPE_WXMINI = "wxmini"
 

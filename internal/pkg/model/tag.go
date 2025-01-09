@@ -12,9 +12,9 @@ import (
 // TagM 是数据库中 tag 记录 struct 格式的映射.
 type TagM struct {
 	gorm.Model
-	TagID       string `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"tagID"`
-	Title       string `gorm:"type:varchar(255);uniqueIndex;not null;comment:标题" json:"title"`
-	Description string `gorm:"not null;size:300;comment:描述" json:"description"`
+	TagID       string `gorm:"type:char(10);uniqueIndex;example:唯一字符ID/分布式ID" json:"tagID"`
+	Title       string `gorm:"type:varchar(255);uniqueIndex;not null;example:标题" json:"title"`
+	Description string `gorm:"not null;size:300;example:描述" json:"description"`
 }
 
 // TableName 用来指定映射的 MySQL 表名.

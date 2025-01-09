@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://www.gotribe.cn
 
-package example
+package comment
 
 import (
 	"gotribe/internal/pkg/core"
@@ -17,10 +17,10 @@ import (
 )
 
 // Update 更新示例.
-func (ctrl *ExampleController) Update(c *gin.Context) {
-	log.C(c).Infow("Update comment function called")
+func (ctrl *CommentController) Update(c *gin.Context) {
+	log.C(c).Infow("Update example function called")
 
-	var r v1.UpdateExampleRequest
+	var r v1.UpdateCommentRequest
 	if err := c.ShouldBindJSON(&r); err != nil {
 		core.WriteResponse(c, errno.ErrBind, nil)
 
@@ -33,7 +33,7 @@ func (ctrl *ExampleController) Update(c *gin.Context) {
 		return
 	}
 
-	if err := ctrl.b.Examples().Update(c, c.GetString(known.XUsernameKey), c.Param("exampleID"), &r); err != nil {
+	if err := ctrl.b.Comments().Update(c, c.GetString(known.XUsernameKey), c.Param("commentID"), &r); err != nil {
 		core.WriteResponse(c, err, nil)
 
 		return
