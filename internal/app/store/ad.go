@@ -32,7 +32,7 @@ func newAds(db *gorm.DB) *ads {
 
 // List 根据 offset 和 limit 返回指定用户的 ad 列表.
 func (u *ads) List(ctx context.Context, sceneID string, offset, limit int) (count int64, ret []*model.AdM, err error) {
-	err = u.db.Where("scene_id = ? and status = ?", sceneID, known.STATUS_PUBLIC).Offset(offset).Limit(defaultLimit(limit)).Order("sort desc").Find(&ret).
+	err = u.db.WithContext(ctx).Where("scene_id = ? and status = ?", sceneID, known.STATUS_PUBLIC).Offset(offset).Limit(defaultLimit(limit)).Order("sort desc").Find(&ret).
 		Offset(-1).
 		Limit(-1).
 		Count(&count).

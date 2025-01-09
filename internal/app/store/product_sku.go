@@ -33,7 +33,7 @@ func newProductSKUs(db *gorm.DB) *productSKUs {
 // Get 根据 productSKUID 查询指定用户的 productSKU 数据库记录.
 func (u *productSKUs) Get(ctx context.Context, productSKUID string) (*model.ProductSKUM, error) {
 	var productSKU model.ProductSKUM
-	if err := u.db.Where("sku_id = ?", productSKUID).First(&productSKU).Error; err != nil {
+	if err := u.db.WithContext(ctx).Where("sku_id = ?", productSKUID).First(&productSKU).Error; err != nil {
 		return nil, err
 	}
 
@@ -42,7 +42,7 @@ func (u *productSKUs) Get(ctx context.Context, productSKUID string) (*model.Prod
 
 // List 根据 offset 和 limit 返回指定分类的 productSKU 列表.
 func (u *productSKUs) List(ctx context.Context, productID string) (ret []*model.ProductSKUM, err error) {
-	err = u.db.Where("product_id = ?", productID).Order("id desc").Find(&ret).
+	err = u.db.WithContext(ctx).Where("product_id = ?", productID).Order("id desc").Find(&ret).
 		Error
 
 	return

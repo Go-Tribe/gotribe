@@ -41,7 +41,7 @@ func newPosts(db *gorm.DB) *posts {
 
 // Create 插入一条 post 记录.
 func (u *posts) Create(ctx context.Context, post *model.PostM) error {
-	return u.db.Create(&post).Error
+	return u.db.WithContext(ctx).Create(&post).Error
 }
 
 // Get 根据 post_id 查询指定用户的 post 数据库记录.
@@ -53,7 +53,7 @@ func (u *posts) Get(ctx context.Context, query v1.PostQueryParams) (*model.PostM
 		log.C(ctx).Errorw("Failed to Get post from build where", "err", err)
 		return nil, err
 	}
-	if err := db.First(&post).Error; err != nil {
+	if err := db.WithContext(ctx).First(&post).Error; err != nil {
 		return nil, err
 	}
 
@@ -62,7 +62,7 @@ func (u *posts) Get(ctx context.Context, query v1.PostQueryParams) (*model.PostM
 
 // Update 更新一条 post 数据库记录.
 func (u *posts) Update(ctx context.Context, post *model.PostM) error {
-	return u.db.Save(post).Error
+	return u.db.WithContext(ctx).Save(post).Error
 }
 
 // List 根据 offset 和 limit 返回指定用户的 post 列表.
@@ -103,13 +103,13 @@ func (u *posts) List(ctx context.Context, r *v1.ListPostRequest) (count int64, r
 		return
 	}
 	// Offset(-1).Limit(-1).Count(&count) 不能少。否则会count=0
-	err = db.Find(&ret).Offset(-1).Limit(-1).Count(&count).Error
+	err = db.WithContext(ctx).Find(&ret).Offset(-1).Limit(-1).Count(&count).Error
 	return
 }
 
 // Delete 根据 username, post_id 删除数据库 post 记录.
 func (u *posts) Delete(ctx context.Context, username string, post_ids []string) error {
-	err := u.db.Where("username = ? and post_id in (?)", username, post_ids).Delete(&model.PostM{}).Error
+	err := u.db.WithContext(ctx).Where("username = ? and post_id in (?)", username, post_ids).Delete(&model.PostM{}).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
 	}

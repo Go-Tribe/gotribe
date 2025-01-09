@@ -72,7 +72,7 @@ func (ds *datastore) Core(ctx context.Context) *gorm.DB {
 }
 
 func (ds *datastore) TX(ctx context.Context, fn func(ctx context.Context) error) error {
-	return ds.db.WithContext(ctx).Transaction(
+	return ds.db.WithContext(ctx).WithContext(ctx).Transaction(
 		func(tx *gorm.DB) error {
 			ctx = context.WithValue(ctx, transactionKey{}, tx)
 			return fn(ctx)

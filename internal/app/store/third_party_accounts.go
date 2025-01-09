@@ -35,7 +35,7 @@ func newAccounts(db *gorm.DB) *accounts {
 
 // Create 插入一条 account 记录.
 func (u *accounts) Create(ctx context.Context, account *model.ThirdPartyAccountsM) error {
-	return u.db.Create(&account).Error
+	return u.db.WithContext(ctx).Create(&account).Error
 }
 
 // Get 根据用户名查询指定 account 的数据库记录.
@@ -46,7 +46,7 @@ func (u *accounts) Get(ctx context.Context, accountWhere v1.AccountWhere) (*mode
 		log.C(ctx).Errorw("Failed to Get account from build where", "err", err)
 		return nil, err
 	}
-	if err := db.First(&account).Error; err != nil {
+	if err := db.WithContext(ctx).First(&account).Error; err != nil {
 		log.C(ctx).Errorw("Failed to Get account from sql", "err", err)
 		return nil, err
 	}
@@ -57,5 +57,5 @@ func (u *accounts) Get(ctx context.Context, accountWhere v1.AccountWhere) (*mode
 // Update 更新一条 account 数据库记录.
 func (u *accounts) Update(ctx context.Context, account *model.ThirdPartyAccountsM) error {
 	log.C(ctx).Infow("account update", "account:", account)
-	return u.db.Save(account).Error
+	return u.db.WithContext(ctx).Save(account).Error
 }

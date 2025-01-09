@@ -33,7 +33,7 @@ func newCategories(db *gorm.DB) *categories {
 // Get 根据 exampleID 查询指定用户的 comment 数据库记录.
 func (u *categories) Get(ctx context.Context, categoryID string) (*model.CategoryM, error) {
 	var category model.CategoryM
-	if err := u.db.Where("category_id = ?", categoryID).First(&category).Error; err != nil {
+	if err := u.db.WithContext(ctx).Where("category_id = ?", categoryID).First(&category).Error; err != nil {
 		return nil, err
 	}
 

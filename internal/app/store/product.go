@@ -34,7 +34,7 @@ func newProducts(db *gorm.DB) *products {
 // Get 根据 productID 查询指定用户的 product 数据库记录.
 func (u *products) Get(ctx context.Context, productID string) (*model.ProductM, error) {
 	var product model.ProductM
-	if err := u.db.Where("product_id = ? and enable = ?", productID, known.STATUS_PUBLIC).First(&product).Error; err != nil {
+	if err := u.db.WithContext(ctx).Where("product_id = ? and enable = ?", productID, known.STATUS_PUBLIC).First(&product).Error; err != nil {
 		return nil, err
 	}
 
@@ -43,7 +43,7 @@ func (u *products) Get(ctx context.Context, productID string) (*model.ProductM, 
 
 // List 根据 offset 和 limit 返回指定分类的 product 列表.
 func (u *products) List(ctx context.Context, categoryID string, offset, limit int) (count int64, ret []*model.ProductM, err error) {
-	err = u.db.Where("category_id = ? and enable = ?", categoryID, known.STATUS_PUBLIC).Offset(offset).Limit(defaultLimit(limit)).Order("id desc").Find(&ret).
+	err = u.db.WithContext(ctx).Where("category_id = ? and enable = ?", categoryID, known.STATUS_PUBLIC).Offset(offset).Limit(defaultLimit(limit)).Order("id desc").Find(&ret).
 		Offset(-1).
 		Limit(-1).
 		Count(&count).

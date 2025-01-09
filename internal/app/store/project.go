@@ -33,7 +33,7 @@ func newProjects(db *gorm.DB) *projects {
 // Get 根据 exampleID 查询指定用户的 comment 数据库记录.
 func (u *projects) Get(ctx context.Context, name string) (*model.ProjectM, error) {
 	var project model.ProjectM
-	if err := u.db.Where("name = ?", name).First(&project).Error; err != nil {
+	if err := u.db.WithContext(ctx).Where("name = ?", name).First(&project).Error; err != nil {
 		return nil, err
 	}
 

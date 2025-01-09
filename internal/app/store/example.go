@@ -37,13 +37,13 @@ func newExamples(db *gorm.DB) *examples {
 
 // Create 插入一条 comment 记录.
 func (u *examples) Create(ctx context.Context, example *model.ExampleM) error {
-	return u.db.Create(&example).Error
+	return u.db.WithContext(ctx).Create(&example).Error
 }
 
 // Get 根据 exampleID 查询指定用户的 comment 数据库记录.
 func (u *examples) Get(ctx context.Context, username, exampleID string) (*model.ExampleM, error) {
 	var example model.ExampleM
-	if err := u.db.Where("username = ? and example_id = ?", username, exampleID).First(&example).Error; err != nil {
+	if err := u.db.WithContext(ctx).Where("username = ? and example_id = ?", username, exampleID).First(&example).Error; err != nil {
 		return nil, err
 	}
 
@@ -52,12 +52,12 @@ func (u *examples) Get(ctx context.Context, username, exampleID string) (*model.
 
 // Update 更新一条 comment 数据库记录.
 func (u *examples) Update(ctx context.Context, example *model.ExampleM) error {
-	return u.db.Save(example).Error
+	return u.db.WithContext(ctx).Save(example).Error
 }
 
 // List 根据 offset 和 limit 返回指定用户的 comment 列表.
 func (u *examples) List(ctx context.Context, username string, offset, limit int) (count int64, ret []*model.ExampleM, err error) {
-	err = u.db.Where("username = ?", username).Offset(offset).Limit(defaultLimit(limit)).Order("id desc").Find(&ret).
+	err = u.db.WithContext(ctx).Where("username = ?", username).Offset(offset).Limit(defaultLimit(limit)).Order("id desc").Find(&ret).
 		Offset(-1).
 		Limit(-1).
 		Count(&count).
@@ -68,7 +68,7 @@ func (u *examples) List(ctx context.Context, username string, offset, limit int)
 
 // Delete 根据 username, exampleID 删除数据库 comment 记录.
 func (u *examples) Delete(ctx context.Context, username string, exampleIDs []string) error {
-	err := u.db.Where("username = ? and example_id in (?)", username, exampleIDs).Delete(&model.ExampleM{}).Error
+	err := u.db.WithContext(ctx).Where("username = ? and example_id in (?)", username, exampleIDs).Delete(&model.ExampleM{}).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
 	}

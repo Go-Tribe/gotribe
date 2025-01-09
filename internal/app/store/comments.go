@@ -20,7 +20,7 @@ type CommentStore interface {
 	Get(ctx context.Context, commentID string) (*model.CommentM, error)
 	Update(ctx context.Context, comment *model.CommentM) error
 	List(ctx context.Context, objectID string, offset, limit int) (int64, []*model.CommentM, error)
-	ListReplies(ctx context.Context, topLevelCommentIDs []uint) ([]*model.CommentM, error)
+	ListReplies(ctx context.Context, objectID string) ([]*model.CommentM, error)
 }
 
 // CommentStore 接口的实现.
@@ -37,13 +37,13 @@ func newComments(db *gorm.DB) *comments {
 
 // Create 插入一条记录.
 func (u *comments) Create(ctx context.Context, comment *model.CommentM) error {
-	return u.db.Create(&comment).Error
+	return u.db.WithContext(ctx).WithContext(ctx).Create(&comment).Error
 }
 
 // Get 根据 commentID 查询数据库记录.
 func (u *comments) Get(ctx context.Context, commentID string) (*model.CommentM, error) {
 	var comment model.CommentM
-	if err := u.db.Where("comment_id = ? and status = ?", commentID, known.AuditPass).First(&comment).Error; err != nil {
+	if err := u.db.WithContext(ctx).WithContext(ctx).Where("comment_id = ? and status = ?", commentID, known.AuditPass).First(&comment).Error; err != nil {
 		return nil, err
 	}
 
@@ -52,12 +52,12 @@ func (u *comments) Get(ctx context.Context, commentID string) (*model.CommentM, 
 
 // Update 更新一条数据库记录.
 func (u *comments) Update(ctx context.Context, comment *model.CommentM) error {
-	return u.db.Save(comment).Error
+	return u.db.WithContext(ctx).WithContext(ctx).Save(comment).Error
 }
 
 // List 根据 offset 和 limit 返回列表.
 func (u *comments) List(ctx context.Context, objectID string, offset, limit int) (count int64, ret []*model.CommentM, err error) {
-	err = u.db.Where("object_id = ? and status = ? and parent_id = 0", objectID, known.AuditPass).Offset(offset).Limit(defaultLimit(limit)).Order("id desc").Find(&ret).
+	err = u.db.WithContext(ctx).WithContext(ctx).Where("object_id = ? and status = ? and parent_id = 0", objectID, known.AuditPass).Offset(offset).Limit(defaultLimit(limit)).Order("id desc").Find(&ret).
 		Offset(-1).
 		Limit(-1).
 		Count(&count).
@@ -66,9 +66,9 @@ func (u *comments) List(ctx context.Context, objectID string, offset, limit int)
 	return
 }
 
-func (c *comments) ListReplies(ctx context.Context, topLevelCommentIDs []uint) ([]*model.CommentM, error) {
+func (c *comments) ListReplies(ctx context.Context, objectID string) ([]*model.CommentM, error) {
 	var replies []*model.CommentM
-	if err := c.db.WithContext(ctx).Where("parent_id IN ?", topLevelCommentIDs).Find(&replies).Error; err != nil {
+	if err := c.db.WithContext(ctx).WithContext(ctx).Where("object_id = ? and status = ? and parent_id > 0", objectID, known.AuditPass).Find(&replies).Error; err != nil {
 		return nil, err
 	}
 	return replies, nil

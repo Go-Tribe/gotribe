@@ -137,8 +137,9 @@ func (b *commentBiz) Update(ctx context.Context, username, commentID string, r *
 }
 
 // List is the implementation of the `List` method in CommentBiz interface.
+// List is the implementation of the `List` method in CommentBiz interface.
 func (b *commentBiz) List(ctx context.Context, r *v1.ListCommentRequest) (*v1.ListCommentResponse, error) {
-	// Step 1: Query top-level comments
+	// Step 1: Query top-level comments with pagination
 	count, topLevelComments, err := b.ds.Comments().List(ctx, r.ObjectID, r.Offset, r.Limit)
 	if err != nil {
 		log.C(ctx).Errorw("Failed to list top-level comments from storage", "err", err)
@@ -151,31 +152,29 @@ func (b *commentBiz) List(ctx context.Context, r *v1.ListCommentRequest) (*v1.Li
 		topLevelCommentIDs = append(topLevelCommentIDs, comment.ID)
 	}
 
-	// Step 3: Query replies for top-level comments
-	replies, err := b.ds.Comments().ListReplies(ctx, topLevelCommentIDs)
+	// Step 3: Query all replies for the object
+	allReplies, err := b.ds.Comments().ListReplies(ctx, r.ObjectID)
 	if err != nil {
-		log.C(ctx).Errorw("Failed to list replies from storage", "err", err)
+		log.C(ctx).Errorw("Failed to list all replies from storage", "err", err)
 		return nil, err
 	}
 
-	// Step 4: Build a map of replies for each top-level comment
+	// Step 4: Build a map of replies for each comment
 	replyMap := make(map[int][]*model.CommentM)
-	for _, reply := range replies {
+	for _, reply := range allReplies {
 		replyMap[reply.ParentID] = append(replyMap[reply.ParentID], reply)
 	}
 
 	// Step 5: Query user information for all comments and replies
-	userIDs := make([]string, 0, count+int64(len(replies)))
+	userIDs := make([]string, 0, count+int64(len(allReplies)))
 	userMap := make(map[string]*model.UserM)
 
 	for _, comment := range topLevelComments {
 		userIDs = append(userIDs, comment.UserID)
 	}
 
-	for _, replies := range replyMap {
-		for _, reply := range replies {
-			userIDs = append(userIDs, reply.UserID)
-		}
+	for _, reply := range allReplies {
+		userIDs = append(userIDs, reply.UserID)
 	}
 
 	users, err := b.ds.Users().ListInUserID(ctx, userIDs)
@@ -191,41 +190,35 @@ func (b *commentBiz) List(ctx context.Context, r *v1.ListCommentRequest) (*v1.Li
 	// Step 6: Construct the final list of comments with replies and user information
 	comments := make([]*v1.CommentInfo, 0, len(topLevelComments))
 	for _, comment := range topLevelComments {
-		var commentInfo v1.CommentInfo
-		_ = copier.Copy(&commentInfo, comment)
-
-		commentInfo.CreatedAt = comment.CreatedAt.Format(known.TimeFormat)
-		commentInfo.UpdatedAt = comment.UpdatedAt.Format(known.TimeFormat)
-
-		// Add user information to commentInfo
-		user, exists := userMap[comment.UserID]
-		if exists {
-			commentInfo.UserID = user.UserID
-			commentInfo.Nickname = user.Nickname
-			commentInfo.Avatar = user.AvatarURL
-		}
-
-		// Add replies to the commentInfo
-		commentInfo.Replies = make([]*v1.CommentInfo, 0)
-		for _, reply := range replyMap[int(comment.ID)] {
-			var replyInfo v1.CommentInfo
-			_ = copier.Copy(&replyInfo, reply)
-			replyInfo.CreatedAt = reply.CreatedAt.Format(known.TimeFormat)
-			replyInfo.UpdatedAt = reply.UpdatedAt.Format(known.TimeFormat)
-
-			// Add user information to replyInfo
-			user, exists := userMap[reply.UserID]
-			if exists {
-				replyInfo.UserID = user.UserID
-				replyInfo.Nickname = user.Nickname
-				replyInfo.Avatar = user.AvatarURL
-			}
-
-			commentInfo.Replies = append(commentInfo.Replies, &replyInfo)
-		}
-
-		comments = append(comments, &commentInfo)
+		commentInfo := b.buildCommentInfo(ctx, comment, replyMap, userMap)
+		comments = append(comments, commentInfo)
 	}
 
 	return &v1.ListCommentResponse{TotalCount: count, Comments: comments}, nil
+}
+
+// buildCommentInfo constructs a CommentInfo with replies and user information
+func (b *commentBiz) buildCommentInfo(ctx context.Context, comment *model.CommentM, replyMap map[int][]*model.CommentM, userMap map[string]*model.UserM) *v1.CommentInfo {
+	var commentInfo v1.CommentInfo
+	_ = copier.Copy(&commentInfo, comment)
+
+	commentInfo.CreatedAt = comment.CreatedAt.Format(known.TimeFormat)
+	commentInfo.UpdatedAt = comment.UpdatedAt.Format(known.TimeFormat)
+
+	// Add user information to commentInfo
+	user, exists := userMap[comment.UserID]
+	if exists {
+		commentInfo.UserID = user.UserID
+		commentInfo.Nickname = user.Nickname
+		commentInfo.Avatar = user.AvatarURL
+	}
+
+	// Add replies to the commentInfo
+	commentInfo.Replies = make([]*v1.CommentInfo, 0)
+	for _, reply := range replyMap[int(comment.ID)] {
+		replyInfo := b.buildCommentInfo(ctx, reply, replyMap, userMap)
+		commentInfo.Replies = append(commentInfo.Replies, replyInfo)
+	}
+
+	return &commentInfo
 }

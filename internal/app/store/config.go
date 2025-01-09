@@ -33,7 +33,7 @@ func newConfigs(db *gorm.DB) *configs {
 // Get 根据 configID 查询指定用户的 config 数据库记录.
 func (u *configs) Get(ctx context.Context, alias string) (*model.ConfigM, error) {
 	var config model.ConfigM
-	if err := u.db.Where("alias = ?", alias).First(&config).Error; err != nil {
+	if err := u.db.WithContext(ctx).Where("alias = ?", alias).First(&config).Error; err != nil {
 		return nil, err
 	}
 
