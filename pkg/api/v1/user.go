@@ -40,16 +40,17 @@ type GetUserResponse UserInfo
 
 // UserInfo 指定了用户的详细信息.
 type UserInfo struct {
-	UserID    string `json:"userID"`
-	Username  string `json:"username"`
-	Nickname  string `json:"nickname"`
-	Email     string `json:"email"`
-	Sex       string `json:"sex"`
-	Phone     string `json:"phone"`
-	AvatarURL string `json:"avatarURL"`
-	Birthday  string `json:"birthday"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	UserID    string  `json:"userID"`
+	Username  string  `json:"username"`
+	Nickname  string  `json:"nickname"`
+	Email     string  `json:"email"`
+	Sex       string  `json:"sex"`
+	Phone     string  `json:"phone"`
+	Point     float64 `json:"point"`
+	AvatarURL string  `json:"avatarURL"`
+	Birthday  string  `json:"birthday"`
+	CreatedAt string  `json:"createdAt"`
+	UpdatedAt string  `json:"updatedAt"`
 }
 
 // ListUserRequest 指定了 `GET /v1/users` 接口的请求参数.
