@@ -35,6 +35,7 @@ type IStore interface {
 	Products() ProductStore
 	ProductSKUs() ProductSKUStore
 	Comments() CommentStore
+	Feedbacks() FeedBackStore
 }
 
 // datastore 是 IStore 的一个具体实现.
@@ -141,4 +142,9 @@ func (ds *datastore) ProductSKUs() ProductSKUStore {
 // Comments 返回一个实现了 commentStore 接口的实例.
 func (ds *datastore) Comments() CommentStore {
 	return newComments(ds.db)
+}
+
+// Feedback 返回一个实现了 feedbackStore 接口的实例.
+func (ds *datastore) Feedbacks() FeedBackStore {
+	return newFeedBacks(ds.db)
 }
