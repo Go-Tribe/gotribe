@@ -24,6 +24,8 @@ func OrderRoutes(g *gin.RouterGroup) gin.IRoutes {
 		orderv1 := v1.Group("/orders", mw.Authn())
 		{
 			orderv1.POST("", pc.Create) // 创建内容
+			orderv1.GET(":orderNumber", pc.Get)
+			orderv1.GET("", pc.List)
 		}
 	}
 	return nil

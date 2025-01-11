@@ -7,7 +7,9 @@ package store
 
 import (
 	"context"
+	"gotribe/internal/pkg/log"
 	"gotribe/internal/pkg/model"
+	v1 "gotribe/pkg/api/v1"
 
 	"gorm.io/gorm"
 )
@@ -15,6 +17,9 @@ import (
 // OrderStore 定义了 comment 模块在 store 层所实现的方法.
 type OrderStore interface {
 	Create(ctx context.Context, order *model.OrderM) (*model.OrderM, error)
+	Get(ctx context.Context, orderWhere v1.OrderWhere) (*model.OrderM, error)
+	List(ctx context.Context, offset, limit int, orderWhere v1.OrderWhere) (count int64, ret []*model.OrderM, err error)
+	Update(ctx context.Context, order *model.OrderM) error
 }
 
 // OrderStore 接口的实现.
@@ -43,4 +48,33 @@ func (u *orders) Create(ctx context.Context, order *model.OrderM) (*model.OrderM
 	}
 
 	return &createdOrder, nil
+}
+
+func (u *orders) Get(ctx context.Context, orderWhere v1.OrderWhere) (*model.OrderM, error) {
+	var order model.OrderM
+	db, err := buildWhere(u.db, orderWhere)
+	if err != nil {
+		log.C(ctx).Errorw("Failed to Get user from build where", "err", err)
+		return nil, err
+	}
+	if err := db.WithContext(ctx).First(&order).Error; err != nil {
+		return nil, err
+	}
+
+	return &order, nil
+}
+
+func (u *orders) List(ctx context.Context, offset, limit int, orderWhere v1.OrderWhere) (count int64, ret []*model.OrderM, err error) {
+	db, err := buildQueryList(u.db, orderWhere, "*", "id desc", offset, limit)
+	if err != nil {
+		log.C(ctx).Errorw("Failed to list order from build where", "err", err)
+		return
+	}
+	err = db.WithContext(ctx).Find(&ret).Offset(-1).Limit(-1).Count(&count).Error
+	return
+}
+
+func (u *orders) Update(ctx context.Context, order *model.OrderM) error {
+	log.C(ctx).Infow("order update", "order:", order)
+	return u.db.WithContext(ctx).Save(order).Error
 }
