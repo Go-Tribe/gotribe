@@ -37,6 +37,7 @@ type IStore interface {
 	Comments() CommentStore
 	Feedbacks() FeedBackStore
 	PointAvailable() PointAvailableStore
+	PointDeduction() PointDeductionStore
 }
 
 // datastore 是 IStore 的一个具体实现.
@@ -153,4 +154,14 @@ func (ds *datastore) Feedbacks() FeedBackStore {
 // PointAvailable 返回一个实现了 pointAvailableStore 接口的实例.
 func (ds *datastore) PointAvailable() PointAvailableStore {
 	return newPointAvailables(ds.db)
+}
+
+// PointDeduction 返回一个实现了 pointDeductionStore 接口的实例.
+func (ds *datastore) PointDeduction() PointDeductionStore {
+	return newPointDeductions(ds.db)
+}
+
+// PointLog 返回一个实现了 pointLogStore 接口的实例.
+func (ds *datastore) PointLog() PointLogStore {
+	return newPointLogs(ds.db)
 }

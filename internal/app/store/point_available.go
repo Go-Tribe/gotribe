@@ -16,6 +16,7 @@ import (
 // PointAvailableStore 定义了 comment 模块在 store 层所实现的方法.
 type PointAvailableStore interface {
 	SumPoints(ctx context.Context, userID, projectID string) (float64, error)
+	Create(ctx context.Context, pointAvailable *model.PointAvailableM) error
 }
 
 // PointAvailableStore 接口的实现.
@@ -40,4 +41,8 @@ func (u *pointAvailables) SumPoints(ctx context.Context, userID, projectID strin
 		return 0, result.Error
 	}
 	return sumPoints, nil
+}
+
+func (u *pointAvailables) Create(ctx context.Context, pointAvailable *model.PointAvailableM) error {
+	return u.db.WithContext(ctx).Create(&pointAvailable).Error
 }
