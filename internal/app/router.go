@@ -65,6 +65,8 @@ func installRouters(g *gin.Engine) error {
 	routes.CommentRoutes(apiGroup)
 	// 反馈
 	routes.FeedbackRoutes(apiGroup)
+	// 订单
+	routes.OrderRoutes(apiGroup)
 
 	return nil
 }

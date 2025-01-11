@@ -16,6 +16,7 @@ import (
 type ProductSKUStore interface {
 	Get(ctx context.Context, productSKUID string) (*model.ProductSKUM, error)
 	List(ctx context.Context, productID string) ([]*model.ProductSKUM, error)
+	Update(ctx context.Context, example *model.ProductSKUM) error
 }
 
 // ProductSKUStore 接口的实现.
@@ -46,4 +47,8 @@ func (u *productSKUs) List(ctx context.Context, productID string) (ret []*model.
 		Error
 
 	return
+}
+
+func (u *productSKUs) Update(ctx context.Context, sku *model.ProductSKUM) error {
+	return u.db.WithContext(ctx).Save(sku).Error
 }
