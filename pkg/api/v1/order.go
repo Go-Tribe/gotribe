@@ -80,5 +80,5 @@ type OrderWhere struct {
 
 type PayOrderRequest struct {
 	OrderNumber string `json:"orderNumber" valid:"required"`
-	PayType     uint8  `json:"payType" valid:"required"`
+	PayMethod   uint8  `json:"payMethod" valid:"required"`
 }
