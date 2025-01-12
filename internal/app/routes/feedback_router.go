@@ -15,7 +15,7 @@ import (
 
 // 注册feedBack路由.
 func FeedbackRoutes(g *gin.RouterGroup) gin.IRoutes {
-	pc := feedBack.New(store.S)
+	pc := feedback.New(store.S)
 
 	// 创建 v1 路由分组
 	v1 := g.Group("/v1")
