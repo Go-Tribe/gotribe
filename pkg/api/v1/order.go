@@ -12,10 +12,10 @@ type CreateOrderRequest struct {
 	Quantity          int    `json:"quantity" valid:"required"`
 	ConsigneeName     string `json:"consigneeName" valid:"required,stringlength(1|256)"`
 	ConsigneePhone    string `json:"consigneePhone" valid:"required,stringlength(1|256)"`
-	ConsigneeProvince string `json:"consigneeProvince" valid:"required,stringlength(1|256)"`
-	ConsigneeCity     string `json:"consigneeCity" valid:"required,stringlength(1|256)"`
-	ConsigneeDistrict string `json:"consigneeDistrict" valid:"required,stringlength(1|256)"`
-	ConsigneeStreet   string `json:"consigneeStreet" valid:"required,stringlength(1|256)"`
+	ConsigneeProvince string `json:"consigneeProvince"`
+	ConsigneeCity     string `json:"consigneeCity" `
+	ConsigneeDistrict string `json:"consigneeDistrict" `
+	ConsigneeStreet   string `json:"consigneeStreet"`
 	ConsigneeAddress  string `json:"consigneeAddress" valid:"required,stringlength(1|256)"`
 	Remark            string `json:"remark"`
 }
