@@ -14,7 +14,7 @@ import (
 	"gotribe/internal/app/biz/comment"
 	"gotribe/internal/app/biz/config"
 	"gotribe/internal/app/biz/example"
-	feedBack "gotribe/internal/app/biz/feedback"
+	feedback "gotribe/internal/app/biz/feedback"
 	"gotribe/internal/app/biz/order"
 	"gotribe/internal/app/biz/point"
 	"gotribe/internal/app/biz/post"
@@ -38,7 +38,7 @@ type IBiz interface {
 	Ads() ad.AdBiz
 	Products() product.ProductBiz
 	Comments() comment.CommentBiz
-	Feedbacks() feedBack.FeedBackBiz
+	Feedbacks() feedback.FeedBackBiz
 	Orders() order.OrderBiz
 	Point() point.PointBiz
 }
@@ -108,8 +108,8 @@ func (b *biz) Products() product.ProductBiz {
 func (b *biz) Comments() comment.CommentBiz {
 	return comment.New(b.ds)
 }
-func (b *biz) Feedbacks() feedBack.FeedBackBiz {
-	return feedBack.New(b.ds)
+func (b *biz) Feedbacks() feedback.FeedBackBiz {
+	return feedback.New(b.ds)
 }
 
 func (b *biz) Point() point.PointBiz {

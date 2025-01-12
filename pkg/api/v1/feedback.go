@@ -5,14 +5,14 @@
 
 package v1
 
-// CreateFeedBackRequest 指定了 `POST /v1/feedBacks` 接口的请求参数.
+// CreateFeedBackRequest 指定了 `POST /v1/feedbacks` 接口的请求参数.
 type CreateFeedBackRequest struct {
 	Title   string `json:"title" valid:"required,stringlength(1|256)"`
 	Content string `json:"content" valid:"required,stringlength(1|10240)"`
 	Phone   string `json:"phone"`
 }
 
-// CreateFeedBackResponse 指定了 `POST /v1/feedBacks` 接口的返回参数.
+// CreateFeedBackResponse 指定了 `POST /v1/feedbacks` 接口的返回参数.
 type CreateFeedBackResponse struct {
-	FeedBackID uint `json:"feedBackID"`
+	FeedBackID uint `json:"feedbackID"`
 }

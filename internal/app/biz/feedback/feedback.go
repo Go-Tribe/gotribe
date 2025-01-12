@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://www.gotribe.cn
 
-package feedBack
+package feedback
 
 import (
 	"context"
@@ -24,22 +24,22 @@ type FeedBackBiz interface {
 }
 
 // The implementation of FeedBackBiz interface.
-type feedBackBiz struct {
+type feedbackBiz struct {
 	ds store.IStore
 }
 
-// Make sure that feedBackBiz implements the FeedBackBiz interface.
+// Make sure that feedbackBiz implements the FeedBackBiz interface.
 // We can find this problem in the compile stage with the following assignment statement.
-var _ FeedBackBiz = (*feedBackBiz)(nil)
+var _ FeedBackBiz = (*feedbackBiz)(nil)
 
-func New(ds store.IStore) *feedBackBiz {
-	return &feedBackBiz{ds: ds}
+func New(ds store.IStore) *feedbackBiz {
+	return &feedbackBiz{ds: ds}
 }
 
 // Create is the implementation of the `Create` method in FeedBackBiz interface.
-func (b *feedBackBiz) Create(ctx context.Context, username string, r *v1.CreateFeedBackRequest) (*v1.CreateFeedBackResponse, error) {
-	var feedBackM model.FeedbackM
-	_ = copier.Copy(&feedBackM, r)
+func (b *feedbackBiz) Create(ctx context.Context, username string, r *v1.CreateFeedBackRequest) (*v1.CreateFeedBackResponse, error) {
+	var feedbackM model.FeedbackM
+	_ = copier.Copy(&feedbackM, r)
 	userM, err := b.ds.Users().Get(ctx, v1.UserWhere{Username: username})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -47,12 +47,12 @@ func (b *feedBackBiz) Create(ctx context.Context, username string, r *v1.CreateF
 		}
 		return nil, err
 	}
-	feedBackM.ProjectID = ctx.Value(known.XPrjectIDKey).(string)
-	feedBackM.UserID = userM.UserID
+	feedbackM.ProjectID = ctx.Value(known.XPrjectIDKey).(string)
+	feedbackM.UserID = userM.UserID
 
-	if err := b.ds.Feedbacks().Create(ctx, &feedBackM); err != nil {
+	if err := b.ds.Feedbacks().Create(ctx, &feedbackM); err != nil {
 		return nil, err
 	}
 
-	return &v1.CreateFeedBackResponse{FeedBackID: feedBackM.ID}, nil
+	return &v1.CreateFeedBackResponse{FeedBackID: feedbackM.ID}, nil
 }

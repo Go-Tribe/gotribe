@@ -14,22 +14,22 @@ import (
 
 // FeedBackStore 定义了 comment 模块在 store 层所实现的方法.
 type FeedBackStore interface {
-	Create(ctx context.Context, feedBack *model.FeedbackM) error
+	Create(ctx context.Context, feedback *model.FeedbackM) error
 }
 
 // FeedBackStore 接口的实现.
-type feedBacks struct {
+type feedbacks struct {
 	db *gorm.DB
 }
 
-// 确保 feedBacks 实现了 FeedBackStore 接口.
-var _ FeedBackStore = (*feedBacks)(nil)
+// 确保 feedbacks 实现了 FeedBackStore 接口.
+var _ FeedBackStore = (*feedbacks)(nil)
 
-func newFeedBacks(db *gorm.DB) *feedBacks {
-	return &feedBacks{db}
+func newFeedBacks(db *gorm.DB) *feedbacks {
+	return &feedbacks{db}
 }
 
 // Create 插入一条 comment 记录.
-func (u *feedBacks) Create(ctx context.Context, feedBack *model.FeedbackM) error {
-	return u.db.WithContext(ctx).Create(&feedBack).Error
+func (u *feedbacks) Create(ctx context.Context, feedback *model.FeedbackM) error {
+	return u.db.WithContext(ctx).Create(&feedback).Error
 }

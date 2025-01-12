@@ -6,24 +6,24 @@
 package routes
 
 import (
-	"gotribe/internal/app/controller/v1/feedBack"
+	"gotribe/internal/app/controller/v1/feedback"
 	"gotribe/internal/app/store"
 	mw "gotribe/internal/pkg/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
-// 注册feedBack路由.
+// 注册feedback路由.
 func FeedbackRoutes(g *gin.RouterGroup) gin.IRoutes {
 	pc := feedback.New(store.S)
 
 	// 创建 v1 路由分组
 	v1 := g.Group("/v1")
 	{
-		// 创建 feedBacks 路由分组
-		feedBackv1 := v1.Group("/feedback", mw.Authn())
+		// 创建 feedbacks 路由分组
+		feedbackv1 := v1.Group("/feedback", mw.Authn())
 		{
-			feedBackv1.POST("", pc.Create) // 创建内容
+			feedbackv1.POST("", pc.Create) // 创建内容
 		}
 	}
 	return nil
