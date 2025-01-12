@@ -198,12 +198,12 @@ func (b *orderBiz) List(ctx context.Context, username string, offset, limit int)
 // 2. 获取用户信息并检查用户积分是否足够支付订单金额
 // 3. 扣减用户积分并更新订单状态为已支付
 // 如果任何步骤失败，事务将回滚并返回错误
+// Pay 订单支付业务处理函数
 func (b *orderBiz) Pay(ctx context.Context, orderNumber, username string) error {
 	err := b.ds.TX(ctx, func(ctx context.Context) error {
-		// 1.获取当前订单信息
+		// 1. 获取当前订单信息
 		order, err := b.ds.Order().Get(ctx, v1.OrderWhere{OrderNumber: orderNumber, Username: username})
 		if err != nil {
-			// 如果查询失败，记录错误日志并返回错误
 			log.C(ctx).Errorw("Failed to get order from storage", "err", err)
 			return err
 		}
@@ -212,21 +212,33 @@ func (b *orderBiz) Pay(ctx context.Context, orderNumber, username string) error 
 		if err != nil {
 			return err
 		}
-		// 检查用户积分是否足够支付订单金额
-		if user.Point < float64(order.AmountPay) {
+
+		// 检查 user.Point 是否为 nil，并将其转换为 float64 进行比较
+		var userPoint float64
+		if user.Point != nil {
+			userPoint = *user.Point
+		} else {
+			userPoint = 0
+		}
+
+		// 将 order.AmountPay 转换为 float64 进行比较
+		if userPoint < float64(order.AmountPay) {
 			return errors.New("积分不足")
 		}
-		// 3.扣减用户积分
+
+		// 扣减用户积分
 		err = b.pt.SubPoints(ctx, username, order.ProjectID, "pay", "支付订单", order.OrderID, util.FenToYuan(order.AmountPay))
 		if err != nil {
 			return err
 		}
+
 		// 更新订单状态为已支付
 		order.Status = known.OrderStatusPaid
 		order.PayMethod = 3
 		order.PayTime = time.Now()
 		order.PayNumber = gid.FetchOrderNum(6)
 		log.C(ctx).Infow("pay order", "order", order)
+
 		// 更新数据库中的订单信息
 		if err := b.ds.Order().Update(ctx, order); err != nil {
 			return err

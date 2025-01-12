@@ -15,7 +15,7 @@ import (
 
 // PointAvailableStore 定义了 comment 模块在 store 层所实现的方法.
 type PointAvailableStore interface {
-	SumPoints(ctx context.Context, userID, projectID string) (float64, error)
+	SumPoints(ctx context.Context, userID, projectID string) (*float64, error)
 	Create(ctx context.Context, pointAvailable *model.PointAvailableM) error
 	GetAll(ctx context.Context, userID, projectID string) ([]*model.PointAvailableM, error)
 	Update(ctx context.Context, pointAvailable *model.PointAvailableM) error
@@ -34,13 +34,13 @@ func newPointAvailables(db *gorm.DB) *pointAvailables {
 }
 
 // SumPoints 根据 userID 求和指定用户的 points 数据库记录.
-func (u *pointAvailables) SumPoints(ctx context.Context, userID, projectID string) (float64, error) {
-	var sumPoints float64
+func (u *pointAvailables) SumPoints(ctx context.Context, userID, projectID string) (*float64, error) {
+	var sumPoints *float64
 	result := u.db.WithContext(ctx).Model(&model.PointAvailableM{}).Select("sum(points)").
 		Where("user_id = ? and project_id = ?", userID, projectID).
 		Scan(&sumPoints)
 	if result.Error != nil {
-		return 0, result.Error
+		return nil, result.Error
 	}
 	return sumPoints, nil
 }

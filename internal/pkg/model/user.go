@@ -24,7 +24,7 @@ type UserM struct {
 	Email     string     `gorm:"type:varchar(30);not null;uniqueIndex;example:邮箱" json:"email"`
 	Phone     string     `gorm:"type:varchar(21);not null;uniqueIndex;example:电话" json:"phone"`
 	Sex       string     `gorm:"type:char(1);not null;default:M;example:M:男 F:女" json:"sex"`
-	Point     float64    `gorm:"-" json:"point"`
+	Point     *float64   `gorm:"-" json:"point"`
 	Status    uint8      `gorm:"type:tinyint(1);not null;default:1;example:用户状态，1-正常；2-禁用" json:"status"`
 	Birthday  *time.Time `gorm:"type:date;example:'用户生日，格式为YYYY-MM-DD'" json:"birthday"`
 	AvatarURL string     `gorm:"type:varchar(255);example:头像地址" json:"avatar_url"`
