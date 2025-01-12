@@ -22,5 +22,5 @@ type PointAvailableM struct {
 }
 
 func (p *PointAvailableM) TableName() string {
-	return "point_acailable"
+	return "point_available"
 }
