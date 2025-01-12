@@ -51,6 +51,7 @@ func (b *productBiz) Get(ctx context.Context, productID string) (*v1.GetProductR
 
 	var resp v1.GetProductResponse
 	_ = copier.Copy(&resp, product)
+	resp.Image = strings.Split(product.Image, ",")
 	// 如果 tag 存在则取出 tag 信息
 	if !gconvert.IsEmpty(product.Tag) {
 		// tag信息
@@ -110,7 +111,7 @@ func (b *productBiz) List(ctx context.Context, r *v1.ListProductRequest) (*v1.Li
 		_ = copier.Copy(&skus, skusM)
 		products = append(products, &v1.ProductInfo{
 			CategoryID:    product.CategoryID,
-			Image:         product.Image,
+			Image:         strings.Split(product.Image, ","),
 			ProductNumber: product.ProductNumber,
 			Description:   product.Description,
 			HtmlContent:   product.HtmlContent,
