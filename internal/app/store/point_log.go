@@ -16,7 +16,7 @@ import (
 // PointLogStore 定义了 comment 模块在 store 层所实现的方法.
 type PointLogStore interface {
 	SumPoints(ctx context.Context, userID, projectID string) (float64, error)
-	Create(ctx context.Context, pointLog *model.PointLogM) error
+	Create(ctx context.Context, pointLog *model.PointLogM) (uint, error)
 }
 
 // PointLogStore 接口的实现.
@@ -43,6 +43,10 @@ func (u *pointLogs) SumPoints(ctx context.Context, userID, projectID string) (fl
 	return sumPoints, nil
 }
 
-func (u *pointLogs) Create(ctx context.Context, pointLog *model.PointLogM) error {
-	return u.db.WithContext(ctx).Create(&pointLog).Error
+func (u *pointLogs) Create(ctx context.Context, pointLog *model.PointLogM) (uint, error) {
+	result := u.db.WithContext(ctx).Create(pointLog)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return pointLog.ID, nil
 }

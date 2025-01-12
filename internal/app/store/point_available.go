@@ -17,6 +17,8 @@ import (
 type PointAvailableStore interface {
 	SumPoints(ctx context.Context, userID, projectID string) (float64, error)
 	Create(ctx context.Context, pointAvailable *model.PointAvailableM) error
+	GetAll(ctx context.Context, userID, projectID string) ([]*model.PointAvailableM, error)
+	Update(ctx context.Context, pointAvailable *model.PointAvailableM) error
 }
 
 // PointAvailableStore 接口的实现.
@@ -45,4 +47,19 @@ func (u *pointAvailables) SumPoints(ctx context.Context, userID, projectID strin
 
 func (u *pointAvailables) Create(ctx context.Context, pointAvailable *model.PointAvailableM) error {
 	return u.db.WithContext(ctx).Create(&pointAvailable).Error
+}
+
+// 获取用户所有积分
+func (u *pointAvailables) GetAll(ctx context.Context, userID, projectID string) ([]*model.PointAvailableM, error) {
+	var pointAvailables []*model.PointAvailableM
+	result := u.db.WithContext(ctx).Where("user_id = ? and project_id = ?", userID, projectID).Find(&pointAvailables)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return pointAvailables, nil
+}
+
+// 更新一条记录
+func (u *pointAvailables) Update(ctx context.Context, pointAvailable *model.PointAvailableM) error {
+	return u.db.WithContext(ctx).Updates(&pointAvailable).Error
 }

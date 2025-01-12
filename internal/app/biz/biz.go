@@ -16,6 +16,7 @@ import (
 	"gotribe/internal/app/biz/example"
 	feedBack "gotribe/internal/app/biz/feedback"
 	"gotribe/internal/app/biz/order"
+	"gotribe/internal/app/biz/point"
 	"gotribe/internal/app/biz/post"
 	"gotribe/internal/app/biz/product"
 	"gotribe/internal/app/biz/project"
@@ -39,6 +40,7 @@ type IBiz interface {
 	Comments() comment.CommentBiz
 	Feedbacks() feedBack.FeedBackBiz
 	Orders() order.OrderBiz
+	Point() point.PointBiz
 }
 
 // 确保 biz 实现了 IBiz 接口.
@@ -109,6 +111,11 @@ func (b *biz) Comments() comment.CommentBiz {
 func (b *biz) Feedbacks() feedBack.FeedBackBiz {
 	return feedBack.New(b.ds)
 }
+
+func (b *biz) Point() point.PointBiz {
+	return point.New(b.ds)
+}
+
 func (b *biz) Orders() order.OrderBiz {
-	return order.New(b.ds)
+	return order.New(b.ds, b.Point())
 }

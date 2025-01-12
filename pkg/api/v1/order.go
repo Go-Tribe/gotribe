@@ -28,12 +28,6 @@ type CreateOrderResponse struct {
 // GetOrderResponse 指定了 `GET /v1/orders/{orderID}` 接口的返回参数.
 type GetOrderResponse OrderInfo
 
-// UpdateOrderRequest 指定了 `PUT /v1/orders` 接口的请求参数.
-type UpdateOrderRequest struct {
-	Title   *string `json:"title" valid:"stringlength(1|256)"`
-	Content *string `json:"content" valid:"stringlength(1|10240)"`
-}
-
 // OrderInfo 指定了文章的详细信息.
 type OrderInfo struct {
 	OrderID           string  `json:"order_id,omitempty"`
@@ -82,4 +76,9 @@ type OrderWhere struct {
 	UserID      string `json:"userID"`
 	Username    string `json:"userID"`
 	Status      uint8  `json:"status"`
+}
+
+type PayOrderRequest struct {
+	OrderNumber string `json:"orderNumber" valid:"required"`
+	PayType     uint8  `json:"payType" valid:"required"`
 }
