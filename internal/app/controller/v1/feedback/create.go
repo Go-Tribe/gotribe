@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://www.gotribe.cn
 
-package feedBack
+package feedback
 
 import (
 	"gotribe/internal/pkg/core"
@@ -17,7 +17,7 @@ import (
 )
 
 // Create 创建一条示例.
-func (ctrl *FeedBackController) Create(c *gin.Context) {
+func (ctrl *FeedbackController) Create(c *gin.Context) {
 	log.C(c).Infow("Create feedback function called")
 
 	var r v1.CreateFeedBackRequest
