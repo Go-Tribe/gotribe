@@ -21,6 +21,7 @@ type AdM struct {
 	SceneID     string `gorm:"type:char(10);Index;example:场景 ID" json:"sceneID"`
 	Ext         string `gorm:"type:text;example:扩展字段" json:"ext"`
 	Image       string `gorm:"type:varchar(255);example:图片地址" json:"image"`
+	Video       string `gorm:"type:varchar(255);example:视频地址" json:"video"`
 }
 
 func (p *AdM) TableName() string {

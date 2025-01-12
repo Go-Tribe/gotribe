@@ -48,6 +48,7 @@ func (b *adBiz) List(ctx context.Context, sceneID string, offset, limit int) (*v
 			URL:         ad.URL,
 			URLType:     ad.URLType,
 			Image:       ad.Image,
+			Video:       ad.Video,
 			Title:       ad.Title,
 			Description: ad.Description,
 			Sort:        ad.Sort,
