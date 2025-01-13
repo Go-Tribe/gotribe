@@ -166,7 +166,7 @@ func (b *postBiz) List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPost
 			log.C(ctx).Errorw("Failed to get tags from storage", "err", err)
 			return nil, err
 		}
-		var tags []v1.TagInfo
+		var tags []*v1.TagInfo
 		_ = copier.Copy(&tags, tagsM)
 
 		posts = append(posts, &v1.PostInfo{
