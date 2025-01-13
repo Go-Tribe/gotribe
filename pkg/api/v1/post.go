@@ -37,6 +37,13 @@ type PostInfo struct {
 	Tag         string       `json:"tag"`
 	Description string       `json:"description"`
 	Type        uint         `json:"type"`
+	Location    string       `json:"location"`
+	People      string       `json:"people"`
+	Time        string       `json:"time"`
+	Ext         string       `json:"ext"`
+	UnitPrice   float64      `json:"unitPrice"`
+	Video       string       `json:"video"`
+	Images      []string     `json:"images"`
 	CreatedAt   string       `json:"createdAt"`
 	UpdatedAt   string       `json:"updatedAt"`
 	Category    CategoryInfo `json:"category"`

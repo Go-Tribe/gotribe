@@ -13,6 +13,7 @@ type TagInfo struct {
 	TagID       string `json:"tagID,omitempty"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
+	Color       string `json:"color"`
 	CreatedAt   string `json:"createdAt"`
 	UpdatedAt   string `json:"updatedAt"`
 }

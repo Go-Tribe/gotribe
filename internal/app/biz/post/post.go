@@ -8,6 +8,7 @@ package post
 import (
 	"context"
 	"errors"
+	util "gotribe/pkg/amount"
 	"strings"
 
 	"gotribe/internal/app/store"
@@ -165,7 +166,14 @@ func (b *postBiz) List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPost
 			Icon:        post.Icon,
 			Category:    category,
 			Content:     post.Content,
+			HtmlContent: post.HtmlContent,
+			Location:    post.Location,
+			People:      post.People,
+			Time:        post.Time,
 			Type:        post.Type,
+			Video:       post.Video,
+			UnitPrice:   util.FenToYuan(int(post.UnitPrice)),
+			Images:      strings.Split(post.Images, ","),
 			Description: post.Description,
 			CreatedAt:   post.CreatedAt.Format(known.TimeFormat),
 			UpdatedAt:   post.UpdatedAt.Format(known.TimeFormat),
