@@ -121,7 +121,18 @@ func (b *productBiz) List(ctx context.Context, r *v1.ListProductRequest) (*v1.Li
 			return nil, err
 		}
 		var skus []*v1.ProductSKUInfo
-		_ = copier.Copy(&skus, skusM)
+		for _, item := range skusM {
+			sku := item
+			skus = append(skus, &v1.ProductSKUInfo{
+				EnableDefault: sku.EnableDefault,
+				Image:         sku.Image,
+				MarketPrice:   sku.MarketPrice,
+				Quantity:      sku.Quantity,
+				SkuID:         sku.SkuID,
+				Title:         sku.Title,
+				UnitPoint:     util.FenToYuan(sku.UnitPoint),
+			})
+		}
 		products = append(products, &v1.ProductInfo{
 			CategoryID:    product.CategoryID,
 			Image:         strings.Split(product.Image, ","),
