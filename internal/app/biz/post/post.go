@@ -151,12 +151,24 @@ func (b *postBiz) List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPost
 		}
 		var category v1.CategoryInfo
 		_ = copier.Copy(&category, categoryM)
+
 		// 用户信息
 		userM, err := b.ds.Users().Get(ctx, v1.UserWhere{UserID: post.UserID})
 		if err != nil {
 			log.C(ctx).Errorw("Failed to get user from storage", "err", err)
 			return nil, err
 		}
+
+		// 标签信息
+		tagSlice := strings.Split(post.Tag, ",")
+		tagsM, err := b.ds.Tags().GetTags(ctx, tagSlice)
+		if err != nil {
+			log.C(ctx).Errorw("Failed to get tags from storage", "err", err)
+			return nil, err
+		}
+		var tags []v1.TagInfo
+		_ = copier.Copy(&tags, tagsM)
+
 		posts = append(posts, &v1.PostInfo{
 			Author:      userM.Nickname,
 			PostID:      post.PostID,
@@ -165,6 +177,7 @@ func (b *postBiz) List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPost
 			Tag:         post.Tag,
 			Icon:        post.Icon,
 			Category:    category,
+			Tags:        tags, // 添加标签信息
 			Content:     post.Content,
 			HtmlContent: post.HtmlContent,
 			Location:    post.Location,
