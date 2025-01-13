@@ -125,11 +125,15 @@ func (b *userBiz) Get(ctx context.Context, username string) (*v1.GetUserResponse
 		resp.Birthday = user.Birthday.Format(known.TimeFormatShort)
 	}
 	// 获取用户积分
-	user.Point, err = b.ds.PointAvailable().SumPoints(ctx, user.UserID, ctx.Value(known.XPrjectIDKey).(string))
+	point, err := b.ds.PointAvailable().SumPoints(ctx, user.UserID, ctx.Value(known.XPrjectIDKey).(string))
 	if err != nil {
 		return nil, err
 	}
-	user.Point = user.Point
+	if point != nil {
+		resp.Point = *point
+	} else {
+		resp.Point = 0 // 或者其他默认值
+	}
 	resp.CreatedAt = user.CreatedAt.Format(known.TimeFormat)
 	resp.UpdatedAt = user.UpdatedAt.Format(known.TimeFormat)
 
