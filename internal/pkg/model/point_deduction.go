@@ -17,6 +17,6 @@ type PointDeductionM struct {
 	AvailablePointsID int     `gorm:"type:int(10);NOT NULL;comment:'可用积分表ID'"`
 }
 
-func (p *PointDeductionM) TableName() string {
+func (m *PointDeductionM) TableName() string {
 	return "point_deduction"
 }

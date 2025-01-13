@@ -35,13 +35,13 @@ type PostM struct {
 }
 
 // TableName 用来指定映射的 MySQL 表名.
-func (p *PostM) TableName() string {
+func (m *PostM) TableName() string {
 	return "post"
 }
 
 // BeforeCreate 在创建数据库记录之前生成 postID.
-func (p *PostM) BeforeCreate(tx *gorm.DB) error {
-	p.PostID = gid.GenShortID()
+func (m *PostM) BeforeCreate(tx *gorm.DB) error {
+	m.PostID = gid.GenShortID()
 
 	return nil
 }

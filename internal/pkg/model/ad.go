@@ -24,6 +24,6 @@ type AdM struct {
 	Video       string `gorm:"type:varchar(255);example:视频地址" json:"video"`
 }
 
-func (p *AdM) TableName() string {
+func (m *AdM) TableName() string {
 	return "ad"
 }

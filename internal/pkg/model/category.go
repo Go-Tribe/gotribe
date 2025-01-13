@@ -25,6 +25,6 @@ type CategoryM struct {
 }
 
 // TableName 用来指定映射的 MySQL 表名.
-func (p *CategoryM) TableName() string {
+func (m *CategoryM) TableName() string {
 	return "category"
 }

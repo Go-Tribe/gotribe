@@ -16,6 +16,6 @@ type FeedbackM struct {
 	ProjectID string `gorm:"type:char(10);Index;comment:项目 ID" json:"projectID"`
 }
 
-func (p *FeedbackM) TableName() string {
+func (m *FeedbackM) TableName() string {
 	return "feedback"
 }

@@ -47,12 +47,12 @@ type OrderM struct {
 	RemarkAdmin       string `gorm:"type:varchar(255);not null;comment:订单备注" json:"remarkAdmin"`
 }
 
-func (o *OrderM) TableName() string {
+func (m *OrderM) TableName() string {
 	return "order"
 }
 
-func (o *OrderM) BeforeCreate(tx *gorm.DB) error {
-	o.OrderID = gid.GenShortID()
-	o.OrderNumber = gid.FetchOrderNum(12)
+func (m *OrderM) BeforeCreate(tx *gorm.DB) error {
+	m.OrderID = gid.GenShortID()
+	m.OrderNumber = gid.FetchOrderNum(12)
 	return nil
 }

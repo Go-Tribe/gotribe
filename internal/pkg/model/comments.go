@@ -33,12 +33,12 @@ type CommentM struct {
 	City        string `gorm:"type:varchar(255);not null;comment:城市" json:"city"`
 }
 
-func (c *CommentM) TableName() string {
+func (m *CommentM) TableName() string {
 	return "comment"
 }
 
-func (c *CommentM) BeforeCreate(tx *gorm.DB) (err error) {
+func (m *CommentM) BeforeCreate(tx *gorm.DB) (err error) {
 	// Encrypt the user password.
-	c.CommentID = gid.GenShortID()
+	m.CommentID = gid.GenShortID()
 	return nil
 }

@@ -17,6 +17,10 @@ type OrderLogM struct {
 	Remark     string `gorm:"type:varchar(255);not null;comment:操作记录" json:"remark"`
 }
 
+func (m *OrderLogM) TableName() string {
+	return "order_log"
+}
+
 func (m *OrderLogM) BeforeCreate(tx *gorm.DB) error {
 	m.OrderLogID = gid.GenShortID()
 	return nil

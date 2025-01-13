@@ -21,6 +21,6 @@ type PointAvailableM struct {
 	Status         uint      `gorm:"type:tinyint(1);not null;default:1;comment:状态，1-正常；2-删除" json:"status"`
 }
 
-func (p *PointAvailableM) TableName() string {
+func (m *PointAvailableM) TableName() string {
 	return "point_available"
 }

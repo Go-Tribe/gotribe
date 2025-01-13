@@ -23,12 +23,12 @@ type ColumnM struct {
 }
 
 // TableName 用来指定映射的 MySQL 表名.
-func (p *ColumnM) TableName() string {
+func (m *ColumnM) TableName() string {
 	return "column"
 }
 
 // BeforeCreate 在创建数据库记录之前生成ColumnID.
-func (p *ColumnM) BeforeCreate(tx *gorm.DB) error {
-	p.ColumnID = gid.GenShortID()
+func (m *ColumnM) BeforeCreate(tx *gorm.DB) error {
+	m.ColumnID = gid.GenShortID()
 	return nil
 }

@@ -23,13 +23,13 @@ type ConfigM struct {
 }
 
 // TableName 用来指定映射的 MySQL 表名.
-func (p *ConfigM) TableName() string {
+func (m *ConfigM) TableName() string {
 	return "config"
 }
 
 // BeforeCreate 在创建数据库记录之前生成ConfigID.
-func (p *ConfigM) BeforeCreate(tx *gorm.DB) error {
-	p.ConfigID = gid.GenShortID()
+func (m *ConfigM) BeforeCreate(tx *gorm.DB) error {
+	m.ConfigID = gid.GenShortID()
 
 	return nil
 }

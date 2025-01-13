@@ -22,13 +22,13 @@ type ExampleM struct {
 }
 
 // TableName 用来指定映射的 MySQL 表名.
-func (p *ExampleM) TableName() string {
+func (m *ExampleM) TableName() string {
 	return "comment"
 }
 
 // BeforeCreate 在创建数据库记录之前生成 ExampleID.
-func (p *ExampleM) BeforeCreate(tx *gorm.DB) error {
-	p.ExampleID = gid.GenShortID()
+func (m *ExampleM) BeforeCreate(tx *gorm.DB) error {
+	m.ExampleID = gid.GenShortID()
 
 	return nil
 }

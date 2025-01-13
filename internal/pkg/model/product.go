@@ -20,6 +20,6 @@ type ProductM struct {
 	Enable        uint   `gorm:"type:tinyint(4);not null;default:1;example:是否启用：1-下架；2-上架" json:"enable"`
 }
 
-func (p *ProductM) TableName() string {
+func (m *ProductM) TableName() string {
 	return "product"
 }

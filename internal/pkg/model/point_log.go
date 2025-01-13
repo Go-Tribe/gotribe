@@ -19,6 +19,6 @@ type PointLogM struct {
 	Status    uint    `gorm:"type:tinyint(1);not null;default:1;comment:状态，1-正常；2-删除" json:"status"`
 }
 
-func (p *PointLogM) TableName() string {
+func (m *PointLogM) TableName() string {
 	return "point_log"
 }
