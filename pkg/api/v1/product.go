@@ -42,17 +42,17 @@ type ListProductResponse struct {
 
 // ProductSKUInfo 指定了sku详细信息.
 type ProductSKUInfo struct {
-	SkuID         string `json:"skuID"`
-	Title         string `json:"title"`
-	ProjectID     string `json:"projectID"`
-	ProductID     string `json:"productID"`
-	Image         string `son:"image"`
-	Video         string `json:"video"`
-	UnitPrice     int    `json:"unitPrice"`
-	MarketPrice   int    `json:"marketPrice"`
-	Quantity      uint   `json:"quantity"`
-	UnitPoint     int    `json:"unitPoint"`
-	EnableDefault uint   ` json:"enableDefault"`
-	CreatedAt     string `json:"createdAt"`
-	UpdatedAt     string `json:"updatedAt"`
+	SkuID         string  `json:"skuID"`
+	Title         string  `json:"title"`
+	ProjectID     string  `json:"projectID"`
+	ProductID     string  `json:"productID"`
+	Image         string  `son:"image"`
+	Video         string  `json:"video"`
+	UnitPrice     int     `json:"unitPrice"`
+	MarketPrice   int     `json:"marketPrice"`
+	Quantity      uint    `json:"quantity"`
+	UnitPoint     float64 `json:"unitPoint"`
+	EnableDefault uint    ` json:"enableDefault"`
+	CreatedAt     string  `json:"createdAt"`
+	UpdatedAt     string  `json:"updatedAt"`
 }
