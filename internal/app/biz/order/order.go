@@ -103,6 +103,13 @@ func (b *orderBiz) CreateTx(ctx context.Context, username string, r *v1.CreateOr
 			return err
 		}
 		orderNumber = createdOrder.OrderNumber
+		// 记录日志
+		if err := b.ds.OrderLog().Create(ctx, &model.OrderLogM{
+			OrderID: createdOrder.OrderID,
+			Remark:  "创建订单",
+		}); err != nil {
+			return err
+		}
 		return nil
 	})
 	if err != nil {
@@ -254,6 +261,14 @@ func (b *orderBiz) Pay(ctx context.Context, orderNumber, username string) error 
 
 		// 更新数据库中的订单信息
 		if err := b.ds.Order().Update(ctx, order); err != nil {
+			return err
+		}
+
+		// 记录日志
+		if err := b.ds.OrderLog().Create(ctx, &model.OrderLogM{
+			OrderID: order.OrderID,
+			Remark:  "支付订单",
+		}); err != nil {
 			return err
 		}
 		return nil
