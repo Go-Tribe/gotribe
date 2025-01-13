@@ -164,11 +164,23 @@ func (b *orderBiz) Get(ctx context.Context, orderNumber, username string) (*v1.G
 // 该方法根据用户名、偏移量和限制数量查询订单，并返回订单列表和总订单数
 // 主要用于处理订单数据的获取，包括从数据源获取原始数据，然后将这些数据转换为API响应格式
 func (b *orderBiz) List(ctx context.Context, username string, offset, limit int) (*v1.ListOrderResponse, error) {
+	// 检查 offset 和 limit 的有效性
+	if offset < 0 || limit <= 0 {
+		return nil, fmt.Errorf("invalid offset or limit")
+	}
+
+	// 安全地获取 ProjectID
+	projectID, ok := ctx.Value(known.XPrjectIDKey).(string)
+	if !ok {
+		log.C(ctx).Errorw("Failed to get project ID from context", "username", username)
+		return nil, fmt.Errorf("project ID not found in context")
+	}
+
 	// 调用数据源的List方法获取订单数据
-	count, list, err := b.ds.Order().List(ctx, offset, limit, v1.OrderWhere{Username: username, ProjectID: ctx.Value(known.XPrjectIDKey).(string)})
+	count, list, err := b.ds.Order().List(ctx, offset, limit, v1.OrderWhere{Username: username, ProjectID: projectID})
 	if err != nil {
 		// 如果查询失败，记录错误日志并返回错误
-		log.C(ctx).Errorw("Failed to list order from storage", "err", err)
+		log.C(ctx).Errorw("Failed to list order from storage", "err", err, "username", username, "projectID", projectID)
 		return nil, err
 	}
 
@@ -177,12 +189,16 @@ func (b *orderBiz) List(ctx context.Context, username string, offset, limit int)
 	for _, item := range list {
 		// 遍历查询结果，将每个订单转换为API响应格式
 		order := item
+		payTimeStr := ""
+		if order.PayTime != nil {
+			payTimeStr = order.PayTime.Format(known.TimeFormat)
+		}
 		orders = append(orders, &v1.OrderInfo{
 			Username:          order.Username,
 			OrderID:           order.OrderID,
 			OrderNumber:       order.OrderNumber,
 			PayNumber:         order.PayNumber,
-			PayTime:           order.PayTime.Format(known.TimeFormat),
+			PayTime:           payTimeStr,
 			Status:            uint8(order.Status),
 			Amount:            util.FenToYuan(order.Amount),
 			AmountPay:         util.FenToYuan(order.AmountPay),
