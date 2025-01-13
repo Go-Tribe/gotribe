@@ -26,7 +26,7 @@ func OrderRoutes(g *gin.RouterGroup) gin.IRoutes {
 			orderv1.POST("", pc.Create) // 创建内容
 			orderv1.GET(":orderNumber", pc.Get)
 			orderv1.GET("", pc.List)
-			orderv1.POST(":pay", pc.Pay)
+			orderv1.POST("/pay", pc.Pay)
 		}
 	}
 	return nil

@@ -16,6 +16,7 @@ import (
 
 type PointBiz interface {
 	SubPoints(ctx context.Context, username, projectID, types, reason, eventID string, points float64) error
+	GetAvailablePoints(ctx context.Context, userID, projectID string) (*float64, error)
 }
 
 type pointBiz struct {
@@ -28,6 +29,16 @@ var _ PointBiz = (*pointBiz)(nil)
 // New 创建一个实现了 GoodsBiz 接口的实例.
 func New(ds store.IStore) *pointBiz {
 	return &pointBiz{ds: ds}
+}
+
+// 获取用户可用积分
+func (b *pointBiz) GetAvailablePoints(ctx context.Context, userID, projectID string) (*float64, error) {
+	// 获取用户积分
+	point, err := b.ds.PointAvailable().SumPoints(ctx, userID, projectID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get available points: %v", err)
+	}
+	return point, nil
 }
 
 // 扣减积分

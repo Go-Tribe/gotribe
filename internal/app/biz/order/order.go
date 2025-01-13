@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"fmt"
 	"github.com/dengmengmian/ghelper/gid"
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
@@ -19,7 +20,7 @@ import (
 
 // OrderBiz defines functions used to handle comment request.
 type OrderBiz interface {
-	CreateTx(ctx context.Context, username string, r *v1.CreateOrderRequest) (string, error)
+	CreateTx(ctx context.Context, username string, r *v1.CreateOrderRequest) (*v1.CreateOrderResponse, error)
 	Get(ctx context.Context, orderNumber, username string) (*v1.GetOrderResponse, error)
 	List(ctx context.Context, username string, offset, limit int) (*v1.ListOrderResponse, error)
 	Pay(ctx context.Context, orderNumber, username string) error
@@ -51,7 +52,7 @@ func New(ds store.IStore, pt point.PointBiz) *orderBiz {
 //
 //	string - 创建的订单号
 //	error - 错误信息，如果执行过程中发生错误
-func (b *orderBiz) CreateTx(ctx context.Context, username string, r *v1.CreateOrderRequest) (string, error) {
+func (b *orderBiz) CreateTx(ctx context.Context, username string, r *v1.CreateOrderRequest) (*v1.CreateOrderResponse, error) {
 	var orderNumber string
 	err := b.ds.TX(ctx, func(ctx context.Context) error {
 		// 1. 获取用户信息
@@ -86,26 +87,29 @@ func (b *orderBiz) CreateTx(ctx context.Context, username string, r *v1.CreateOr
 		orderM.UnitPoint = sku.UnitPoint
 		orderM.UnitPrice = sku.UnitPrice
 		orderM.Quantity = uint(r.Quantity)
+		orderM.ProductImage = product.Image
 		orderM.Amount = sku.UnitPoint * r.Quantity
 		orderM.AmountPay = sku.UnitPrice * r.Quantity
-
+		// 默认为普通订单
+		orderM.OrderType = known.OrderTypeNormal
 		createdOrder, err := b.ds.Order().Create(ctx, &orderM)
+
 		if err != nil {
 			return err
 		}
 		// 扣减库存
-		if err := b.ds.ProductSKUs().Update(ctx, &model.ProductSKUM{
-			Quantity: sku.Quantity - uint(r.Quantity),
-		}); err != nil {
+		sku.Quantity -= uint(r.Quantity)
+		if err := b.ds.ProductSKUs().Update(ctx, sku); err != nil {
 			return err
 		}
 		orderNumber = createdOrder.OrderNumber
 		return nil
 	})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return orderNumber, nil
+
+	return &v1.CreateOrderResponse{OrderNumber: orderNumber}, nil
 }
 
 // Get 通过订单号和用户名获取订单详情。
@@ -212,30 +216,39 @@ func (b *orderBiz) Pay(ctx context.Context, orderNumber, username string) error 
 		if err != nil {
 			return err
 		}
-
 		// 检查 user.Point 是否为 nil，并将其转换为 float64 进行比较
-		var userPoint float64
-		if user.Point != nil {
-			userPoint = *user.Point
-		} else {
-			userPoint = 0
+		userPoint, err := b.pt.GetAvailablePoints(ctx, user.UserID, ctx.Value(known.XPrjectIDKey).(string))
+		if err != nil {
+			log.C(ctx).Errorw("Failed to get user point from storage", "err", err)
+			return err
 		}
-
-		// 将 order.AmountPay 转换为 float64 进行比较
-		if userPoint < float64(order.AmountPay) {
+		fmt.Println("userPoint", userPoint)
+		// 解引用 userPoint 并处理可能的 nil 情况
+		var pointValue float64
+		if userPoint != nil {
+			pointValue = *userPoint
+		} else {
+			pointValue = 0
+		}
+		fmt.Println("pointValue", pointValue)
+		fmt.Println("util.YuanToFen(pointValue)", util.YuanToFen(pointValue))
+		fmt.Println("order.AmountPay", order.AmountPay)
+		if util.YuanToFen(pointValue) < order.AmountPay {
 			return errors.New("积分不足")
 		}
 
 		// 扣减用户积分
-		err = b.pt.SubPoints(ctx, username, order.ProjectID, "pay", "支付订单", order.OrderID, util.FenToYuan(order.AmountPay))
+		err = b.pt.SubPoints(ctx, username, ctx.Value(known.XPrjectIDKey).(string), "pay", "支付订单", order.OrderID, util.FenToYuan(order.AmountPay))
 		if err != nil {
 			return err
 		}
 
 		// 更新订单状态为已支付
 		order.Status = known.OrderStatusPaid
-		order.PayMethod = 3
-		order.PayTime = time.Now()
+		order.PayMethod = known.PaymentMethodPoint
+		order.OrderType = known.OrderTypePoint
+		now := time.Now()
+		order.PayTime = &now
 		order.PayNumber = gid.FetchOrderNum(6)
 		log.C(ctx).Infow("pay order", "order", order)
 

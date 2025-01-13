@@ -15,4 +15,14 @@ const (
 	OrderStatusRefunding      = 6 // 待退款
 	OrderStatusRefunded       = 7 // 已退款
 	OrderStatusRefundFailed   = 8 // 退款失败
+
+	// 订单类型 订单类型：1-普通订单；2-积分订单
+	OrderTypeNormal = 1
+	OrderTypePoint  = 2
+
+	// 支付方式 支付方式：1-微信支付；2-支付宝支付；3-积分支付；4-余额支付
+	PaymentMethodWechatPay = 1
+	PaymentMethodAlipay    = 2
+	PaymentMethodPoint     = 3
+	PaymentMethodBalance   = 4
 )
