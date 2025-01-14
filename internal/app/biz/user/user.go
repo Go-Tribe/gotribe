@@ -200,32 +200,49 @@ func (b *userBiz) List(ctx context.Context, offset, limit int) (*v1.ListUserResp
 func (b *userBiz) Update(ctx context.Context, username string, user *v1.UpdateUserRequest) error {
 	userM, err := b.ds.Users().Get(ctx, v1.UserWhere{Username: username})
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errno.ErrUserNotFound
+		}
+		log.C(ctx).Errorw("Failed to get user", "err", err)
 		return err
 	}
 
-	if user.Email != nil {
-		userM.Email = *user.Email
+	// 使用 map 减少重复代码
+	updateFields := map[string]interface{}{
+		"Email":      user.Email,
+		"Nickname":   user.Nickname,
+		"Phone":      user.Phone,
+		"AvatarURL":  user.AvatarURL,
+		"Sex":        user.Sex,
+		"Background": user.Background,
+		"Ext":        user.Ext,
 	}
 
-	if user.Nickname != nil {
-		userM.Nickname = *user.Nickname
-	}
-
-	if user.Phone != nil {
-		userM.Phone = *user.Phone
-	}
-
-	if user.AvatarURL != nil {
-		userM.AvatarURL = *user.AvatarURL
-	}
-
-	if user.Sex != nil {
-		userM.Sex = *user.Sex
+	for key, value := range updateFields {
+		if value != nil {
+			switch key {
+			case "Email":
+				userM.Email = *user.Email
+			case "Nickname":
+				userM.Nickname = *user.Nickname
+			case "Phone":
+				userM.Phone = *user.Phone
+			case "AvatarURL":
+				userM.AvatarURL = *user.AvatarURL
+			case "Sex":
+				userM.Sex = *user.Sex
+			case "Ext":
+				userM.Ext = *user.Ext
+			case "Background":
+				userM.Background = *user.Background
+			}
+		}
 	}
 
 	if user.Birthday != nil {
 		birthday, err := time.Parse(known.TimeFormatShort, *user.Birthday)
 		if err != nil {
+			log.C(ctx).Errorw("Failed to parse birthday", "err", err)
 			return err
 		}
 
@@ -233,6 +250,7 @@ func (b *userBiz) Update(ctx context.Context, username string, user *v1.UpdateUs
 	}
 
 	if err := b.ds.Users().Update(ctx, userM); err != nil {
+		log.C(ctx).Errorw("Failed to update user", "err", err)
 		return err
 	}
 
