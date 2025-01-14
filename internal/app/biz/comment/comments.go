@@ -51,7 +51,7 @@ func (b *commentBiz) Create(ctx context.Context, username string, r *v1.CreateCo
 	commentM.HtmlContent = gmarkdown.MdToHTML(commentM.Content)
 	commentM.ProjectID = ctx.Value(known.XPrjectIDKey).(string)
 	commentM.IP = ctx.Value(known.XClientIPKey).(string)
-	country, city, regionName := ip.GetIPInfo(ctx, commentM.IP)
+	country, city, regionName := ip.GeoIP(ctx, commentM.IP)
 	commentM.Country = country
 	commentM.RegionName = regionName
 	commentM.City = city
@@ -76,7 +76,7 @@ func (b *commentBiz) Reply(ctx context.Context, username string, r *v1.ReplyComm
 	commentM.ParentID = *r.ParentID
 	commentM.IP = ctx.Value(known.XClientIPKey).(string)
 	commentM.IP = ctx.Value(known.XClientIPKey).(string)
-	country, city, regionName := ip.GetIPInfo(ctx, commentM.IP)
+	country, city, regionName := ip.GeoIP(ctx, commentM.IP)
 	commentM.Country = country
 	commentM.RegionName = regionName
 	commentM.City = city

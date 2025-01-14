@@ -10,7 +10,10 @@ jwt-secret: Rtg8BPKNEf2mB4mgvKONGPZZQSaJWNLijxR42qRgq0iBb5 # JWT 签发密钥
 url-path-prefix: api
 # 文件上传默认使用oss.
 enable-oss: true
+# CDN 域名
 cdn-domain: cdn.gotribe.cn
+# ip离线库
+ip-db: ./_output/ip2region.db
 
 # HTTPS 服务器相关配置
 tls:
