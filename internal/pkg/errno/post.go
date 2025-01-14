@@ -6,4 +6,7 @@
 package errno
 
 // ErrPostNotFound 表示未找到文章.
-var ErrPostNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.PostNotFound", Message: "Post was not found."}
+var ErrPostNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.PostNotFound", Message: map[string]string{
+	"en": "Post was not found.",
+	"zh": "文章未找到。",
+}}

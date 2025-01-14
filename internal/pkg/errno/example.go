@@ -5,5 +5,8 @@
 
 package errno
 
-// ErrExampleNotFound 表示未找到文章.
-var ErrExampleNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.ExampleNotFound", Message: "Example was not found."}
+// ErrExampleNotFound 表示未找到示例.
+var ErrExampleNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.ExampleNotFound", Message: map[string]string{
+	"en": "Example was not found.",
+	"zh": "示例未找到。",
+}}

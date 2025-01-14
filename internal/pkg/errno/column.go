@@ -5,5 +5,8 @@
 
 package errno
 
-// ErrConfigNotFound 表示未找到专栏信息.
-var ErrColumnNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.ColumnNotFound", Message: "Column was not found."}
+// ErrColumnNotFound 表示未找到专栏信息.
+var ErrColumnNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.ColumnNotFound", Message: map[string]string{
+	"en": "Column was not found.",
+	"zh": "专栏未找到。",
+}}

@@ -22,11 +22,20 @@ type ErrResponse struct {
 	Message string `json:"message"`
 }
 
-// WriteResponse 将错误或响应数据写入 HTTP 响应主体。
-// WriteResponse 使用 errno.Decode 方法，根据错误类型，尝试从 err 中提取业务错误码和错误信息.
-func WriteResponse(c *gin.Context, err error, data interface{}) {
+// WriteResponse 写响应到 gin.Context 中。
+// lang 参数为可选参数，默认为 "zh"。
+func WriteResponse(c *gin.Context, err error, data interface{}, langs ...string) {
+	lang := c.GetHeader("Accept - Language")
+	// 如果没有设置语言，默认使用英语
+	if lang != "en" {
+		lang = "zh"
+	}
+	if len(langs) > 0 {
+		lang = langs[0]
+	}
+
 	if err != nil {
-		hcode, code, message := errno.Decode(err)
+		hcode, code, message := errno.Decode(err, lang)
 		c.JSON(hcode, ErrResponse{
 			Code:    code,
 			Message: message,

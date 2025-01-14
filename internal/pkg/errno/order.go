@@ -6,7 +6,9 @@
 package errno
 
 var (
-
-	// ErrUserNotFound 表示未找到订单.
-	ErrOrderNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.OrderNotFound", Message: "订单不存在"}
+	// ErrOrderNotFound 表示未找到订单.
+	ErrOrderNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.OrderNotFound", Message: map[string]string{
+		"en": "Order was not found.",
+		"zh": "订单不存在。",
+	}}
 )
