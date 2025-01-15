@@ -53,6 +53,8 @@ type OrderInfo struct {
 	UnitPoint         float64 `json:"unitPoint"`
 	Amount            float64 `json:"amount"`
 	AmountPay         float64 `json:"amountPay"`
+	LogisticsNumber   string  `json:"logisticsNumber"`
+	LogisticsCompany  string  `json:"logisticsCompany"`
 	ProjectID         string  `json:"projectID"`
 	CreatedAt         string  `json:"createdAt"`
 	UpdatedAt         string  `json:"updatedAt"`

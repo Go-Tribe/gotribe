@@ -43,6 +43,8 @@ type OrderM struct {
 	ConsigneeDistrict string `gorm:"type:varchar(100);not null;comment:区/县" json:"consigneeDistrict"`
 	ConsigneeStreet   string `gorm:"type:varchar(255);not null;comment:街道" json:"consigneeStreet"`
 	ConsigneeAddress  string `gorm:"type:varchar(255);not null;comment:详细地址" json:"consigneeAddress"`
+	LogisticsNumber   string `gorm:"type:varchar(255);not null;comment:物流单号" json:"logisticsNumber"`
+	LogisticsCompany  string `gorm:"type:varchar(255);not null;comment:物流公司" json:"logisticsCompany"`
 	Remark            string `gorm:"type:varchar(255);not null;comment:买家留言" json:"remark"`
 	RemarkAdmin       string `gorm:"type:varchar(255);not null;comment:订单备注" json:"remarkAdmin"`
 }

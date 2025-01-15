@@ -213,6 +213,8 @@ func (b *orderBiz) List(ctx context.Context, username string, offset, limit int)
 			ConsigneeCity:     order.ConsigneeCity,
 			ConsigneeDistrict: order.ConsigneeDistrict,
 			ConsigneeStreet:   order.ConsigneeStreet,
+			LogisticsCompany:  order.LogisticsCompany,
+			LogisticsNumber:   order.LogisticsNumber,
 			Remark:            order.Remark,
 			CreatedAt:         order.CreatedAt.Format(known.TimeFormat),
 			UpdatedAt:         order.UpdatedAt.Format(known.TimeFormat),
