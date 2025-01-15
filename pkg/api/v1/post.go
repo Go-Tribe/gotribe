@@ -78,3 +78,20 @@ type PostQueryParams struct {
 	ColumnID   int
 	CategoryID int
 }
+
+type SearchPostRequest struct {
+	Offset     int    `form:"offset"`
+	Limit      int    `form:"limit"`
+	Query      string `form:"query"`
+	CategoryID string `form:"categoryID"`
+}
+type PostWhere struct {
+	PostID     string
+	Title      string
+	Author     string
+	ProjectID  string
+	Type       int
+	Status     int
+	ColumnID   int
+	CategoryID int
+}

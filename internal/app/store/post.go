@@ -25,6 +25,7 @@ type PostStore interface {
 	Update(ctx context.Context, post *model.PostM) error
 	List(ctx context.Context, r *v1.ListPostRequest) (int64, []*model.PostM, error)
 	Delete(ctx context.Context, username string, post_ids []string) error
+	Search(ctx context.Context, r *v1.SearchPostRequest) (int64, []*model.PostM, error)
 }
 
 // PostStore 接口的实现.
@@ -115,4 +116,19 @@ func (u *posts) Delete(ctx context.Context, username string, post_ids []string) 
 	}
 
 	return nil
+}
+
+func (u *posts) Search(ctx context.Context, r *v1.SearchPostRequest) (count int64, ret []*model.PostM, err error) {
+	where := []interface{}{
+		[]interface{}{"title", "like", "%" + r.Query + "%"},
+		[]interface{}{"project_id", ctx.Value(known.XPrjectIDKey).(string)},
+		[]interface{}{"category_id", r.CategoryID},
+	}
+	db, err := buildWhere(u.db, where)
+	if err != nil {
+		log.C(ctx).Errorw("Failed to Search post from build where", "err", err)
+		return 0, nil, err
+	}
+	err = db.WithContext(ctx).Find(&ret).Offset(r.Offset).Limit(defaultLimit(r.Limit)).Count(&count).Error
+	return
 }

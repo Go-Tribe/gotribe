@@ -23,8 +23,9 @@ func PostRoutes(g *gin.RouterGroup) gin.IRoutes {
 		// 创建 posts 路由分组
 		postv1 := v1.Group("/posts")
 		{
-			postv1.GET(":postID", pc.Get) // 获取文章详情
-			postv1.GET("", pc.List)       // 获取文章列表
+			postv1.GET(":postID", pc.Get)   // 获取文章详情
+			postv1.GET("", pc.List)         // 获取文章列表
+			postv1.GET("search", pc.Search) // 获取文章列表
 			postv1.Use(mw.Authn())
 			postv1.POST("", pc.Create)             // 创建文章
 			postv1.PUT(":postID", pc.Update)       // 更新文章

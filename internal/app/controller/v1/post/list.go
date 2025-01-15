@@ -33,3 +33,22 @@ func (ctrl *PostController) List(c *gin.Context) {
 
 	core.WriteResponse(c, nil, resp)
 }
+
+func (ctrl *PostController) Search(c *gin.Context) {
+	log.C(c).Infow("Search post function called.")
+
+	var r v1.SearchPostRequest
+	if err := c.ShouldBindQuery(&r); err != nil {
+		core.WriteResponse(c, errno.ErrBind, nil)
+
+		return
+	}
+	resp, err := ctrl.b.Posts().Search(c, &r)
+	if err != nil {
+		core.WriteResponse(c, err, nil)
+
+		return
+	}
+
+	core.WriteResponse(c, nil, resp)
+}
