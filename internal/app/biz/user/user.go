@@ -198,59 +198,52 @@ func (b *userBiz) List(ctx context.Context, offset, limit int) (*v1.ListUserResp
 
 // Update 是 UserBiz 接口中 `Update` 方法的实现.
 func (b *userBiz) Update(ctx context.Context, username string, user *v1.UpdateUserRequest) error {
+	// 获取用户信息
 	userM, err := b.ds.Users().Get(ctx, v1.UserWhere{Username: username})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errno.ErrUserNotFound
 		}
-		log.C(ctx).Errorw("Failed to get user", "err", err)
+		log.C(ctx).Errorw("Failed to get user", "username", username, "err", err)
 		return err
 	}
 
-	// 使用 map 减少重复代码
-	updateFields := map[string]interface{}{
-		"Email":      user.Email,
-		"Nickname":   user.Nickname,
-		"Phone":      user.Phone,
-		"AvatarURL":  user.AvatarURL,
-		"Sex":        user.Sex,
-		"Background": user.Background,
-		"Ext":        user.Ext,
+	// 更新字段
+	if user.Email != nil {
+		userM.Email = *user.Email
+	}
+	if user.Nickname != nil {
+		userM.Nickname = *user.Nickname
+	}
+	if user.Phone != nil {
+		userM.Phone = *user.Phone
+	}
+	if user.AvatarURL != nil {
+		userM.AvatarURL = *user.AvatarURL
+	}
+	if user.Sex != nil {
+		userM.Sex = *user.Sex
+	}
+	if user.Background != nil {
+		userM.Background = *user.Background
+	}
+	if user.Ext != nil {
+		userM.Ext = *user.Ext
 	}
 
-	for key, value := range updateFields {
-		if value != nil {
-			switch key {
-			case "Email":
-				userM.Email = *user.Email
-			case "Nickname":
-				userM.Nickname = *user.Nickname
-			case "Phone":
-				userM.Phone = *user.Phone
-			case "AvatarURL":
-				userM.AvatarURL = *user.AvatarURL
-			case "Sex":
-				userM.Sex = *user.Sex
-			case "Ext":
-				userM.Ext = *user.Ext
-			case "Background":
-				userM.Background = *user.Background
-			}
-		}
-	}
-
+	// 更新生日字段
 	if user.Birthday != nil {
 		birthday, err := time.Parse(known.TimeFormatShort, *user.Birthday)
 		if err != nil {
-			log.C(ctx).Errorw("Failed to parse birthday", "err", err)
-			return err
+			log.C(ctx).Warnw("Failed to parse birthday, skipping update", "username", username, "err", err)
+		} else {
+			userM.Birthday = &birthday
 		}
-
-		userM.Birthday = &birthday
 	}
 
+	// 使用事务确保原子性
 	if err := b.ds.Users().Update(ctx, userM); err != nil {
-		log.C(ctx).Errorw("Failed to update user", "err", err)
+		log.C(ctx).Errorw("Failed to update user", "username", username, "err", err)
 		return err
 	}
 
