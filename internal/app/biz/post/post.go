@@ -90,6 +90,7 @@ func (b *postBiz) Get(ctx context.Context, postID string) (*v1.GetPostResponse, 
 
 	var resp v1.GetPostResponse
 	_ = copier.Copy(&resp, post)
+	resp.UnitPrice = util.FenToYuan(int(post.UnitPrice))
 	// tag信息
 	tagsM, err := b.ds.Tags().GetTags(ctx, strings.Split(post.Tag, ","))
 	var tags []*v1.TagInfo
