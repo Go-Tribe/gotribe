@@ -41,6 +41,7 @@ type IStore interface {
 	PointLog() PointLogStore
 	Order() OrderStore
 	OrderLog() OrderLogStore
+	UserEvents() UserEventStore
 }
 
 // datastore 是 IStore 的一个具体实现.
@@ -174,4 +175,7 @@ func (ds *datastore) Order() OrderStore {
 
 func (ds *datastore) OrderLog() OrderLogStore {
 	return newOrderLogs(ds.db)
+}
+func (ds *datastore) UserEvents() UserEventStore {
+	return newUserEvents(ds.db)
 }

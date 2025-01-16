@@ -22,6 +22,7 @@ import (
 	"gotribe/internal/app/biz/project"
 	"gotribe/internal/app/biz/tag"
 	"gotribe/internal/app/biz/user"
+	userEvent "gotribe/internal/app/biz/user_event"
 	"gotribe/internal/app/store"
 )
 
@@ -41,6 +42,7 @@ type IBiz interface {
 	Feedbacks() feedback.FeedBackBiz
 	Orders() order.OrderBiz
 	Point() point.PointBiz
+	UserEvents() userEvent.UserEventBiz
 }
 
 // 确保 biz 实现了 IBiz 接口.
@@ -118,4 +120,7 @@ func (b *biz) Point() point.PointBiz {
 
 func (b *biz) Orders() order.OrderBiz {
 	return order.New(b.ds, b.Point())
+}
+func (b *biz) UserEvents() userEvent.UserEventBiz {
+	return userEvent.New(b.ds)
 }
