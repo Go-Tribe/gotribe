@@ -43,6 +43,25 @@ func (b *adBiz) List(ctx context.Context, sceneID string, offset, limit int) (*v
 	ads := make([]*v1.AdInfo, 0, len(list))
 	for _, item := range list {
 		ad := item
+		var categoryID string
+		if ad.URLType == 2 {
+			// 查出文章信息
+			postM, err := b.ds.Posts().Get(ctx, v1.PostQueryParams{PostID: ad.URL})
+			if err != nil {
+				log.C(ctx).Errorw("Failed to get post from storage", "err", err)
+				return nil, err
+			}
+			categoryID = postM.CategoryID
+		}
+		if ad.URLType == 3 {
+			// 查出商品信息
+			productM, err := b.ds.Products().Get(ctx, ad.URL)
+			if err != nil {
+				log.C(ctx).Errorw("Failed to get product from storage", "err", err)
+				return nil, err
+			}
+			categoryID = productM.CategoryID
+		}
 		ads = append(ads, &v1.AdInfo{
 			AdID:        ad.AdID,
 			URL:         ad.URL,
@@ -54,6 +73,7 @@ func (b *adBiz) List(ctx context.Context, sceneID string, offset, limit int) (*v
 			Sort:        ad.Sort,
 			SceneID:     ad.SceneID,
 			Ext:         ad.Ext,
+			CategoryID:  categoryID,
 			CreatedAt:   ad.CreatedAt.Format(known.TimeFormat),
 			UpdatedAt:   ad.UpdatedAt.Format(known.TimeFormat),
 		})

@@ -40,6 +40,7 @@ type AdInfo struct {
 	Ext         string `json:"ext"`
 	Image       string `json:"image"`
 	Video       string `json:"video"`
+	CategoryID  string `json:"categoryID"`
 }
 
 // ListAdRequest 指定了 `GET /v1/ads` 接口的请求参数.
