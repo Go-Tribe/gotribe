@@ -9,6 +9,7 @@ import (
 	"context"
 	"github.com/jinzhu/copier"
 	"gotribe/internal/app/store"
+	"gotribe/internal/pkg/known"
 	"gotribe/internal/pkg/model"
 	v1 "gotribe/pkg/api/v1"
 )
@@ -33,6 +34,13 @@ func New(ds store.IStore) *userEventBiz {
 
 func (b *userEventBiz) Create(ctx context.Context, r *v1.CreateUserEventRequest) error {
 	var userEventM model.UserEventM
+	if ctx.Value(known.XUsernameKey).(string) != "" {
+		userInfo, err := b.ds.Users().Get(ctx, v1.UserWhere{Username: ctx.Value(known.XUsernameKey).(string)})
+		if err != nil {
+			return err
+		}
+		userEventM.UserID = userInfo.UserID
+	}
 	_ = copier.Copy(&userEventM, r)
 	if _, err := b.ds.UserEvents().Create(ctx, &userEventM); err != nil {
 		return err
