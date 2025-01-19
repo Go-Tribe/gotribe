@@ -10,6 +10,7 @@ import (
 	"github.com/jinzhu/copier"
 	"gotribe/internal/app/store"
 	"gotribe/internal/pkg/known"
+	"gotribe/internal/pkg/log"
 	"gotribe/internal/pkg/model"
 	v1 "gotribe/pkg/api/v1"
 )
@@ -34,13 +35,19 @@ func New(ds store.IStore) *userEventBiz {
 
 func (b *userEventBiz) Create(ctx context.Context, r *v1.CreateUserEventRequest) error {
 	var userEventM model.UserEventM
-	if ctx.Value(known.XUsernameKey).(string) != "" {
-		userInfo, err := b.ds.Users().Get(ctx, v1.UserWhere{Username: ctx.Value(known.XUsernameKey).(string)})
+	// 获取用户名并检查是否为空或 nil
+	username, ok := ctx.Value(known.XUsernameKey).(string)
+	if !ok || username == "" {
+		log.C(ctx).Warnw("XUsernameKey is not a valid string or is empty", "key", known.XUsernameKey)
+	} else {
+		userInfo, err := b.ds.Users().Get(ctx, v1.UserWhere{Username: username})
 		if err != nil {
+			log.C(ctx).Errorw("Failed to get user info", "username", username, "err", err)
 			return err
 		}
 		userEventM.UserID = userInfo.UserID
 	}
+
 	_ = copier.Copy(&userEventM, r)
 	if _, err := b.ds.UserEvents().Create(ctx, &userEventM); err != nil {
 		return err
