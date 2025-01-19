@@ -15,7 +15,7 @@ import (
 
 // Get 获取指定的示例.
 func (ctrl *ExampleController) Get(c *gin.Context) {
-	log.C(c).Infow("Get example function called")
+	log.C(c).Infow("Get comment function called")
 
 	example, err := ctrl.b.Examples().Get(c, c.GetString(known.XUsernameKey), c.Param("exampleID"))
 	if err != nil {

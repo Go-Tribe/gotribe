@@ -8,14 +8,21 @@ package biz
 //go:generate mockgen -destination mock_biz.go -package biz app/internal/app/biz IBiz
 
 import (
+	"gotribe/internal/app/biz/ad"
 	"gotribe/internal/app/biz/category"
 	"gotribe/internal/app/biz/column"
+	"gotribe/internal/app/biz/comment"
 	"gotribe/internal/app/biz/config"
 	"gotribe/internal/app/biz/example"
+	feedback "gotribe/internal/app/biz/feedback"
+	"gotribe/internal/app/biz/order"
+	"gotribe/internal/app/biz/point"
 	"gotribe/internal/app/biz/post"
+	"gotribe/internal/app/biz/product"
 	"gotribe/internal/app/biz/project"
 	"gotribe/internal/app/biz/tag"
 	"gotribe/internal/app/biz/user"
+	userEvent "gotribe/internal/app/biz/user_event"
 	"gotribe/internal/app/store"
 )
 
@@ -29,6 +36,13 @@ type IBiz interface {
 	Categoyies() category.CategoryBiz
 	Tags() tag.TagBiz
 	Projects() project.ProjectBiz
+	Ads() ad.AdBiz
+	Products() product.ProductBiz
+	Comments() comment.CommentBiz
+	Feedbacks() feedback.FeedBackBiz
+	Orders() order.OrderBiz
+	Point() point.PointBiz
+	UserEvents() userEvent.UserEventBiz
 }
 
 // 确保 biz 实现了 IBiz 接口.
@@ -85,4 +99,28 @@ func (b *biz) Tags() tag.TagBiz {
 // Projects 返回一个实现了 projectBiz 接口的实例.
 func (b *biz) Projects() project.ProjectBiz {
 	return project.New(b.ds)
+}
+
+func (b *biz) Ads() ad.AdBiz {
+	return ad.New(b.ds)
+}
+func (b *biz) Products() product.ProductBiz {
+	return product.New(b.ds)
+}
+func (b *biz) Comments() comment.CommentBiz {
+	return comment.New(b.ds)
+}
+func (b *biz) Feedbacks() feedback.FeedBackBiz {
+	return feedback.New(b.ds)
+}
+
+func (b *biz) Point() point.PointBiz {
+	return point.New(b.ds)
+}
+
+func (b *biz) Orders() order.OrderBiz {
+	return order.New(b.ds, b.Point())
+}
+func (b *biz) UserEvents() userEvent.UserEventBiz {
+	return userEvent.New(b.ds)
 }

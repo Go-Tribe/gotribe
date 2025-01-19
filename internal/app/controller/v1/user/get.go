@@ -7,6 +7,7 @@ package user
 
 import (
 	"gotribe/internal/pkg/core"
+	"gotribe/internal/pkg/known"
 	"gotribe/internal/pkg/log"
 
 	"github.com/gin-gonic/gin"
@@ -15,11 +16,9 @@ import (
 // Get 获取一个用户的详细信息.
 func (ctrl *UserController) Get(c *gin.Context) {
 	log.C(c).Infow("Get user function called")
-
-	user, err := ctrl.b.Users().Get(c, c.Param("name"))
+	user, err := ctrl.b.Users().Get(c, c.GetString(known.XUsernameKey))
 	if err != nil {
 		core.WriteResponse(c, err, nil)
-
 		return
 	}
 

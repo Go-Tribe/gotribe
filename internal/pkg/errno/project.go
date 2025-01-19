@@ -5,5 +5,8 @@
 
 package errno
 
-// ErrProjectNotFound 表示未找到分类信息.
-var ErrProjectNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.ErrProjectNotFound", Message: "Project was not found."}
+// ErrProjectNotFound 表示未找到项目信息.
+var ErrProjectNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.ProjectNotFound", Message: map[string]string{
+	"en": "Project was not found.",
+	"zh": "项目未找到。",
+}}

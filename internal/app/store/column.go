@@ -36,7 +36,7 @@ func newColumns(db *gorm.DB) *columns {
 // Get 根据 columnID 查询指定的 column 数据库记录.
 func (u *columns) Get(ctx context.Context, columnID string) (*model.ColumnM, error) {
 	var column model.ColumnM
-	if err := u.db.Where("column_id = ? and status = ?", columnID, known.STATUS_OK).First(&column).Error; err != nil {
+	if err := u.db.WithContext(ctx).Where("column_id = ? and status = ?", columnID, known.STATUS_OK).First(&column).Error; err != nil {
 		return nil, err
 	}
 
@@ -55,6 +55,6 @@ func (u *columns) List(ctx context.Context, r *v1.ListColumnRequest) (count int6
 		return
 	}
 	// Offset(-1).Limit(-1).Count(&count) 不能少。否则会count=0
-	err = db.Find(&ret).Offset(-1).Limit(-1).Count(&count).Error
+	err = db.WithContext(ctx).Find(&ret).Offset(-1).Limit(-1).Count(&count).Error
 	return
 }

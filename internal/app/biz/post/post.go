@@ -8,6 +8,7 @@ package post
 import (
 	"context"
 	"errors"
+	util "gotribe/pkg/amount"
 	"strings"
 
 	"gotribe/internal/app/store"
@@ -29,6 +30,7 @@ type PostBiz interface {
 	DeleteCollection(ctx context.Context, username string, postIDs []string) error
 	Get(ctx context.Context, postID string) (*v1.GetPostResponse, error)
 	List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPostResponse, error)
+	Search(ctx context.Context, r *v1.SearchPostRequest) (*v1.ListPostResponse, error)
 }
 
 // The implementation of PostBiz interface.
@@ -88,6 +90,7 @@ func (b *postBiz) Get(ctx context.Context, postID string) (*v1.GetPostResponse, 
 
 	var resp v1.GetPostResponse
 	_ = copier.Copy(&resp, post)
+	resp.UnitPrice = util.FenToYuan(int(post.UnitPrice))
 	// tag信息
 	tagsM, err := b.ds.Tags().GetTags(ctx, strings.Split(post.Tag, ","))
 	var tags []*v1.TagInfo
@@ -103,6 +106,7 @@ func (b *postBiz) Get(ctx context.Context, postID string) (*v1.GetPostResponse, 
 	var category v1.CategoryInfo
 	_ = copier.Copy(&category, categoryM)
 	resp.Category = category
+	resp.Images = strings.Split(post.Images, ",")
 	resp.CreatedAt = post.CreatedAt.Format(known.TimeFormat)
 	resp.UpdatedAt = post.UpdatedAt.Format(known.TimeFormat)
 
@@ -150,12 +154,24 @@ func (b *postBiz) List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPost
 		}
 		var category v1.CategoryInfo
 		_ = copier.Copy(&category, categoryM)
+
 		// 用户信息
 		userM, err := b.ds.Users().Get(ctx, v1.UserWhere{UserID: post.UserID})
 		if err != nil {
 			log.C(ctx).Errorw("Failed to get user from storage", "err", err)
 			return nil, err
 		}
+
+		// 标签信息
+		tagSlice := strings.Split(post.Tag, ",")
+		tagsM, err := b.ds.Tags().GetTags(ctx, tagSlice)
+		if err != nil {
+			log.C(ctx).Errorw("Failed to get tags from storage", "err", err)
+			return nil, err
+		}
+		var tags []*v1.TagInfo
+		_ = copier.Copy(&tags, tagsM)
+
 		posts = append(posts, &v1.PostInfo{
 			Author:      userM.Nickname,
 			PostID:      post.PostID,
@@ -164,8 +180,79 @@ func (b *postBiz) List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPost
 			Tag:         post.Tag,
 			Icon:        post.Icon,
 			Category:    category,
+			Tags:        tags, // 添加标签信息
 			Content:     post.Content,
+			HtmlContent: post.HtmlContent,
+			Location:    post.Location,
+			People:      post.People,
+			Time:        post.Time,
 			Type:        post.Type,
+			Video:       post.Video,
+			UnitPrice:   util.FenToYuan(int(post.UnitPrice)),
+			Images:      strings.Split(post.Images, ","),
+			Description: post.Description,
+			CreatedAt:   post.CreatedAt.Format(known.TimeFormat),
+			UpdatedAt:   post.UpdatedAt.Format(known.TimeFormat),
+		})
+	}
+
+	return &v1.ListPostResponse{TotalCount: count, Posts: posts}, nil
+}
+
+func (b *postBiz) Search(ctx context.Context, r *v1.SearchPostRequest) (*v1.ListPostResponse, error) {
+	count, list, err := b.ds.Posts().Search(ctx, r)
+	if err != nil {
+		log.C(ctx).Errorw("Failed to list posts from storage", "err", err)
+		return nil, err
+	}
+
+	posts := make([]*v1.PostInfo, 0, len(list))
+	for _, item := range list {
+		post := item
+		// 分类信息
+		categoryM, err := b.ds.Categories().Get(ctx, post.CategoryID)
+		if err != nil {
+			log.C(ctx).Errorw("Failed to get category from storage", "err", err)
+			return nil, err
+		}
+		var category v1.CategoryInfo
+		_ = copier.Copy(&category, categoryM)
+
+		// 用户信息
+		userM, err := b.ds.Users().Get(ctx, v1.UserWhere{UserID: post.UserID})
+		if err != nil {
+			log.C(ctx).Errorw("Failed to get user from storage", "err", err)
+			return nil, err
+		}
+
+		// 标签信息
+		tagSlice := strings.Split(post.Tag, ",")
+		tagsM, err := b.ds.Tags().GetTags(ctx, tagSlice)
+		if err != nil {
+			log.C(ctx).Errorw("Failed to get tags from storage", "err", err)
+			return nil, err
+		}
+		var tags []*v1.TagInfo
+		_ = copier.Copy(&tags, tagsM)
+
+		posts = append(posts, &v1.PostInfo{
+			Author:      userM.Nickname,
+			PostID:      post.PostID,
+			Title:       post.Title,
+			ColumnID:    post.ColumnID,
+			Tag:         post.Tag,
+			Icon:        post.Icon,
+			Category:    category,
+			Tags:        tags, // 添加标签信息
+			Content:     post.Content,
+			HtmlContent: post.HtmlContent,
+			Location:    post.Location,
+			People:      post.People,
+			Time:        post.Time,
+			Type:        post.Type,
+			Video:       post.Video,
+			UnitPrice:   util.FenToYuan(int(post.UnitPrice)),
+			Images:      strings.Split(post.Images, ","),
 			Description: post.Description,
 			CreatedAt:   post.CreatedAt.Format(known.TimeFormat),
 			UpdatedAt:   post.UpdatedAt.Format(known.TimeFormat),

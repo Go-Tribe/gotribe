@@ -8,6 +8,7 @@ package user
 import (
 	"context"
 	"errors"
+	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe/internal/app/store"
 	"gotribe/internal/pkg/errno"
 	"gotribe/internal/pkg/known"
@@ -18,6 +19,7 @@ import (
 	"gotribe/pkg/token"
 	"regexp"
 	"sync"
+	"time"
 
 	"github.com/jinzhu/copier"
 	"golang.org/x/sync/errgroup"
@@ -119,7 +121,19 @@ func (b *userBiz) Get(ctx context.Context, username string) (*v1.GetUserResponse
 
 	var resp v1.GetUserResponse
 	_ = copier.Copy(&resp, user)
-
+	if !gconvert.IsEmpty(user.Birthday) {
+		resp.Birthday = user.Birthday.Format(known.TimeFormatShort)
+	}
+	// 获取用户积分
+	point, err := b.ds.PointAvailable().SumPoints(ctx, user.UserID, ctx.Value(known.XPrjectIDKey).(string))
+	if err != nil {
+		return nil, err
+	}
+	if point != nil {
+		resp.Point = *point
+	} else {
+		resp.Point = 0 // 或者其他默认值
+	}
 	resp.CreatedAt = user.CreatedAt.Format(known.TimeFormat)
 	resp.UpdatedAt = user.UpdatedAt.Format(known.TimeFormat)
 
@@ -184,24 +198,52 @@ func (b *userBiz) List(ctx context.Context, offset, limit int) (*v1.ListUserResp
 
 // Update 是 UserBiz 接口中 `Update` 方法的实现.
 func (b *userBiz) Update(ctx context.Context, username string, user *v1.UpdateUserRequest) error {
+	// 获取用户信息
 	userM, err := b.ds.Users().Get(ctx, v1.UserWhere{Username: username})
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errno.ErrUserNotFound
+		}
+		log.C(ctx).Errorw("Failed to get user", "username", username, "err", err)
 		return err
 	}
 
+	// 更新字段
 	if user.Email != nil {
 		userM.Email = *user.Email
 	}
-
 	if user.Nickname != nil {
 		userM.Nickname = *user.Nickname
 	}
-
 	if user.Phone != nil {
 		userM.Phone = *user.Phone
 	}
+	if user.AvatarURL != nil {
+		userM.AvatarURL = *user.AvatarURL
+	}
+	if user.Sex != nil {
+		userM.Sex = *user.Sex
+	}
+	if user.Background != nil {
+		userM.Background = *user.Background
+	}
+	if user.Ext != nil {
+		userM.Ext = *user.Ext
+	}
 
+	// 更新生日字段
+	if user.Birthday != nil {
+		birthday, err := time.Parse(known.TimeFormatShort, *user.Birthday)
+		if err != nil {
+			log.C(ctx).Warnw("Failed to parse birthday, skipping update", "username", username, "err", err)
+		} else {
+			userM.Birthday = &birthday
+		}
+	}
+
+	// 使用事务确保原子性
 	if err := b.ds.Users().Update(ctx, userM); err != nil {
+		log.C(ctx).Errorw("Failed to update user", "username", username, "err", err)
 		return err
 	}
 
@@ -248,10 +290,14 @@ func (b *userBiz) WxMiniLogin(ctx context.Context, r *v1.WechatMiniLoginRequest,
 			return nil, err // 其他错误直接返回。
 		}
 	}
+	userInfo, err := b.ds.Users().Get(ctx, v1.UserWhere{UserID: accountM.UserID})
+	if err != nil {
+		return nil, err
+	}
 	// 如果匹配成功，说明登录成功，签发 token 并返回
-	t, err := token.Sign(accountM.UserID)
+	t, err := token.Sign(userInfo.Username)
 	if err != nil {
 		return nil, errno.ErrSignToken
 	}
-	return &v1.LoginResponse{Token: t, UserID: accountM.UserID}, nil
+	return &v1.LoginResponse{Token: t, Username: userInfo.Username}, nil
 }

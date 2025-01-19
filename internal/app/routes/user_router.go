@@ -28,10 +28,11 @@ func UserRoutes(g *gin.RouterGroup) gin.IRoutes {
 			userv1.POST("", uc.Create)                             // 创建用户
 			userv1.PUT(":name/change-password", uc.ChangePassword) // 修改用户密码
 			userv1.Use(mw.Authn())
-			userv1.GET(":name", uc.Get)       // 获取用户详情
-			userv1.PUT(":name", uc.Update)    // 更新用户
-			userv1.GET("", uc.List)           // 列出用户列表
-			userv1.DELETE(":name", uc.Delete) // 删除用户
+			userv1.GET(":name", uc.Get)                // 获取用户详情
+			userv1.PUT(":name", uc.Update)             // 更新用户
+			userv1.GET("", uc.List)                    // 列出用户列表
+			userv1.DELETE(":name", uc.Delete)          // 删除用户
+			userv1.POST("/upload", uc.UploadResources) //上传图片
 		}
 	}
 	return nil

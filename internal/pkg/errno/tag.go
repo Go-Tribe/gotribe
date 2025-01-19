@@ -5,5 +5,8 @@
 
 package errno
 
-// ErrTagNotFound 表示未找到分类信息.
-var ErrTagNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.ErrTagNotFound", Message: "Tag was not found."}
+// ErrTagNotFound 表示未找到标签信息.
+var ErrTagNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.TagNotFound", Message: map[string]string{
+	"en": "Tag was not found.",
+	"zh": "标签未找到。",
+}}

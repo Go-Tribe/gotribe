@@ -31,6 +31,17 @@ type IStore interface {
 	Tags() TagStore
 	Projects() ProjectStore
 	ThirdPartyAccounts() AccountStore
+	Ad() AdStore
+	Products() ProductStore
+	ProductSKUs() ProductSKUStore
+	Comments() CommentStore
+	Feedbacks() FeedBackStore
+	PointAvailable() PointAvailableStore
+	PointDeduction() PointDeductionStore
+	PointLog() PointLogStore
+	Order() OrderStore
+	OrderLog() OrderLogStore
+	UserEvents() UserEventStore
 }
 
 // datastore 是 IStore 的一个具体实现.
@@ -68,7 +79,7 @@ func (ds *datastore) Core(ctx context.Context) *gorm.DB {
 }
 
 func (ds *datastore) TX(ctx context.Context, fn func(ctx context.Context) error) error {
-	return ds.db.WithContext(ctx).Transaction(
+	return ds.db.WithContext(ctx).WithContext(ctx).Transaction(
 		func(tx *gorm.DB) error {
 			ctx = context.WithValue(ctx, transactionKey{}, tx)
 			return fn(ctx)
@@ -118,4 +129,53 @@ func (ds *datastore) Projects() ProjectStore {
 
 func (ds *datastore) ThirdPartyAccounts() AccountStore {
 	return newAccounts(ds.db)
+}
+
+func (ds *datastore) Ad() AdStore {
+	return newAds(ds.db)
+}
+
+// Products 返回一个实现了 productStore 接口的实例.
+func (ds *datastore) Products() ProductStore {
+	return newProducts(ds.db)
+}
+
+// ProductSKUs 返回一个实现了 productSKUStore 接口的实例.
+func (ds *datastore) ProductSKUs() ProductSKUStore {
+	return newProductSKUs(ds.db)
+}
+
+// Comments 返回一个实现了 commentStore 接口的实例.
+func (ds *datastore) Comments() CommentStore {
+	return newComments(ds.db)
+}
+
+// Feedback 返回一个实现了 feedbackStore 接口的实例.
+func (ds *datastore) Feedbacks() FeedBackStore {
+	return newFeedBacks(ds.db)
+}
+
+// PointAvailable 返回一个实现了 pointAvailableStore 接口的实例.
+func (ds *datastore) PointAvailable() PointAvailableStore {
+	return newPointAvailables(ds.db)
+}
+
+// PointDeduction 返回一个实现了 pointDeductionStore 接口的实例.
+func (ds *datastore) PointDeduction() PointDeductionStore {
+	return newPointDeductions(ds.db)
+}
+
+// PointLog 返回一个实现了 pointLogStore 接口的实例.
+func (ds *datastore) PointLog() PointLogStore {
+	return newPointLogs(ds.db)
+}
+func (ds *datastore) Order() OrderStore {
+	return newOrders(ds.db)
+}
+
+func (ds *datastore) OrderLog() OrderLogStore {
+	return newOrderLogs(ds.db)
+}
+func (ds *datastore) UserEvents() UserEventStore {
+	return newUserEvents(ds.db)
 }

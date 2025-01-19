@@ -5,5 +5,8 @@
 
 package errno
 
-// ErrConfigNotFound 表示未找到文章.
-var ErrConfigNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.ConfigNotFound", Message: "Config was not found."}
+// ErrConfigNotFound 表示未找到配置.
+var ErrConfigNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.ConfigNotFound", Message: map[string]string{
+	"en": "Config was not found.",
+	"zh": "配置未找到。",
+}}

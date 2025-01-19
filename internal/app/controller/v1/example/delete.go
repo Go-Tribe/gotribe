@@ -15,7 +15,7 @@ import (
 
 // Delete 删除指定的示例.
 func (ctrl *ExampleController) Delete(c *gin.Context) {
-	log.C(c).Infow("Delete example function called")
+	log.C(c).Infow("Delete comment function called")
 
 	if err := ctrl.b.Examples().Delete(c, c.GetString(known.XUsernameKey), c.Param("exampleID")); err != nil {
 		core.WriteResponse(c, err, nil)

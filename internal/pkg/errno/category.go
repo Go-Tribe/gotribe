@@ -6,4 +6,7 @@
 package errno
 
 // ErrCategoryNotFound 表示未找到分类信息.
-var ErrCategoryNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.ErrCategoryNotFound", Message: "Category was not found."}
+var ErrCategoryNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.ErrCategoryNotFound", Message: map[string]string{
+	"en": "Category was not found.",
+	"zh": "分类不存在",
+}}

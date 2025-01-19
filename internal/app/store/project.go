@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// ProjectStore 定义了 example 模块在 store 层所实现的方法.
+// ProjectStore 定义了 comment 模块在 store 层所实现的方法.
 type ProjectStore interface {
 	Get(ctx context.Context, name string) (*model.ProjectM, error)
 }
@@ -30,10 +30,10 @@ func newProjects(db *gorm.DB) *projects {
 	return &projects{db}
 }
 
-// Get 根据 exampleID 查询指定用户的 example 数据库记录.
+// Get 根据 exampleID 查询指定用户的 comment 数据库记录.
 func (u *projects) Get(ctx context.Context, name string) (*model.ProjectM, error) {
 	var project model.ProjectM
-	if err := u.db.Where("name = ?", name).First(&project).Error; err != nil {
+	if err := u.db.WithContext(ctx).Where("name = ?", name).First(&project).Error; err != nil {
 		return nil, err
 	}
 

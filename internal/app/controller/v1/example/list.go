@@ -17,7 +17,7 @@ import (
 
 // List 返回示例列表.
 func (ctrl *ExampleController) List(c *gin.Context) {
-	log.C(c).Infow("List example function called.")
+	log.C(c).Infow("List comment function called.")
 
 	var r v1.ListExampleRequest
 	if err := c.ShouldBindQuery(&r); err != nil {

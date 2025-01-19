@@ -18,7 +18,7 @@ import (
 
 // Update 更新示例.
 func (ctrl *ExampleController) Update(c *gin.Context) {
-	log.C(c).Infow("Update example function called")
+	log.C(c).Infow("Update comment function called")
 
 	var r v1.UpdateExampleRequest
 	if err := c.ShouldBindJSON(&r); err != nil {

@@ -14,15 +14,29 @@ const (
 
 	// XUsernameKey 用来定义 Gin 上下文的键，代表请求的所有者.
 	XUsernameKey = "X-Username"
+	// 客户端 IP
+	XClientIPKey = "X-Client-IP"
 
 	// 日期格式化.
-	TimeFormatDay = "20060102"
-	TimeFormat    = "2006-01-02 15:04:05"
+	TimeFormatDay   = "20060102"
+	TimeFormat      = "2006-01-02 15:04:05"
+	TimeFormatShort = "2006-01-02"
 
 	// 公用状态.
 	STATUS_OK      = 1
 	STATUS_DISABLE = 2
+	// 私密
+	STATUS_PRIVATE = 1
+	// 公开
+	STATUS_PUBLIC = 2
+
+	// 审核状态
+	AuditPass = 2
+	AuditFail = 1
 
 	// 用户来源
 	LOGIN_TYPE_WXMINI = "wxmini"
+
+	// 上传资源大小 (默认 10MB)
+	DEFAULT_UPLOAD_SIZE int64 = 10 * 1024 * 1024
 )

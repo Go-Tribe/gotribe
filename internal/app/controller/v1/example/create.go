@@ -18,7 +18,7 @@ import (
 
 // Create 创建一条示例.
 func (ctrl *ExampleController) Create(c *gin.Context) {
-	log.C(c).Infow("Create example function called")
+	log.C(c).Infow("Create comment function called")
 
 	var r v1.CreateExampleRequest
 	if err := c.ShouldBindJSON(&r); err != nil {

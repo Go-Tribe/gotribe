@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// TagStore 定义了 example 模块在 store 层所实现的方法.
+// TagStore 定义了 comment 模块在 store 层所实现的方法.
 type TagStore interface {
 	Get(ctx context.Context, tagID string) (*model.TagM, error)
 	GetTags(ctx context.Context, tagIDs []string) (ret []*model.TagM, err error)
@@ -31,10 +31,10 @@ func newTags(db *gorm.DB) *tags {
 	return &tags{db}
 }
 
-// Get 根据 exampleID 查询指定用户的 example 数据库记录.
+// Get 根据 exampleID 查询指定用户的 comment 数据库记录.
 func (u *tags) Get(ctx context.Context, tagID string) (*model.TagM, error) {
 	var tag model.TagM
-	if err := u.db.Where("tag_id = ?", tagID).First(&tag).Error; err != nil {
+	if err := u.db.WithContext(ctx).Where("tag_id = ?", tagID).First(&tag).Error; err != nil {
 		return nil, err
 	}
 
@@ -43,6 +43,6 @@ func (u *tags) Get(ctx context.Context, tagID string) (*model.TagM, error) {
 
 // GetTags.
 func (u *tags) GetTags(ctx context.Context, tagIDs []string) (ret []*model.TagM, err error) {
-	err = u.db.Where("tag_id in (?)", tagIDs).Find(&ret).Error
+	err = u.db.WithContext(ctx).Where("tag_id in (?)", tagIDs).Find(&ret).Error
 	return
 }

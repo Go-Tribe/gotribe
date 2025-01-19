@@ -13,8 +13,8 @@ type LoginRequest struct {
 
 // LoginResponse 指定了 `POST /login` 接口的返回参数.
 type LoginResponse struct {
-	Token  string `json:"token"`
-	UserID string `json:"userID"`
+	Token    string `json:"token"`
+	Username string `json:"username"`
 }
 
 // ChangePasswordRequest 指定了 `POST /v1/users/{name}/change-password` 接口的请求参数.
@@ -40,14 +40,18 @@ type GetUserResponse UserInfo
 
 // UserInfo 指定了用户的详细信息.
 type UserInfo struct {
-	UserID    string `json:"userID"`
-	Username  string `json:"username"`
-	Nickname  string `json:"nickname"`
-	Email     string `json:"email"`
-	Phone     string `json:"phone"`
-	PostCount int64  `json:"postCount"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	UserID     string  `json:"userID"`
+	Username   string  `json:"username"`
+	Nickname   string  `json:"nickname"`
+	Email      string  `json:"email"`
+	Sex        string  `json:"sex"`
+	Phone      string  `json:"phone"`
+	Point      float64 `json:"point"`
+	AvatarURL  string  `json:"avatarURL"`
+	Birthday   string  `json:"birthday"`
+	Background string  `json:"background"`
+	CreatedAt  string  `json:"createdAt"`
+	UpdatedAt  string  `json:"updatedAt"`
 }
 
 // ListUserRequest 指定了 `GET /v1/users` 接口的请求参数.
@@ -64,9 +68,14 @@ type ListUserResponse struct {
 
 // UpdateUserRequest 指定了 `PUT /v1/users/{name}` 接口的请求参数.
 type UpdateUserRequest struct {
-	Nickname *string `json:"nickname" valid:"stringlength(2|30)"`
-	Email    *string `json:"email" valid:"email"`
-	Phone    *string `json:"phone" valid:"stringlength(11|11)"`
+	Nickname   *string `json:"nickname" valid:"stringlength(2|30)"`
+	Email      *string `json:"email" valid:"email"`
+	Sex        *string `json:"sex" valid:"stringlength(1|2)"`
+	AvatarURL  *string `json:"avatarURL"`
+	Birthday   *string `json:"birthday"`
+	Phone      *string `json:"phone" valid:"stringlength(11|11)"`
+	Ext        *string `json:"ext"`
+	Background *string `json:"background"`
 }
 
 type UserWhere struct {

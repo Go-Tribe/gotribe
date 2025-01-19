@@ -23,6 +23,7 @@ type UserStore interface {
 	Update(ctx context.Context, user *model.UserM) error
 	List(ctx context.Context, offset, limit int, userWhere v1.UserWhere) (int64, []*model.UserM, error)
 	Delete(ctx context.Context, username string) error
+	ListInUserID(ctx context.Context, userID []string) ([]*model.UserM, error)
 }
 
 // UserStore 接口的实现.
@@ -40,7 +41,7 @@ func newUsers(db *gorm.DB) *users {
 // Create 插入一条 user 记录.
 func (u *users) Create(ctx context.Context, user *model.UserM) (*model.UserM, error) {
 	user.ProjectID = ctx.Value(known.XPrjectIDKey).(string)
-	result := u.db.Create(&user)
+	result := u.db.WithContext(ctx).Create(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -56,7 +57,7 @@ func (u *users) Get(ctx context.Context, userWhere v1.UserWhere) (*model.UserM, 
 		log.C(ctx).Errorw("Failed to Get user from build where", "err", err)
 		return nil, err
 	}
-	if err := db.First(&user).Error; err != nil {
+	if err := db.WithContext(ctx).First(&user).Error; err != nil {
 		log.C(ctx).Errorw("Failed to Get user from sql", "err", err)
 		return nil, err
 	}
@@ -67,7 +68,7 @@ func (u *users) Get(ctx context.Context, userWhere v1.UserWhere) (*model.UserM, 
 // Update 更新一条 user 数据库记录.
 func (u *users) Update(ctx context.Context, user *model.UserM) error {
 	log.C(ctx).Infow("user update", "user:", user)
-	return u.db.Save(user).Error
+	return u.db.WithContext(ctx).Save(user).Error
 }
 
 // List 根据 offset 和 limit 返回 user 列表.
@@ -78,16 +79,24 @@ func (u *users) List(ctx context.Context, offset, limit int, userWhere v1.UserWh
 		return
 	}
 	// Offset(-1).Limit(-1).Count(&count) 不能少。否则会count=0
-	err = db.Find(&ret).Offset(-1).Limit(-1).Count(&count).Error
+	err = db.WithContext(ctx).Find(&ret).Offset(-1).Limit(-1).Count(&count).Error
 	return
 }
 
 // Delete 根据 username 删除数据库 user 记录.
 func (u *users) Delete(ctx context.Context, username string) error {
-	err := u.db.Where("username = ?", username).Delete(&model.UserM{}).Error
+	err := u.db.WithContext(ctx).Where("username = ?", username).Delete(&model.UserM{}).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		log.C(ctx).Errorw("Failed to Delete users from sql", "err", err)
 		return err
 	}
 	return nil
+}
+
+func (c *users) ListInUserID(ctx context.Context, userID []string) ([]*model.UserM, error) {
+	var usersM []*model.UserM
+	if err := c.db.WithContext(ctx).WithContext(ctx).Where("user_id IN ?", userID).Find(&usersM).Error; err != nil {
+		return nil, err
+	}
+	return usersM, nil
 }

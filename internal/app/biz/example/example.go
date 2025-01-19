@@ -19,7 +19,7 @@ import (
 	"gotribe/internal/pkg/model"
 )
 
-// ExampleBiz defines functions used to handle example request.
+// ExampleBiz defines functions used to handle comment request.
 type ExampleBiz interface {
 	Create(ctx context.Context, username string, r *v1.CreateExampleRequest) (*v1.CreateExampleResponse, error)
 	Update(ctx context.Context, username, exampleID string, r *v1.UpdateExampleRequest) error
