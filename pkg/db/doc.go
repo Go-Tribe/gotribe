@@ -3,5 +3,5 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://www.gotribe.cn
 
-// Package db provide useful functions to create mysql instance.
+// Package db 提供创建 MySQL 与 PostgreSQL 数据库连接实例的方法.
 package db // import "app/pkg/db"

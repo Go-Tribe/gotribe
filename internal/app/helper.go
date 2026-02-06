@@ -16,6 +16,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"gorm.io/gorm"
 )
 
 const (
@@ -81,20 +82,46 @@ func logOptions() *log.Options {
 	}
 }
 
-// initStore 读取 db 配置，创建 gorm.DB 实例，并初始化 app store 层.
+// initStore 读取 db 配置，根据 db.type 创建 MySQL 或 PostgreSQL 的 gorm.DB 实例，并初始化 app store 层.
 func initStore() error {
-	dbOptions := &db.MySQLOptions{
-		Host:                  viper.GetString("db.host"),
-		Username:              viper.GetString("db.username"),
-		Password:              viper.GetString("db.password"),
-		Database:              viper.GetString("db.database"),
-		MaxIdleConnections:    viper.GetInt("db.max-idle-connections"),
-		MaxOpenConnections:    viper.GetInt("db.max-open-connections"),
-		MaxConnectionLifeTime: viper.GetDuration("db.max-connection-life-time"),
-		LogLevel:              viper.GetInt("db.log-level"),
+	dbType := viper.GetString("db.type")
+	if dbType == "" {
+		dbType = "mysql"
 	}
 
-	ins, err := db.NewMySQL(dbOptions)
+	var ins *gorm.DB
+	var err error
+
+	switch dbType {
+	case "postgres", "pg", "postgresql":
+		pgOptions := &db.PostgresOptions{
+			Host:                  viper.GetString("db.host"),
+			Port:                  viper.GetInt("db.port"),
+			Username:              viper.GetString("db.username"),
+			Password:              viper.GetString("db.password"),
+			Database:              viper.GetString("db.database"),
+			SSLMode:               viper.GetString("db.sslmode"),
+			Timezone:              viper.GetString("db.timezone"),
+			MaxIdleConnections:    viper.GetInt("db.max-idle-connections"),
+			MaxOpenConnections:    viper.GetInt("db.max-open-connections"),
+			MaxConnectionLifeTime: viper.GetDuration("db.max-connection-life-time"),
+			LogLevel:              viper.GetInt("db.log-level"),
+		}
+		ins, err = db.NewPostgres(pgOptions)
+	default:
+		mysqlOptions := &db.MySQLOptions{
+			Host:                  viper.GetString("db.host"),
+			Username:              viper.GetString("db.username"),
+			Password:              viper.GetString("db.password"),
+			Database:              viper.GetString("db.database"),
+			MaxIdleConnections:    viper.GetInt("db.max-idle-connections"),
+			MaxOpenConnections:    viper.GetInt("db.max-open-connections"),
+			MaxConnectionLifeTime: viper.GetDuration("db.max-connection-life-time"),
+			LogLevel:              viper.GetInt("db.log-level"),
+		}
+		ins, err = db.NewMySQL(mysqlOptions)
+	}
+
 	if err != nil {
 		return err
 	}

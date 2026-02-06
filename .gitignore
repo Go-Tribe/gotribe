@@ -68,6 +68,5 @@ tags
 .DS_Store
 # Custom
 /_output
-configs/config.yaml
+configs/config.yml
 .vscode
-

@@ -25,15 +25,21 @@ tls:
 grpc:
   addr: :9090 # GRPC 服务器监听地址
 
-# MySQL 数据库相关配置
+# 数据库相关配置（可选 mysql 或 postgres）
 db:
-  host: 127.0.0.1:3306  # MySQL 机器 IP 和端口，默认 127.0.0.1:3306
-  username: app # MySQL 用户名(建议授权最小权限集)
-  password: app.cn # MySQL 用户密码
-  database: app # app 系统所用的数据库名
-  max-idle-connections: 100 # MySQL 最大空闲连接数，默认 100
-  max-open-connections: 100 # MySQL 最大打开的连接数，默认 100
-  max-connection-life-time: 10s # 空闲连接最大存活时间，默认 10s
+  type: mysql # 数据库类型：mysql | postgres（或 pg、postgresql）
+  # MySQL：host 填 127.0.0.1:3306；PostgreSQL：可填 127.0.0.1:5432 或仅 127.0.0.1（配合 port）
+  host: 127.0.0.1:3306
+  port: 5432 # PostgreSQL 专用，未指定时默认 5432；MySQL 可忽略
+  username: app
+  password: app.cn
+  database: app
+  # 以下为 PostgreSQL 可选（MySQL 可忽略）
+  sslmode: disable # PostgreSQL SSL 模式：disable | require 等
+  timezone: Asia/Shanghai # PostgreSQL 时区
+  max-idle-connections: 100
+  max-open-connections: 100
+  max-connection-life-time: 10s
   log-level: 4 # GORM log level, 1: silent, 2:error, 3:warn, 4:info
 
 # 日志配置
