@@ -14,6 +14,7 @@ import (
 	"gotribe/internal/pkg/log"
 	"gotribe/pkg/db"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -23,31 +24,33 @@ const (
 	// recommendedHomeDir 定义放置 app 服务配置的默认目录.
 	recommendedHomeDir = ".configs"
 
-	// defaultConfigName 指定了 app 服务的默认配置文件名.
-	defaultConfigName = "config.yaml"
+	// defaultConfigName 默认配置文件名（不含扩展名），viper 会按顺序尝试 .yaml / .yml 等
+	defaultConfigName = "config"
 )
 
 // initConfig 设置需要读取的配置文件名、环境变量，并读取配置文件内容到 viper 中.
+// 未指定 -c 时，按以下顺序查找 config.yaml/config.yml：当前目录、可执行文件所在目录、可执行文件上级目录、$HOME/.configs
 func initConfig() {
 	if cfgFile != "" {
 		// 从命令行选项指定的配置文件中读取
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// 查找用户主目录
-		home, err := os.UserHomeDir()
-		// 如果获取用户主目录失败，打印 `'Error: xxx` 错误，并退出程序（退出码为 1）
-		cobra.CheckErr(err)
-
-		// 将用 `$HOME/<recommendedHomeDir>` 目录加入到配置文件的搜索路径中
-		viper.AddConfigPath(filepath.Join(home, recommendedHomeDir))
-
-		// 把当前目录加入到配置文件的搜索路径中
+		// 1. 当前工作目录（开发时在项目根执行 make run 或 ./gotribe 时生效）
 		viper.AddConfigPath(".")
 
-		// 设置配置文件格式为 YAML (YAML 格式清晰易读，并且支持复杂的配置结构)
-		viper.SetConfigType("yaml")
+		// 2. 可执行文件所在目录（部署时二进制与 config 同目录）
+		if execPath, err := os.Executable(); err == nil {
+			viper.AddConfigPath(filepath.Dir(execPath))
+			// 3. 可执行文件上级目录（部署时如二进制在 bin/ 子目录，config 在项目根）
+			viper.AddConfigPath(filepath.Join(filepath.Dir(execPath), ".."))
+		}
 
-		// 配置文件名称（没有文件扩展名）
+		// 4. 用户主目录下的 .configs（统一放置多项目配置）
+		home, err := os.UserHomeDir()
+		cobra.CheckErr(err)
+		viper.AddConfigPath(filepath.Join(home, recommendedHomeDir))
+
+		viper.SetConfigType("yaml")
 		viper.SetConfigName(defaultConfigName)
 	}
 
@@ -66,8 +69,22 @@ func initConfig() {
 		log.Errorw("Failed to read viper configuration file", "err", err)
 	}
 
-	// 打印 viper 当前使用的配置文件，方便 Debug.
 	log.Debugw("Using config file", "file", viper.ConfigFileUsed())
+
+	// 配置文件热加载：监听变更后全量重新读取
+	if viper.ConfigFileUsed() != "" {
+		viper.OnConfigChange(func(e fsnotify.Event) {
+			if e.Op != fsnotify.Create && e.Op != fsnotify.Write {
+				return
+			}
+			if err := viper.ReadInConfig(); err != nil {
+				log.Errorw("Failed to reload config file", "file", e.Name, "err", err)
+				return
+			}
+			log.Infow("Config file reloaded", "file", e.Name)
+		})
+		viper.WatchConfig()
+	}
 }
 
 // logOptions 从 viper 中读取日志配置，构建 `*log.Options` 并返回.

@@ -11,7 +11,7 @@ all: gen.add-copyright go.format go.build
 # Includes
 
 # 确保 `include common.mk` 位于第一行，common.mk 中定义了一些变量，后面的子 makefile 有依赖
-include scripts/make-rules/common.mk 
+include scripts/make-rules/common.mk
 include scripts/make-rules/tools.mk
 include scripts/make-rules/golang.mk
 include scripts/make-rules/generate.mk
@@ -26,6 +26,8 @@ Options:
   BINS             The binaries to build. Default is all of cmd.
                    This option is available when using: make build
                    Example: make build BINS="gotribe test"
+  BIN_NAME         Override output binary name (e.g. for different companies).
+                   Example: make build BIN_NAME=company-a-api
   IMAGES           Backend images to make. Default is all of cmd.
                    This option is available when using: make image/push
                    Example: make image IMAGES="gotribe"
@@ -62,10 +64,15 @@ deps: ## 安装依赖，例如：生成需要的代码、安装需要的工具�
 ## --------------------------------------
 
 ##@ build:
-
+#示例：
+#make build PLATFORMS=linux_amd64 BIN_NAME=gotribe
 .PHONY: build
 build: go.tidy  ## 编译源码，依赖 tidy 目标自动添加/移除依赖包.
 	@$(MAKE) go.build
+
+.PHONY: run
+run: ## 开发时启动服务，默认使用 configs/config.yml（可覆盖：make run C=configs/config.tem.yml）
+	@$(GO) run $(ROOT_PACKAGE)/cmd/gotribe -c $(or $(C),$(ROOT_DIR)/configs/config.yml)
 
 .PHONY: image
 image: ## 构建 Docker 镜像.
@@ -104,11 +111,11 @@ lint: ## 执行静态代码检查.
 
 ##@ test:
 
-.PHONY: test 
+.PHONY: test
 test: ## 执行单元测试.
 	@$(MAKE) go.test
 
-.PHONY: cover 
+.PHONY: cover
 cover: ## 执行单元测试，并校验覆盖率阈值.
 	@$(MAKE) go.cover
 
