@@ -9,7 +9,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gotribe/internal/app/jobs"
 	"net/http"
 	"os"
 	"os/signal"
@@ -52,11 +51,6 @@ Find more app information at:
 			// 初始化日志
 			log.Init(logOptions())
 			defer log.Sync() // Sync 将缓存中的日志刷新到磁盘文件中
-
-			//初始化定时任务
-			jobs.InitCron()
-			jobs.Cron.Start()
-			defer jobs.Cron.Stop()
 
 			return run()
 		},
@@ -117,12 +111,6 @@ func run() error {
 	// 创建并运行 HTTP 服务器
 	httpsrv := startInsecureServer(g)
 
-	// 创建并运行 HTTPS 服务器
-	//httpssrv := startSecureServer(g)
-
-	// 创建并运行 GRPC 服务器
-	// grpcsrv := startGRPCServer()
-
 	// 等待中断信号优雅地关闭服务器（10 秒超时)。
 	quit := make(chan os.Signal, 1)
 	// kill 默认会发送 syscall.SIGTERM 信号
@@ -141,12 +129,6 @@ func run() error {
 		log.Errorw("Insecure Server forced to shutdown", "err", err)
 		return err
 	}
-	//if err := httpssrv.Shutdown(ctx); err != nil {
-	//	log.Errorw("Secure Server forced to shutdown", "err", err)
-	//	return err
-	//}
-
-	// grpcsrv.GracefulStop()
 
 	log.Infow("Server exiting")
 
@@ -169,46 +151,3 @@ func startInsecureServer(g *gin.Engine) *http.Server {
 
 	return httpsrv
 }
-
-// startSecureServer 创建并运行 HTTPS 服务器.
-//func startSecureServer(g *gin.Engine) *http.Server {
-//	// 创建 HTTPS Server 实例
-//	httpssrv := &http.Server{Addr: viper.GetString("tls.addr"), Handler: g}
-//
-//	// 运行 HTTPS 服务器。在 goroutine 中启动服务器，它不会阻止下面的正常关闭处理流程
-//	// 打印一条日志，用来提示 HTTPS 服务已经起来，方便排障
-//	log.Infow("Start to listening the incoming requests on https address", "addr", viper.GetString("tls.addr"))
-//	cert, key := viper.GetString("tls.cert"), viper.GetString("tls.key")
-//	if cert != "" && key != "" {
-//		go func() {
-//			if err := httpssrv.ListenAndServeTLS(cert, key); err != nil && !errors.Is(err, http.ErrServerClosed) {
-//				log.Fatalw(err.Error())
-//			}
-//		}()
-//	}
-//
-//	return httpssrv
-//}
-
-//// startGRPCServer 创建并运行 GRPC 服务器.
-// func startGRPCServer() *grpc.Server {
-//	lis, err := net.Listen("tcp", viper.GetString("grpc.addr"))
-//	if err != nil {
-//		log.Fatalw("Failed to listen", "err", err)
-//	}
-//
-//	// 创建 GRPC Server 实例
-//	grpcsrv := grpc.NewServer()
-//	pb.RegisterGoTribeServer(grpcsrv, user.New(store.S, nil))
-//
-//	// 运行 GRPC 服务器。在 goroutine 中启动服务器，它不会阻止下面的正常关闭处理流程
-//	// 打印一条日志，用来提示 GRPC 服务已经起来，方便排障
-//	log.Infow("Start to listening the incoming requests on grpc address", "addr", viper.GetString("grpc.addr"))
-//	go func() {
-//		if err := grpcsrv.Serve(lis); err != nil {
-//			log.Fatalw(err.Error())
-//		}
-//	}()
-//
-//	return grpcsrv
-//}

@@ -31,5 +31,5 @@ func ExampleRoutes(g *gin.RouterGroup) gin.IRoutes {
 			examplev1.DELETE(":exampleID", pc.Delete) // 删除内容
 		}
 	}
-	return nil
+	return g
 }

@@ -25,5 +25,5 @@ func ConfigRoutes(g *gin.RouterGroup) gin.IRoutes {
 			configv1.GET(":alias", cf.Get) // 获取内容详情
 		}
 	}
-	return nil
+	return g
 }

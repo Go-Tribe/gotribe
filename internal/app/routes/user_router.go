@@ -35,5 +35,5 @@ func UserRoutes(g *gin.RouterGroup) gin.IRoutes {
 			userv1.POST("/upload", uc.UploadResources) //上传图片
 		}
 	}
-	return nil
+	return g
 }

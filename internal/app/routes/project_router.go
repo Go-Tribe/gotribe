@@ -25,5 +25,5 @@ func ProjectRoutes(g *gin.RouterGroup) gin.IRoutes {
 			projectv1.GET(":alias", pj.Get) // 获取project详情
 		}
 	}
-	return nil
+	return g
 }

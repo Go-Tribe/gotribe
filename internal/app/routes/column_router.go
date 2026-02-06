@@ -26,5 +26,5 @@ func ColumnRoutes(g *gin.RouterGroup) gin.IRoutes {
 			columnv1.GET("", cf.List)         // 获取内容列表
 		}
 	}
-	return nil
+	return g
 }

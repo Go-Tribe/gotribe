@@ -30,5 +30,5 @@ func CommentRoutes(g *gin.RouterGroup) gin.IRoutes {
 			commentv1.POST("reply", pc.Reply)      // 回复评论
 		}
 	}
-	return nil
+	return g
 }

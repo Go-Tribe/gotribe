@@ -16,7 +16,7 @@ import (
 func (ctrl *CategoryController) Get(c *gin.Context) {
 	log.C(c).Infow("Get category function called")
 
-	category, err := ctrl.b.Categoyies().Get(c, c.Param("categoryID"))
+	category, err := ctrl.b.Categories().Get(c, c.Param("categoryID"))
 	if err != nil {
 		core.WriteResponse(c, err, nil)
 

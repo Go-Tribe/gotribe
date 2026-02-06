@@ -5,7 +5,7 @@
 
 package biz
 
-//go:generate mockgen -destination mock_biz.go -package biz app/internal/app/biz IBiz
+//go:generate mockgen -destination mock_biz.go -package biz gotribe/internal/app/biz IBiz
 
 import (
 	"gotribe/internal/app/biz/ad"
@@ -33,7 +33,7 @@ type IBiz interface {
 	Examples() example.ExampleBiz
 	Configs() config.ConfigBiz
 	Columns() column.ColumnBiz
-	Categoyies() category.CategoryBiz
+	Categories() category.CategoryBiz
 	Tags() tag.TagBiz
 	Projects() project.ProjectBiz
 	Ads() ad.AdBiz
@@ -86,8 +86,8 @@ func (b *biz) Columns() column.ColumnBiz {
 	return column.New(b.ds)
 }
 
-// Category 返回一个实现了 categoryBiz 接口的实例.
-func (b *biz) Categoyies() category.CategoryBiz {
+// Categories 返回一个实现了 categoryBiz 接口的实例.
+func (b *biz) Categories() category.CategoryBiz {
 	return category.New(b.ds)
 }
 

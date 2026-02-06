@@ -24,5 +24,5 @@ func AdRoutes(g *gin.RouterGroup) gin.IRoutes {
 			adv1.GET(":sceneID", pc.List)
 		}
 	}
-	return nil
+	return g
 }

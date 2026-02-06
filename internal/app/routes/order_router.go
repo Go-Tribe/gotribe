@@ -29,5 +29,5 @@ func OrderRoutes(g *gin.RouterGroup) gin.IRoutes {
 			orderv1.POST("/pay", pc.Pay)
 		}
 	}
-	return nil
+	return g
 }

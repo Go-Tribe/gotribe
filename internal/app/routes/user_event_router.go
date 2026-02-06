@@ -23,5 +23,5 @@ func UserEventRoutes(g *gin.RouterGroup) gin.IRoutes {
 			userEventv1.POST("", uc.Create)
 		}
 	}
-	return nil
+	return g
 }

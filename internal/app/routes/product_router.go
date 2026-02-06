@@ -26,5 +26,5 @@ func ProductRoutes(g *gin.RouterGroup) gin.IRoutes {
 			productv1.GET("", pdt.List)          // 获取product详情
 		}
 	}
-	return nil
+	return g
 }

@@ -25,5 +25,5 @@ func TagRoutes(g *gin.RouterGroup) gin.IRoutes {
 			tagv1.GET(":tagID", cf.Get) // 获取tag详情
 		}
 	}
-	return nil
+	return g
 }

@@ -25,5 +25,5 @@ func CategoryRoutes(g *gin.RouterGroup) gin.IRoutes {
 			categoryv1.GET(":categoryID", cf.Get) // 获取分类详情
 		}
 	}
-	return nil
+	return g
 }

@@ -26,5 +26,5 @@ func FeedbackRoutes(g *gin.RouterGroup) gin.IRoutes {
 			feedbackv1.POST("", pc.Create) // 创建内容
 		}
 	}
-	return nil
+	return g
 }

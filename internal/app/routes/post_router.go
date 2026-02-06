@@ -33,5 +33,5 @@ func PostRoutes(g *gin.RouterGroup) gin.IRoutes {
 			postv1.DELETE(":postID", pc.Delete)    // 删除文章
 		}
 	}
-	return nil
+	return g
 }

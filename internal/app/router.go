@@ -35,13 +35,7 @@ func installRouters(g *gin.Engine) error {
 	routes.ProjectRoutes(apiGroup)
 	// healthz 不需要projectID，在 healthz之后添加 PojectID 中间件
 	apiGroup.Use(mw.ProjectID())
-	// 注册 pprof 路由
-	//pprof.Register(g)
-	//RABC
-	//authz, err := auth.NewAuthz(store.S.DB())
-	//if err != nil {
-	//	return err
-	//}
+	// RBAC 鉴权（计划中）：authz, err := auth.NewAuthz(store.S.DB())
 
 	// 用户路由
 	routes.UserRoutes(apiGroup)
