@@ -18,7 +18,7 @@ import (
 	"gotribe/internal/pkg/known"
 	"gotribe/internal/pkg/log"
 	"gotribe/internal/pkg/model"
-	util "gotribe/pkg/amount"
+	"gotribe/pkg/amount"
 	"gotribe/pkg/api/v1"
 	"time"
 )
@@ -88,7 +88,7 @@ func (b *orderBiz) CreateTx(ctx context.Context, username string, r *v1.CreateOr
 		orderM.ProductSku = sku.SkuID
 		orderM.ProductName = product.Title
 		orderM.Status = known.OrderStatusPendingPayment
-		orderM.ProjectID = ctx.Value(known.XPrjectIDKey).(string)
+		orderM.ProjectID = ctx.Value(known.XProjectIDKey).(string)
 		orderM.UnitPoint = sku.UnitPoint
 		orderM.UnitPrice = sku.UnitPrice
 		orderM.Quantity = uint(r.Quantity)
@@ -147,9 +147,9 @@ func (b *orderBiz) Get(ctx context.Context, orderNumber, username string) (*v1.G
 	_ = copier.Copy(&resp, order)
 
 	// 将订单金额从分转换为元，并更新到响应对象中。
-	resp.Amount = util.FenToYuan(order.Amount)
-	resp.AmountPay = util.FenToYuan(order.AmountPay)
-	resp.UnitPoint = util.FenToYuan(order.UnitPoint)
+	resp.Amount = amount.FenToYuan(order.Amount)
+	resp.AmountPay = amount.FenToYuan(order.AmountPay)
+	resp.UnitPoint = amount.FenToYuan(order.UnitPoint)
 
 	// 将订单的创建时间、更新时间和支付时间格式化为已知的时间格式。
 	resp.CreatedAt = order.CreatedAt.Format(known.TimeFormat)
@@ -170,7 +170,7 @@ func (b *orderBiz) List(ctx context.Context, username string, offset, limit int)
 	}
 
 	// 安全地获取 ProjectID
-	projectID, ok := ctx.Value(known.XPrjectIDKey).(string)
+	projectID, ok := ctx.Value(known.XProjectIDKey).(string)
 	if !ok {
 		log.C(ctx).Errorw("Failed to get project ID from context", "username", username)
 		return nil, fmt.Errorf("project ID not found in context")
@@ -200,12 +200,12 @@ func (b *orderBiz) List(ctx context.Context, username string, offset, limit int)
 			PayNumber:         order.PayNumber,
 			PayTime:           payTimeStr,
 			Status:            uint8(order.Status),
-			Amount:            util.FenToYuan(order.Amount),
-			AmountPay:         util.FenToYuan(order.AmountPay),
+			Amount:            amount.FenToYuan(order.Amount),
+			AmountPay:         amount.FenToYuan(order.AmountPay),
 			ProductID:         order.ProductID,
 			ProductName:       order.ProductName,
 			Quantity:          int(order.Quantity),
-			UnitPoint:         util.FenToYuan(order.UnitPoint),
+			UnitPoint:         amount.FenToYuan(order.UnitPoint),
 			ConsigneeName:     order.ConsigneeName,
 			ConsigneePhone:    order.ConsigneePhone,
 			ConsigneeAddress:  order.ConsigneeAddress,
@@ -247,7 +247,7 @@ func (b *orderBiz) Pay(ctx context.Context, orderNumber, username string) error 
 			return err
 		}
 		// 检查 user.Point 是否为 nil，并将其转换为 float64 进行比较
-		userPoint, err := b.pt.GetAvailablePoints(ctx, user.UserID, ctx.Value(known.XPrjectIDKey).(string))
+		userPoint, err := b.pt.GetAvailablePoints(ctx, user.UserID, ctx.Value(known.XProjectIDKey).(string))
 		if err != nil {
 			log.C(ctx).Errorw("Failed to get user point from storage", "err", err)
 			return err
@@ -261,14 +261,14 @@ func (b *orderBiz) Pay(ctx context.Context, orderNumber, username string) error 
 			pointValue = 0
 		}
 		fmt.Println("pointValue", pointValue)
-		fmt.Println("util.YuanToFen(pointValue)", util.YuanToFen(pointValue))
+		fmt.Println("amount.YuanToFen(pointValue)", amount.YuanToFen(pointValue))
 		fmt.Println("order.AmountPay", order.AmountPay)
-		if util.YuanToFen(pointValue) < order.AmountPay {
+		if amount.YuanToFen(pointValue) < order.AmountPay {
 			return errors.New("积分不足")
 		}
 
 		// 扣减用户积分
-		err = b.pt.SubPoints(ctx, username, ctx.Value(known.XPrjectIDKey).(string), "pay", "支付订单", order.OrderID, util.FenToYuan(order.AmountPay))
+		err = b.pt.SubPoints(ctx, username, ctx.Value(known.XProjectIDKey).(string), "pay", "支付订单", order.OrderID, amount.FenToYuan(order.AmountPay))
 		if err != nil {
 			return err
 		}

@@ -19,7 +19,7 @@ import (
 func (b *userBiz) createUserAndAccount(ctx context.Context, openID, platformType string) (*v1.LoginResponse, error) {
 	// 先建用户，再新增拓展用户信息
 	userM := model.UserM{
-		ProjectID: ctx.Value(known.XPrjectIDKey).(string),
+		ProjectID: ctx.Value(known.XProjectIDKey).(string),
 		Username:  generateRandomUserName(),
 	}
 	userInfo, err := b.ds.Users().Create(ctx, &userM)

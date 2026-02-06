@@ -31,7 +31,7 @@ func newUserEvents(db *gorm.DB) *userEvents {
 
 // Create 插入一条 userEvent 记录.
 func (u *userEvents) Create(ctx context.Context, userEvent *model.UserEventM) (*model.UserEventM, error) {
-	userEvent.ProjectID = ctx.Value(known.XPrjectIDKey).(string)
+	userEvent.ProjectID = ctx.Value(known.XProjectIDKey).(string)
 	result := u.db.WithContext(ctx).Create(&userEvent)
 	if result.Error != nil {
 		return nil, result.Error

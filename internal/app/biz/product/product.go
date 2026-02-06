@@ -9,7 +9,7 @@ import (
 	"context"
 	"errors"
 	"github.com/dengmengmian/ghelper/gconvert"
-	util "gotribe/pkg/amount"
+	"gotribe/pkg/amount"
 	"gotribe/pkg/api/v1"
 	"strings"
 
@@ -82,7 +82,7 @@ func (b *productBiz) Get(ctx context.Context, productID string) (*v1.GetProductR
 			Quantity:      sku.Quantity,
 			SkuID:         sku.SkuID,
 			Title:         sku.Title,
-			UnitPoint:     util.FenToYuan(sku.UnitPoint),
+			UnitPoint:     amount.FenToYuan(sku.UnitPoint),
 		})
 	}
 	resp.Skus = skus
@@ -130,7 +130,7 @@ func (b *productBiz) List(ctx context.Context, r *v1.ListProductRequest) (*v1.Li
 				Quantity:      sku.Quantity,
 				SkuID:         sku.SkuID,
 				Title:         sku.Title,
-				UnitPoint:     util.FenToYuan(sku.UnitPoint),
+				UnitPoint:     amount.FenToYuan(sku.UnitPoint),
 			})
 		}
 		products = append(products, &v1.ProductInfo{

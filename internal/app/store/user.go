@@ -40,7 +40,7 @@ func newUsers(db *gorm.DB) *users {
 
 // Create 插入一条 user 记录.
 func (u *users) Create(ctx context.Context, user *model.UserM) (*model.UserM, error) {
-	user.ProjectID = ctx.Value(known.XPrjectIDKey).(string)
+	user.ProjectID = ctx.Value(known.XProjectIDKey).(string)
 	result := u.db.WithContext(ctx).Create(&user)
 	if result.Error != nil {
 		return nil, result.Error

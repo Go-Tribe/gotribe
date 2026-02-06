@@ -26,7 +26,7 @@ type ErrResponse struct {
 // lang 参数为可选参数，默认为 "zh"。
 func WriteResponse(c *gin.Context, err error, data interface{}, langs ...string) {
 	lang := c.GetHeader("Accept-Language")
-	// 如果没有设置语言，默认使用英语
+	// 若非 en 则视为中文
 	if lang != "en" {
 		lang = "zh"
 	}

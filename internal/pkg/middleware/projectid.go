@@ -17,7 +17,7 @@ import (
 func ProjectID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 检查请求头中是否有 `X-Project-ID`，如果有则复用，没有中断
-		projectID := c.Request.Header.Get(known.XPrjectIDKey)
+		projectID := c.Request.Header.Get(known.XProjectIDKey)
 
 		if projectID == "" {
 			core.WriteResponse(c, errno.ErrUnpropjectID, nil)
@@ -26,10 +26,10 @@ func ProjectID() gin.HandlerFunc {
 		}
 
 		// 将 RequestID 保存在 gin.Context 中，方便后边程序使用
-		c.Set(known.XPrjectIDKey, projectID)
+		c.Set(known.XProjectIDKey, projectID)
 
 		// 将 ProjectID 保存在 HTTP 返回头中，Header 的键为 `X-Project-ID`
-		c.Writer.Header().Set(known.XPrjectIDKey, projectID)
+		c.Writer.Header().Set(known.XProjectIDKey, projectID)
 		c.Next()
 	}
 }

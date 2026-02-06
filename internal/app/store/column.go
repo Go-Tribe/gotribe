@@ -47,7 +47,7 @@ func (u *columns) List(ctx context.Context, r *v1.ListColumnRequest) (count int6
 	// 声明一个空的 []interface{} 切片用于存放查询条件
 	queryWhere := make([]interface{}, 0)
 	// 逐个创建查询条件并追加到 queryWhere 切片中
-	queryWhere = append(queryWhere, []interface{}{"project_id", ctx.Value(known.XPrjectIDKey).(string)})
+	queryWhere = append(queryWhere, []interface{}{"project_id", ctx.Value(known.XProjectIDKey).(string)})
 	queryWhere = append(queryWhere, []interface{}{"status", known.STATUS_OK})
 	db, err := buildQueryList(u.db, queryWhere, "*", "id desc", r.Offset, r.Limit)
 	if err != nil {

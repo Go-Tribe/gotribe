@@ -125,7 +125,7 @@ func (b *userBiz) Get(ctx context.Context, username string) (*v1.GetUserResponse
 		resp.Birthday = user.Birthday.Format(known.TimeFormatShort)
 	}
 	// 获取用户积分
-	point, err := b.ds.PointAvailable().SumPoints(ctx, user.UserID, ctx.Value(known.XPrjectIDKey).(string))
+	point, err := b.ds.PointAvailable().SumPoints(ctx, user.UserID, ctx.Value(known.XProjectIDKey).(string))
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +142,7 @@ func (b *userBiz) Get(ctx context.Context, username string) (*v1.GetUserResponse
 
 // List 是 UserBiz 接口中 `List` 方法的实现.
 func (b *userBiz) List(ctx context.Context, offset, limit int) (*v1.ListUserResponse, error) {
-	count, list, err := b.ds.Users().List(ctx, offset, limit, v1.UserWhere{ProjectID: ctx.Value(known.XPrjectIDKey).(string)})
+	count, list, err := b.ds.Users().List(ctx, offset, limit, v1.UserWhere{ProjectID: ctx.Value(known.XProjectIDKey).(string)})
 	if err != nil {
 		log.C(ctx).Errorw("Failed to list users from storage", "err", err)
 		return nil, err

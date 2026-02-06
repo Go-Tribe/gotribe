@@ -9,8 +9,8 @@ const (
 	// XRequestIDKey 用来定义 Gin 上下文中的键，代表请求的 uuid.
 	XRequestIDKey = "X-Request-ID"
 
-	// XPrjectIDKey  用来定义 Gin 上下文中的键，代表请求的 project id.
-	XPrjectIDKey = "X-Project-ID"
+	// XProjectIDKey 用来定义 Gin 上下文中的键，代表请求的 project id.
+	XProjectIDKey = "X-Project-ID"
 
 	// XUsernameKey 用来定义 Gin 上下文的键，代表请求的所有者.
 	XUsernameKey = "X-Username"

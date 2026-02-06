@@ -49,6 +49,19 @@ type Service struct {
 	uploader Uploader
 }
 
+// defaultService 启动时初始化的上传服务，供全局复用，避免每次请求创建
+var defaultService *Service
+
+// SetDefaultService 设置全局默认上传服务（建议在应用启动时调用一次）
+func SetDefaultService(s *Service) {
+	defaultService = s
+}
+
+// DefaultService 返回全局默认上传服务，未设置时返回 nil
+func DefaultService() *Service {
+	return defaultService
+}
+
 // NewService 根据 Options 创建对应的上传 Service（oss / qiniu，后续可扩展 s3）
 func NewService(opts *Options) (*Service, error) {
 	if opts == nil {

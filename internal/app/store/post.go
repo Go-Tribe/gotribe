@@ -71,7 +71,7 @@ func (u *posts) List(ctx context.Context, r *v1.ListPostRequest) (count int64, r
 	// 声明一个空的 []interface{} 切片用于存放查询条件
 	queryWhere := make([]interface{}, 0)
 	// 逐个创建查询条件并追加到 queryWhere 切片中
-	queryWhere = append(queryWhere, []interface{}{"project_id", ctx.Value(known.XPrjectIDKey).(string)})
+	queryWhere = append(queryWhere, []interface{}{"project_id", ctx.Value(known.XProjectIDKey).(string)})
 	queryWhere = append(queryWhere, []interface{}{"status", known.POST_STATUS_PUBLIC})
 	if !gconvert.IsEmpty(r.CategoryID) {
 		queryWhere = append(queryWhere, []interface{}{"category_id", r.CategoryID})
@@ -121,7 +121,7 @@ func (u *posts) Delete(ctx context.Context, username string, post_ids []string) 
 func (u *posts) Search(ctx context.Context, r *v1.SearchPostRequest) (count int64, ret []*model.PostM, err error) {
 	where := []interface{}{
 		[]interface{}{"title", "like", "%" + r.Query + "%"},
-		[]interface{}{"project_id", ctx.Value(known.XPrjectIDKey).(string)},
+		[]interface{}{"project_id", ctx.Value(known.XProjectIDKey).(string)},
 		[]interface{}{"category_id", r.CategoryID},
 	}
 	db, err := buildWhere(u.db, where)

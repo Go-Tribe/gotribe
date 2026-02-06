@@ -8,7 +8,7 @@ package post
 import (
 	"context"
 	"errors"
-	util "gotribe/pkg/amount"
+	"gotribe/pkg/amount"
 	"strings"
 
 	"gotribe/internal/app/store"
@@ -51,7 +51,7 @@ func (b *postBiz) Create(ctx context.Context, username string, r *v1.CreatePostR
 	var postM model.PostM
 	_ = copier.Copy(&postM, r)
 	postM.Author = username
-	postM.ProjectID = ctx.Value(known.XPrjectIDKey).(string)
+	postM.ProjectID = ctx.Value(known.XProjectIDKey).(string)
 	if err := b.ds.Posts().Create(ctx, &postM); err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (b *postBiz) Get(ctx context.Context, postID string) (*v1.GetPostResponse, 
 
 	var resp v1.GetPostResponse
 	_ = copier.Copy(&resp, post)
-	resp.UnitPrice = util.FenToYuan(int(post.UnitPrice))
+	resp.UnitPrice = amount.FenToYuan(int(post.UnitPrice))
 	// tag信息
 	tagsM, err := b.ds.Tags().GetTags(ctx, strings.Split(post.Tag, ","))
 	var tags []*v1.TagInfo
@@ -188,7 +188,7 @@ func (b *postBiz) List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPost
 			Time:        post.Time,
 			Type:        post.Type,
 			Video:       post.Video,
-			UnitPrice:   util.FenToYuan(int(post.UnitPrice)),
+			UnitPrice:   amount.FenToYuan(int(post.UnitPrice)),
 			Images:      strings.Split(post.Images, ","),
 			Description: post.Description,
 			CreatedAt:   post.CreatedAt.Format(known.TimeFormat),
@@ -251,7 +251,7 @@ func (b *postBiz) Search(ctx context.Context, r *v1.SearchPostRequest) (*v1.List
 			Time:        post.Time,
 			Type:        post.Type,
 			Video:       post.Video,
-			UnitPrice:   util.FenToYuan(int(post.UnitPrice)),
+			UnitPrice:   amount.FenToYuan(int(post.UnitPrice)),
 			Images:      strings.Split(post.Images, ","),
 			Description: post.Description,
 			CreatedAt:   post.CreatedAt.Format(known.TimeFormat),

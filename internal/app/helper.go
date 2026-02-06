@@ -13,6 +13,7 @@ import (
 	"gotribe/internal/app/store"
 	"gotribe/internal/pkg/log"
 	"gotribe/pkg/db"
+	"gotribe/pkg/upload"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
@@ -146,4 +147,30 @@ func initStore() error {
 	_ = store.NewStore(ins)
 
 	return nil
+}
+
+// initUpload 根据配置初始化全局上传服务，供 controller 复用
+func initUpload() {
+	provider := viper.GetString("upload-file.provider")
+	if provider == "" {
+		if viper.GetBool("enable-oss") {
+			provider = "oss"
+		} else {
+			provider = "qiniu"
+		}
+	}
+	opts := &upload.Options{
+		Provider:  upload.Provider(provider),
+		Endpoint:  viper.GetString("upload-file.endpoint"),
+		AccessKey: viper.GetString("upload-file.access-key"),
+		SecretKey: viper.GetString("upload-file.secret-key"),
+		Bucket:    viper.GetString("upload-file.bucket"),
+		Region:    viper.GetString("upload-file.region"),
+	}
+	svc, err := upload.NewService(opts)
+	if err != nil {
+		log.Warnw("Upload service not initialized, upload API will create per-request", "err", err)
+		return
+	}
+	upload.SetDefaultService(svc)
 }

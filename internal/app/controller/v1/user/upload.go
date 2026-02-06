@@ -8,15 +8,16 @@ package user
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"gotribe/internal/pkg/core"
 	"gotribe/internal/pkg/known"
 	"gotribe/internal/pkg/log"
 	"gotribe/pkg/upload"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
-// Get 获取一个用户的详细信息.
+// UploadResources 上传用户资源（如图片）.
 func (ctrl *UserController) UploadResources(c *gin.Context) {
 	log.C(c).Infow("post upload file", "user_id", c.GetString("user_id"), "request_id", c.GetString("request_id"))
 
@@ -34,24 +35,9 @@ func (ctrl *UserController) UploadResources(c *gin.Context) {
 		return
 	}
 
-	provider := viper.GetString("upload-file.provider")
-	if provider == "" {
-		if viper.GetBool("enable-oss") {
-			provider = "oss"
-		} else {
-			provider = "qiniu"
-		}
-	}
-	uploadFile, err := upload.NewService(&upload.Options{
-		Provider:  upload.Provider(provider),
-		Endpoint:  viper.GetString("upload-file.endpoint"),
-		AccessKey: viper.GetString("upload-file.access-key"),
-		SecretKey: viper.GetString("upload-file.secret-key"),
-		Bucket:    viper.GetString("upload-file.bucket"),
-		Region:    viper.GetString("upload-file.region"),
-	})
-	if err != nil {
-		core.WriteResponse(c, err, nil)
+	uploadFile := upload.DefaultService()
+	if uploadFile == nil {
+		core.WriteResponse(c, errors.New("upload service not configured"), nil)
 		return
 	}
 	fileRes, err := uploadFile.UploadFile(fileHeader)

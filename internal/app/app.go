@@ -32,9 +32,9 @@ var cfgFile string
 func NewGoTribeCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		// 指定命令的名字，该名字会出现在帮助信息中
-		Use: "app",
+		Use: "gotribe",
 		// 命令的简短描述
-		Short: "A good Go practical project",
+		Short: "GoTribe API 服务",
 		// 命令的详细描述
 		Long: `A good Go practical project, used to create user with basic information.
 
@@ -74,9 +74,6 @@ Find more app information at:
 	// Cobra 支持持久性标志(PersistentFlag)，该标志可用于它所分配的命令以及该命令下的每个子命令
 	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "The path to the app configuration file. Empty string for no configuration file.")
 
-	// Cobra 也支持本地标志，本地标志只能在其所绑定的命令上使用
-	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 	// 添加 --version 标志
 	verflag.AddFlags(cmd.PersistentFlags())
 
@@ -89,6 +86,9 @@ func run() error {
 	if err := initStore(); err != nil {
 		return err
 	}
+
+	// 初始化上传服务（全局复用，避免每次请求创建）
+	initUpload()
 
 	// 设置 token 包的签发密钥，用于 token 包 token 的签发和解析
 	token.Init(viper.GetString("jwt-secret"), known.XUsernameKey)
