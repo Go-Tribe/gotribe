@@ -34,13 +34,26 @@ func (ctrl *UserController) UploadResources(c *gin.Context) {
 		return
 	}
 
-	uploadFile, err := upload.NewUploadFile(
-		viper.GetString("upload-file.endpoint"),
-		viper.GetString("upload-file.access-key"),
-		viper.GetString("upload-file.secret-key"),
-		viper.GetString("upload-file.bucket"),
-		viper.GetBool("enable-oss"),
-	)
+	provider := viper.GetString("upload-file.provider")
+	if provider == "" {
+		if viper.GetBool("enable-oss") {
+			provider = "oss"
+		} else {
+			provider = "qiniu"
+		}
+	}
+	uploadFile, err := upload.NewService(&upload.Options{
+		Provider:  upload.Provider(provider),
+		Endpoint:  viper.GetString("upload-file.endpoint"),
+		AccessKey: viper.GetString("upload-file.access-key"),
+		SecretKey: viper.GetString("upload-file.secret-key"),
+		Bucket:    viper.GetString("upload-file.bucket"),
+		Region:    viper.GetString("upload-file.region"),
+	})
+	if err != nil {
+		core.WriteResponse(c, err, nil)
+		return
+	}
 	fileRes, err := uploadFile.UploadFile(fileHeader)
 	if err != nil {
 		core.WriteResponse(c, fmt.Errorf("failed to create upload file: %w", err), nil)
