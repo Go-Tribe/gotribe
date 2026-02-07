@@ -32,8 +32,8 @@ type PostInfo struct {
 	ColumnID    string       `json:"columnID,omitempty"`
 	Icon        string       `json:"icon"`
 	Title       string       `json:"title"`
-	Content     string       `json:"content"`
-	HtmlContent string       `json:"htmlContent"`
+	Content     string       `json:"content,omitempty"`
+	HtmlContent string       `json:"htmlContent,omitempty"`
 	Tag         string       `json:"tag"`
 	Description string       `json:"description"`
 	Type        uint         `json:"type"`

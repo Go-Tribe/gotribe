@@ -8,14 +8,15 @@ package store
 import (
 	"context"
 	"errors"
-	"gotribe/pkg/api/v1"
+	v1 "gotribe/pkg/api/v1"
 	"strings"
 
-	"github.com/dengmengmian/ghelper/gconvert"
-	"gorm.io/gorm"
 	"gotribe/internal/pkg/known"
 	"gotribe/internal/pkg/log"
 	"gotribe/internal/pkg/model"
+
+	"github.com/dengmengmian/ghelper/gconvert"
+	"gorm.io/gorm"
 )
 
 // PostStore 定义了 post 模块在 store 层所实现的方法.
@@ -89,9 +90,7 @@ func (u *posts) List(ctx context.Context, r *v1.ListPostRequest) (count int64, r
 		queryWhere = append(queryWhere, []interface{}{"tag", "like", r.TagID + "%"})
 	}
 	if !gconvert.IsEmpty(r.IsTop) {
-		queryWhere = append(queryWhere, []interface{}{"is_top", known.STATUS_OK})
-	} else {
-		queryWhere = append(queryWhere, []interface{}{"is_top", known.STATUS_DISABLE})
+		queryWhere = append(queryWhere, []interface{}{"is_top", r.IsTop})
 	}
 	if !gconvert.IsEmpty(r.Type) {
 		queryWhere = append(queryWhere, []interface{}{"type", "in", strings.Split(r.Type, ",")})

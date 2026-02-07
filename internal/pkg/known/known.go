@@ -25,6 +25,10 @@ const (
 	// 公用状态.
 	STATUS_OK      = 1
 	STATUS_DISABLE = 2
+
+	//置顶
+	DEFAULT_OK      = 2
+	DEFAULT_DISABLE = 1
 	// 私密
 	STATUS_PRIVATE = 1
 	// 公开

@@ -143,34 +143,103 @@ func (b *postBiz) List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPost
 		return nil, err
 	}
 
-	posts := make([]*v1.PostInfo, 0, len(list))
-	for _, item := range list {
-		post := item
-		// 分类信息
-		categoryM, err := b.ds.Categories().Get(ctx, post.CategoryID)
+	userIDSet := make(map[string]struct{}, len(list))
+	categoryIDSet := make(map[string]struct{}, len(list))
+	tagIDSet := make(map[string]struct{})
+	for _, p := range list {
+		if p.UserID != "" {
+			userIDSet[p.UserID] = struct{}{}
+		}
+		if p.CategoryID != "" {
+			categoryIDSet[p.CategoryID] = struct{}{}
+		}
+		if p.Tag != "" {
+			for _, t := range strings.Split(p.Tag, ",") {
+				if t != "" {
+					tagIDSet[t] = struct{}{}
+				}
+			}
+		}
+	}
+
+	userIDs := make([]string, 0, len(userIDSet))
+	for id := range userIDSet {
+		userIDs = append(userIDs, id)
+	}
+	usersM, err := b.ds.Users().ListInUserID(ctx, userIDs)
+	if err != nil {
+		log.C(ctx).Errorw("Failed to list users from storage", "err", err)
+		return nil, err
+	}
+	userMap := make(map[string]*model.UserM, len(usersM))
+	for _, u := range usersM {
+		userMap[u.UserID] = u
+	}
+
+	categoryMap := make(map[string]v1.CategoryInfo, len(categoryIDSet))
+	for id := range categoryIDSet {
+		categoryM, err := b.ds.Categories().Get(ctx, id)
 		if err != nil {
 			log.C(ctx).Errorw("Failed to get category from storage", "err", err)
 			return nil, err
 		}
 		var category v1.CategoryInfo
 		_ = copier.Copy(&category, categoryM)
+		categoryMap[id] = category
+	}
 
-		// 用户信息
-		userM, err := b.ds.Users().Get(ctx, v1.UserWhere{UserID: post.UserID})
-		if err != nil {
-			log.C(ctx).Errorw("Failed to get user from storage", "err", err)
-			return nil, err
-		}
-
-		// 标签信息
-		tagSlice := strings.Split(post.Tag, ",")
-		tagsM, err := b.ds.Tags().GetTags(ctx, tagSlice)
+	tagIDs := make([]string, 0, len(tagIDSet))
+	for id := range tagIDSet {
+		tagIDs = append(tagIDs, id)
+	}
+	tagMap := make(map[string]*v1.TagInfo, len(tagIDs))
+	if len(tagIDs) > 0 {
+		tagsM, err := b.ds.Tags().GetTags(ctx, tagIDs)
 		if err != nil {
 			log.C(ctx).Errorw("Failed to get tags from storage", "err", err)
 			return nil, err
 		}
+		for _, tm := range tagsM {
+			var ti v1.TagInfo
+			_ = copier.Copy(&ti, tm)
+			tagMap[tm.TagID] = &ti
+		}
+	}
+
+	posts := make([]*v1.PostInfo, 0, len(list))
+	for _, item := range list {
+		post := item
+		category, ok := categoryMap[post.CategoryID]
+		if !ok && post.CategoryID != "" {
+			categoryM, err := b.ds.Categories().Get(ctx, post.CategoryID)
+			if err != nil {
+				log.C(ctx).Errorw("Failed to get category from storage", "err", err)
+				return nil, err
+			}
+			_ = copier.Copy(&category, categoryM)
+		}
+
+		userM := userMap[post.UserID]
+		if userM == nil && post.UserID != "" {
+			userM, err = b.ds.Users().Get(ctx, v1.UserWhere{UserID: post.UserID})
+			if err != nil {
+				log.C(ctx).Errorw("Failed to get user from storage", "err", err)
+				return nil, err
+			}
+		}
+
 		var tags []*v1.TagInfo
-		_ = copier.Copy(&tags, tagsM)
+		if post.Tag != "" {
+			tagSlice := strings.Split(post.Tag, ",")
+			for _, tid := range tagSlice {
+				if tid == "" {
+					continue
+				}
+				if t, ok := tagMap[tid]; ok {
+					tags = append(tags, t)
+				}
+			}
+		}
 
 		posts = append(posts, &v1.PostInfo{
 			Author:      userM.Nickname,
@@ -181,8 +250,6 @@ func (b *postBiz) List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPost
 			Icon:        post.Icon,
 			Category:    category,
 			Tags:        tags, // 添加标签信息
-			Content:     post.Content,
-			HtmlContent: post.HtmlContent,
 			Location:    post.Location,
 			People:      post.People,
 			Time:        post.Time,
@@ -244,8 +311,6 @@ func (b *postBiz) Search(ctx context.Context, r *v1.SearchPostRequest) (*v1.List
 			Icon:        post.Icon,
 			Category:    category,
 			Tags:        tags, // 添加标签信息
-			Content:     post.Content,
-			HtmlContent: post.HtmlContent,
 			Location:    post.Location,
 			People:      post.People,
 			Time:        post.Time,
