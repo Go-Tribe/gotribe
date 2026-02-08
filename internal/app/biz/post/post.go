@@ -257,6 +257,7 @@ func (b *postBiz) List(ctx context.Context, r *v1.ListPostRequest) (*v1.ListPost
 			Video:       post.Video,
 			UnitPrice:   amount.FenToYuan(int(post.UnitPrice)),
 			Images:      strings.Split(post.Images, ","),
+			ShowTime:    post.ShowTime,
 			Description: post.Description,
 			CreatedAt:   post.CreatedAt.Format(known.TimeFormat),
 			UpdatedAt:   post.UpdatedAt.Format(known.TimeFormat),

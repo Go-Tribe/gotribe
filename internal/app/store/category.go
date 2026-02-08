@@ -16,6 +16,7 @@ import (
 // CategoryStore 定义了 comment 模块在 store 层所实现的方法.
 type CategoryStore interface {
 	Get(ctx context.Context, categoryID string) (*model.CategoryM, error)
+	GetChildren(ctx context.Context, parentID uint) ([]model.CategoryM, error)
 }
 
 // CategoryStore 接口的实现.
@@ -38,4 +39,14 @@ func (u *categories) Get(ctx context.Context, categoryID string) (*model.Categor
 	}
 
 	return &category, nil
+}
+
+// GetChildren 根据 categoryID 查询指定用户的 comment 数据库记录.
+func (u *categories) GetChildren(ctx context.Context, parentID uint) ([]model.CategoryM, error) {
+	var categories []model.CategoryM
+	if err := u.db.WithContext(ctx).Where("parent_id = ?", parentID).Find(&categories).Error; err != nil {
+		return nil, err
+	}
+
+	return categories, nil
 }

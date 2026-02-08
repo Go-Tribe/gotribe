@@ -8,18 +8,20 @@ package category
 import (
 	"context"
 	"errors"
-	"gotribe/pkg/api/v1"
+	v1 "gotribe/pkg/api/v1"
 
-	"github.com/jinzhu/copier"
-	"gorm.io/gorm"
 	"gotribe/internal/app/store"
 	"gotribe/internal/pkg/errno"
 	"gotribe/internal/pkg/known"
+
+	"github.com/jinzhu/copier"
+	"gorm.io/gorm"
 )
 
 // CategoryBiz defines functions used to handle category request.
 type CategoryBiz interface {
 	Get(ctx context.Context, categoryID string) (*v1.GetCategoryResponse, error)
+	GetChildren(ctx context.Context, categoryID string) (*v1.GetCategoryChildrenResponse, error)
 }
 
 // The implementation of CategoryBiz interface.
@@ -51,6 +53,42 @@ func (b *categoryBiz) Get(ctx context.Context, categoryID string) (*v1.GetCatego
 
 	resp.CreatedAt = category.CreatedAt.Format(known.TimeFormat)
 	resp.UpdatedAt = category.UpdatedAt.Format(known.TimeFormat)
+
+	return &resp, nil
+}
+
+// GetChildren is the implementation of the `GetChildren` method in CategoryBiz interface.
+func (b *categoryBiz) GetChildren(ctx context.Context, categoryID string) (*v1.GetCategoryChildrenResponse, error) {
+	// 先获取到父分类的信息
+	category, err := b.ds.Categories().Get(ctx, categoryID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errno.ErrCategoryNotFound
+		}
+
+		return nil, err
+	}
+	// 再去获取父类下所有子分类
+	categories, err := b.ds.Categories().GetChildren(ctx, category.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp v1.GetCategoryChildrenResponse
+	resp.CategoryID = category.CategoryID
+	resp.Children = make([]v1.CategoryInfo, 0, len(categories))
+	for _, c := range categories {
+		var ci v1.CategoryInfo
+		_ = copier.Copy(&ci, c)
+		ci.CreatedAt = c.CreatedAt.Format(known.TimeFormat)
+		ci.UpdatedAt = c.UpdatedAt.Format(known.TimeFormat)
+		resp.Children = append(resp.Children, ci)
+	}
+
+	// 如果没有子分类，返回一个空切片而不是 null
+	if resp.Children == nil {
+		resp.Children = []v1.CategoryInfo{}
+	}
 
 	return &resp, nil
 }

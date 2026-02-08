@@ -38,6 +38,7 @@ type PostM struct {
 	Time        string `gorm:"type:varchar(255);comment:时间" json:"time"`
 	Images      string `gorm:"type:varchar(1000);comment:图片" json:"images"`
 	Video       string `gorm:"type:varchar(255);not null;comment:产品视频" json:"video"`
+	ShowTime    string `gorm:"type:varchar(255);comment:展示时间" json:"showTime"`
 }
 
 // TableName 用来指定映射的 MySQL 表名.

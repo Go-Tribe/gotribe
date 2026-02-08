@@ -25,3 +25,16 @@ func (ctrl *CategoryController) Get(c *gin.Context) {
 
 	core.WriteResponse(c, nil, category)
 }
+
+func (ctrl *CategoryController) GetChildren(c *gin.Context) {
+	log.C(c).Infow("Get category children function called")
+
+	category, err := ctrl.b.Categories().GetChildren(c, c.Param("categoryID"))
+	if err != nil {
+		core.WriteResponse(c, err, nil)
+
+		return
+	}
+
+	core.WriteResponse(c, nil, category)
+}

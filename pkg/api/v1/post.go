@@ -47,6 +47,7 @@ type PostInfo struct {
 	CreatedAt   string       `json:"createdAt"`
 	UpdatedAt   string       `json:"updatedAt"`
 	Category    CategoryInfo `json:"category"`
+	ShowTime    string       `json:"showTime"`
 	Tags        []*TagInfo   `json:"tags"`
 }
 

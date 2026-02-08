@@ -97,7 +97,7 @@ func (u *posts) List(ctx context.Context, r *v1.ListPostRequest) (count int64, r
 	} else {
 		queryWhere = append(queryWhere, []interface{}{"type", known.POST_TYPE_POST})
 	}
-	db, err := buildQueryList(u.db, queryWhere, "*", "id desc", r.Offset, r.Limit)
+	db, err := buildQueryList(u.db, queryWhere, "*", "show_time desc", r.Offset, r.Limit)
 	if err != nil {
 		log.C(ctx).Errorw("Failed to list post from build where", "err", err)
 		return

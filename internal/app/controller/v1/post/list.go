@@ -9,7 +9,7 @@ import (
 	"gotribe/internal/pkg/core"
 	"gotribe/internal/pkg/errno"
 	"gotribe/internal/pkg/log"
-	"gotribe/pkg/api/v1"
+	v1 "gotribe/pkg/api/v1"
 
 	"github.com/gin-gonic/gin"
 )

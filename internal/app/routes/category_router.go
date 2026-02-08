@@ -23,6 +23,8 @@ func CategoryRoutes(g *gin.RouterGroup) gin.IRoutes {
 		categoryv1 := v1.Group("/categorys")
 		{
 			categoryv1.GET(":categoryID", cf.Get) // 获取分类详情
+			//获取子分类列表
+			categoryv1.GET(":categoryID/children", cf.GetChildren)
 		}
 	}
 	return g

@@ -18,3 +18,8 @@ type CategoryInfo struct {
 	CreatedAt   string `json:"createdAt"`
 	UpdatedAt   string `json:"updatedAt"`
 }
+
+type GetCategoryChildrenResponse struct {
+	CategoryID string         `json:"categoryID,omitempty"`
+	Children   []CategoryInfo `json:"children"`
+}
