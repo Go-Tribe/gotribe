@@ -70,6 +70,14 @@ deps: ## 安装依赖，例如：生成需要的代码、安装需要的工具�
 build: go.tidy  ## 编译源码，依赖 tidy 目标自动添加/移除依赖包.
 	@$(MAKE) go.build
 
+.PHONY: linux
+linux: ## 编译 Linux amd64 可执行程序.
+	@$(MAKE) build PLATFORM=linux_amd64
+
+.PHONY: linux-arm64
+linux-arm64: ## 编译 Linux arm64 可执行程序.
+	@$(MAKE) build PLATFORM=linux_arm64
+
 .PHONY: run
 run: ## 开发时启动服务，默认使用 configs/config.yml（可覆盖：make run C=configs/config.tem.yml）
 	@$(GO) run $(ROOT_PACKAGE)/cmd/gotribe -c $(or $(C),$(ROOT_DIR)/configs/config.yml)
