@@ -67,5 +67,7 @@ func installRouters(g *gin.Engine) error {
 	routes.ExtensionRoutes(apiGroup)
 	// 大语言模型转发
 	routes.ChatRoutes(apiGroup)
+	// 应用版本
+	routes.AppVersionRoutes(apiGroup)
 	return nil
 }

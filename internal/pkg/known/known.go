@@ -43,4 +43,10 @@ const (
 
 	// 上传资源大小 (默认 10MB)
 	DEFAULT_UPLOAD_SIZE int64 = 10 * 1024 * 1024
+
+	// 应用版本检查请求头
+	XProductKey             = "X-Product"
+	XPlatformKey            = "X-Platform"
+	XPlatformVersionCodeKey = "X-Platform-Version-Code"
+	XPlatformVersionNameKey = "X-Platform-Version-Name"
 )

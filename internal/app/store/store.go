@@ -43,6 +43,7 @@ type IStore interface {
 	OrderLog() OrderLogStore
 	UserEvents() UserEventStore
 	Extensions() ExtensionStore
+	AppVersions() AppVersionStore
 }
 
 // datastore 是 IStore 的一个具体实现.
@@ -184,4 +185,9 @@ func (ds *datastore) UserEvents() UserEventStore {
 // Extensions 返回一个实现了 ExtensionStore 接口的实例.
 func (ds *datastore) Extensions() ExtensionStore {
 	return newExtensions(ds.db)
+}
+
+// AppVersions 返回一个实现了 AppVersionStore 接口的实例.
+func (ds *datastore) AppVersions() AppVersionStore {
+	return newAppVersions(ds.db)
 }

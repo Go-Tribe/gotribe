@@ -9,6 +9,7 @@ package biz
 
 import (
 	"gotribe/internal/app/biz/ad"
+	"gotribe/internal/app/biz/app_version"
 	"gotribe/internal/app/biz/category"
 	"gotribe/internal/app/biz/column"
 	"gotribe/internal/app/biz/comment"
@@ -45,6 +46,7 @@ type IBiz interface {
 	Point() point.PointBiz
 	UserEvents() userEvent.UserEventBiz
 	Extensions() extension.ExtensionBiz
+	AppVersions() app_version.AppVersionBiz
 }
 
 // 确保 biz 实现了 IBiz 接口.
@@ -129,4 +131,8 @@ func (b *biz) UserEvents() userEvent.UserEventBiz {
 
 func (b *biz) Extensions() extension.ExtensionBiz {
 	return extension.New(b.ds)
+}
+
+func (b *biz) AppVersions() app_version.AppVersionBiz {
+	return app_version.New(b.ds)
 }
