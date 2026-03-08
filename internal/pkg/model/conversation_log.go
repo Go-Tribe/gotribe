@@ -31,13 +31,14 @@ type ConversationLogM struct {
 	DeductionStatus  int        `gorm:"type:smallint;not null;default:1;comment:扣费状态(1-待扣费,2-扣费成功,3-扣费失败,4-无需扣费)" json:"deductionStatus"`
 	DeductionType    int        `gorm:"type:smallint;not null;default:1;comment:扣费类型(1-点数扣费,2-内部白名单用户)" json:"deductionType"`
 	DeductionTime    *time.Time `gorm:"type:timestamp;comment:扣费时间" json:"deductionTime,omitempty"`
+	AppVersionId     string     `gorm:"type:varchar(50);not null;default:'';comment:应用版本id" json:"appVersionId"`
 	ClientName       string     `gorm:"type:varchar(50);not null;default:'';comment:客户端名" json:"clientName"`
 	ClientVersion    string     `gorm:"type:varchar(30);not null;default:'';comment:客户端版本" json:"clientVersion"`
-	DeviceModel      string     `gorm:"type:varchar(30);not null;default:'';comment:客户端版本" json:"deviceModel"`
-	OS               string     `gorm:"type:varchar(30);not null;default:'';comment:客户端版本" json:"os"`
-	OSVersion        string     `gorm:"type:varchar(30);not null;default:'';comment:客户端版本" json:"osVersion"`
-	OSArch           string     `gorm:"type:varchar(30);not null;default:'';comment:客户端版本" json:"osArch"`
-	CPUModel         string     `gorm:"type:varchar(30);not null;default:'';comment:客户端版本" json:"cpuModel"`
+	DeviceModel      string     `gorm:"type:varchar(30);not null;default:'';comment:设备号" json:"deviceModel"`
+	OS               string     `gorm:"type:varchar(30);not null;default:'';comment:ios/android/darwin/windows/linux" json:"os"`
+	OSVersion        string     `gorm:"type:varchar(30);not null;default:'';comment:系统版本" json:"osVersion"`
+	OSArch           string     `gorm:"type:varchar(30);not null;default:'';comment:系统架构，如：arm64" json:"osArch"`
+	CPUModel         string     `gorm:"type:varchar(30);not null;default:'';comment:如：Intel Core i9-14900HX" json:"cpuModel"`
 	RequestID        string     `gorm:"type:varchar(64);not null;default:'';comment:请求ID(用于幂等)" json:"requestId"`
 	IPAddress        string     `gorm:"type:varchar(64);not null;default:'';comment:客户端IP" json:"ipAddress"`
 	Status           int        `gorm:"type:smallint;not null;default:1;comment:状态(1-成功,2-失败)" json:"status"`

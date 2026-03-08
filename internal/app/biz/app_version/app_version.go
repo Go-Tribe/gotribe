@@ -13,6 +13,7 @@ import (
 	"gotribe/internal/app/store"
 	"gotribe/internal/pkg/errno"
 	"gotribe/internal/pkg/known"
+	"gotribe/internal/pkg/model"
 	"gotribe/pkg/api/v1"
 
 	"gorm.io/gorm"
@@ -20,9 +21,10 @@ import (
 
 // AppVersionBiz 定义 app_version 在 biz 层的方法.
 type AppVersionBiz interface {
-	// GetLatestRelease 获取当前产品+平台的最新发布版本，并计算 needForceUpdate.
-	// clientVersionCode 来自请求头 x-platform-version-code，解析失败时按 0 处理（倾向于需要强制升级）.
-	GetLatestRelease(ctx context.Context, productName, platform string, clientVersionCode int) (*v1.GetLatestReleaseResponse, error)
+	// GetByAppVersionID 根据 app_version_id 查版本记录，用于从表里取 clientVersionCode.
+	GetByAppVersionID(ctx context.Context, appVersionID string) (*model.AppVersionM, error)
+	// GetLatestRelease 根据 ClientName+OS+OSArch 获取最新发布版本，并根据传入的 clientVersionCode 判断是否需强制升级.
+	GetLatestRelease(ctx context.Context, clientName, os, osArch string, clientVersionCode int) (*v1.GetLatestReleaseResponse, error)
 }
 
 type appVersionBiz struct {
@@ -35,8 +37,12 @@ func New(ds store.IStore) *appVersionBiz {
 	return &appVersionBiz{ds: ds}
 }
 
-func (b *appVersionBiz) GetLatestRelease(ctx context.Context, productName, platform string, clientVersionCode int) (*v1.GetLatestReleaseResponse, error) {
-	m, err := b.ds.AppVersions().GetLatestRelease(ctx, productName, platform)
+func (b *appVersionBiz) GetByAppVersionID(ctx context.Context, appVersionID string) (*model.AppVersionM, error) {
+	return b.ds.AppVersions().GetByAppVersionID(ctx, appVersionID)
+}
+
+func (b *appVersionBiz) GetLatestRelease(ctx context.Context, clientName, os, osArch string, clientVersionCode int) (*v1.GetLatestReleaseResponse, error) {
+	m, err := b.ds.AppVersions().GetLatestRelease(ctx, clientName, os, osArch)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -48,10 +54,10 @@ func (b *appVersionBiz) GetLatestRelease(ctx context.Context, productName, platf
 	}
 
 	resp := &v1.GetLatestReleaseResponse{
-		ProductName:             m.ProductName,
-		Platform:                m.Platform,
-		VersionCode:             m.VersionCode,
-		VersionName:             m.VersionName,
+		ProductName:             m.ClientName,
+		Platform:                m.OS,
+		VersionCode:             m.ClientVersionCode,
+		VersionName:             m.ClientVersion,
 		MinSupportedVersionCode: m.MinSupportedVersionCode,
 		ForceUpdate:             m.ForceUpdate,
 		Title:                   m.Title,

@@ -45,8 +45,12 @@ const (
 	DEFAULT_UPLOAD_SIZE int64 = 10 * 1024 * 1024
 
 	// 应用版本检查请求头
-	XProductKey           = "X-Product"
-	XPlatformKey          = "X-Platform"
-	XClientVersionCodeKey = "X-Client-Version-Code"
-	XClientVersionNameKey = "X-Client-Version-Name"
+	XAppVersionId  = "X-App-Version-Id"
+	XClientName    = "X-Client-Name"
+	XClientVersion = "X-Client-Version"
+	XDeviceModel   = "X-Device-Model"
+	XOS            = "X-OS"
+	XOSVersion     = "X-OS-Version"
+	XOSArch        = "X-OS-Arch"
+	XCPUModel      = "X-CPU-Model"
 )

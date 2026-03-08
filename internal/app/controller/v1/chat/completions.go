@@ -84,7 +84,6 @@ func (ctrl *ChatController) Completions(c *gin.Context) {
 
 	username := c.GetString(known.XUsernameKey)
 	projectID := c.GetString(known.XProjectIDKey)
-	clientVersion := c.GetHeader(known.XClientVersionNameKey)
 	user, err := ctrl.ds.Users().Get(c.Request.Context(), v1.UserWhere{Username: username})
 	if err != nil {
 		core.WriteResponse(c, errno.ErrUnauthorized, nil)
@@ -92,7 +91,7 @@ func (ctrl *ChatController) Completions(c *gin.Context) {
 	}
 
 	// 创建 conversation_log（接口一进来就创建）
-	convLog, err := ctrl.createConversationLog(c, user, projectID, modelVal, clientVersion)
+	convLog, err := ctrl.createConversationLog(c, user, projectID, modelVal)
 	if err != nil {
 		core.WriteResponse(c, err, nil)
 		return
@@ -204,8 +203,17 @@ func (ctrl *ChatController) setClientHeaders(c *gin.Context, req *http.Request, 
 }
 
 // createConversationLog 创建一条 conversation_log，并返回带 SID 的 log（用于后续扣费 eventID）.
-func (ctrl *ChatController) createConversationLog(c *gin.Context, user *model.UserM, projectID, modelName, clientVersion string) (*model.ConversationLogM, error) {
+func (ctrl *ChatController) createConversationLog(c *gin.Context, user *model.UserM, projectID, modelName string) (*model.ConversationLogM, error) {
 	requestID := c.GetHeader(known.XRequestIDKey)
+	appVersionId := c.GetHeader(known.XAppVersionId)
+	clientName := c.GetHeader(known.XClientName)
+	clientVersion := c.GetHeader(known.XClientVersion)
+	deviceModel := c.GetHeader(known.XDeviceModel)
+	os := c.GetHeader(known.XOS)
+	osVersion := c.GetHeader(known.XOSVersion)
+	osArch := c.GetHeader(known.XOSArch)
+	cpuModel := c.GetHeader(known.XCPUModel)
+
 	convLog := &model.ConversationLogM{
 		UserID:          user.UserID,
 		Username:        user.Username,
@@ -216,7 +224,15 @@ func (ctrl *ChatController) createConversationLog(c *gin.Context, user *model.Us
 		DeductionStatus: known.ClDeductionStatusPending,
 		DeductionType:   known.ClDeductionTypeWhite,
 		IPAddress:       c.ClientIP(),
+		AppVersionId:    appVersionId,
+		ClientName:      clientName,
 		ClientVersion:   clientVersion,
+		DeviceModel:     deviceModel,
+		OS:              os,
+		OSVersion:       osVersion,
+		OSArch:          osArch,
+		CPUModel:        cpuModel,
+		Ext:             "{}",
 	}
 	if err := ctrl.ds.ConversationLogs().Create(c.Request.Context(), convLog); err != nil {
 		return nil, errno.InternalServerError

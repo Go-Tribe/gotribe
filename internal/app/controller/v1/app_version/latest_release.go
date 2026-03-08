@@ -6,7 +6,6 @@
 package app_version
 
 import (
-	"gotribe/internal/app/biz/app_version"
 	"gotribe/internal/pkg/core"
 	"gotribe/internal/pkg/errno"
 	"gotribe/internal/pkg/known"
@@ -15,23 +14,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// LatestRelease 获取当前产品+平台的最新发布版本.
-// Header: x-product, x-platform, x-platform-version-code, x-platform-version-name.
-// 除基础版本字段外返回 needForceUpdate：最新版 ForceUpdate=1 或 客户端版本号 < 最新版最低兼容版本号 时为 true.
+// LatestRelease 获取当前客户端对应的最新发布版本，并判断当前版本是否仍受支持（是否需要强制升级）.
+// 根据 Header：X-Client-Name(产品如 gobot)、X-OS(如 darwin)、X-OSArch(如 amd64) 查找最新版本；
+// 根据 X-App-Version-Id 得到当前客户端的 clientVersionCode，与最新版的 MinSupportedVersionCode 比较判断 needForceUpdate.
 func (ctrl *AppVersionController) LatestRelease(c *gin.Context) {
 	log.C(c).Infow("Get latest release called")
 
-	productName := c.GetHeader(known.XProductKey)
-	platform := c.GetHeader(known.XPlatformKey)
-	if productName == "" || platform == "" {
+	clientName := c.GetHeader(known.XClientName)
+	osName := c.GetHeader(known.XOS)
+	if clientName == "" || osName == "" {
 		core.WriteResponse(c, errno.ErrInvalidParameter, nil)
 		return
 	}
+	osArch := c.GetHeader(known.XOSArch)
 
-	codeStr := c.GetHeader(known.XClientVersionCodeKey)
-	clientVersionCode := app_version.ParseClientVersionCode(codeStr)
+	// 根据 X-App-Version-Id 查 app_version 表得到当前客户端的 clientVersionCode，用于判断是否仍支持（是否需强制升级）
+	appVersionID := c.GetHeader(known.XAppVersionId)
+	clientVersionCode := 0
+	if appVersionID != "" {
+		if cur, err := ctrl.b.AppVersions().GetByAppVersionID(c, appVersionID); err == nil {
+			clientVersionCode = cur.ClientVersionCode
+		}
+	}
 
-	resp, err := ctrl.b.AppVersions().GetLatestRelease(c, productName, platform, clientVersionCode)
+	resp, err := ctrl.b.AppVersions().GetLatestRelease(c, clientName, osName, osArch, clientVersionCode)
 	if err != nil {
 		core.WriteResponse(c, err, nil)
 		return

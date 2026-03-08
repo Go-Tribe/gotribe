@@ -8,16 +8,19 @@ package model
 import (
 	"time"
 
+	"github.com/dengmengmian/ghelper/gid"
 	"gorm.io/gorm"
 )
 
 // AppVersion 应用版本管理表
 type AppVersionM struct {
 	gorm.Model
-	ProductName             string     `gorm:"type:varchar(20);not null;default:'';comment:产品名" json:"productName"`
-	Platform                string     `gorm:"type:varchar(20);not null;default:'';comment:平台：ios/android/harmony" json:"platform"`
-	VersionCode             int        `gorm:"type:integer;not null;default:0;comment:版本号（整数，用于比较大小，如32）" json:"versionCode"`
-	VersionName             string     `gorm:"type:varchar(50);not null;default:'';comment:版本名称（如3.2.0）" json:"versionName"`
+	AppVersionId            string     `gorm:"type:varchar(50);not null;default:'';comment:版本id" json:"appVersionId"`
+	ClientName              string     `gorm:"type:varchar(20);not null;default:'';comment:产品名" json:"clientName"`
+	ClientVersion           string     `gorm:"type:varchar(50);not null;default:'';comment:版本名称（如3.2.0）" json:"clientVersion"`
+	ClientVersionCode       int        `gorm:"type:integer;not null;default:0;comment:版本号（整数，用于比较大小，如32）" json:"clientVersionCode"`
+	OS                      string     `gorm:"type:varchar(20);not null;default:'';comment:系统：darwin/linux/windows/ios/android" json:"os"`
+	OSArch                  string     `gorm:"type:varchar(20);default:'';comment:架构：amd64/arm64" json:"osArch"`
 	MinSupportedVersionCode int        `gorm:"type:integer;not null;comment:最低兼容版本（低于此必须升级）" json:"minSupportedVersionCode"`
 	ForceUpdate             int        `gorm:"type:smallint;default:0;comment:是否强制升级：0=推荐升级，1=强制升级" json:"forceUpdate"`
 	Title                   string     `gorm:"type:varchar(255);comment:升级弹窗标题" json:"title"`
@@ -30,4 +33,9 @@ type AppVersionM struct {
 
 func (m *AppVersionM) TableName() string {
 	return "app_version"
+}
+
+func (p *AppVersionM) BeforeCreate(tx *gorm.DB) error {
+	p.AppVersionId = gid.GenShortID()
+	return nil
 }
