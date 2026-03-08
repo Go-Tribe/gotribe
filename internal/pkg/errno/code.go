@@ -59,4 +59,10 @@ var (
 		"en": "UnprojectID.",
 		"zh": "未找到项目ID。",
 	}}
+
+	// ErrInsufficientPoints 表示用户点数低于对话所需最低点数.
+	ErrInsufficientPoints = &Errno{HTTP: 402, Code: "InsufficientPoints", Message: map[string]string{
+		"en": "Insufficient points to continue the conversation.",
+		"zh": "点数不足，无法继续对话。",
+	}}
 )

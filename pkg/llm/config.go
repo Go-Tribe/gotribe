@@ -14,21 +14,16 @@ import (
 
 const strategyRandom = "random"
 
-// Backend 表示一个具体的 LLM 后端（api_key、base_url、model、header）.
-// Header 可配置额外请求头，用于部分模型所需的自定义 header.
-type Backend struct {
-	Type    string            `mapstructure:"type" json:"type"` // openai
-	APIKey  string            `mapstructure:"api_key" json:"api_key"`
-	BaseURL string            `mapstructure:"base_url" json:"base_url"`
-	Model   string            `mapstructure:"model" json:"model"`
-	Header  map[string]string `mapstructure:"header" json:"header"`
+// LLMItem 配置中的单个 LLM，仅含 name，实际 api_key/base_url 等从 llm_model 表按 name 查询.
+type LLMItem struct {
+	Name string `mapstructure:"name" json:"name"`
 }
 
-// ModelGroup 表示配置中的一层：id、strategy、以及多个 models.
+// ModelGroup 配置中的一层：model、strategy、llms（仅 name）.
 type ModelGroup struct {
-	ID       string    `mapstructure:"id" json:"id"`
+	Model    string    `mapstructure:"model" json:"model"`
 	Strategy string    `mapstructure:"strategy" json:"strategy"`
-	Models   []Backend `mapstructure:"models" json:"models"`
+	LLMs     []LLMItem `mapstructure:"llms" json:"llms"`
 }
 
 // Config 对应配置最外层的 llms，包含 models 数组.
@@ -38,7 +33,7 @@ type Config struct {
 
 var (
 	ErrLLMConfigNotFound = errors.New("llm config not found")
-	ErrNoBackend         = errors.New("no backend in model group")
+	ErrNoBackend         = errors.New("no llm in model group")
 )
 
 // GetConfig 从 viper 读取 llms 配置（key 为 llms）.
@@ -50,26 +45,46 @@ func GetConfig() (*Config, error) {
 	return &cfg, nil
 }
 
-// SelectBackend 根据请求的 model（对应配置中的 id）和 strategy 选出一个后端.
-// 目前仅支持 strategy=random.
-func SelectBackend(modelID string) (*Backend, error) {
+// SelectBackendName 根据请求的 model（对应配置中的 model）和 strategy 选出一个后端名称.
+// 返回的 name 用于在 llm_model 表中查询具体配置（取第一条）.
+func SelectBackendName(modelID string) (string, error) {
 	cfg, err := GetConfig()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	for i := range cfg.Models {
 		g := &cfg.Models[i]
-		if g.ID == modelID {
-			if len(g.Models) == 0 {
-				return nil, ErrNoBackend
+		if g.Model == modelID {
+			if len(g.LLMs) == 0 {
+				return "", ErrNoBackend
 			}
+			var name string
 			switch g.Strategy {
 			case strategyRandom:
-				return &g.Models[rand.Intn(len(g.Models))], nil
+				name = g.LLMs[rand.Intn(len(g.LLMs))].Name
 			default:
-				return &g.Models[0], nil
+				name = g.LLMs[0].Name
 			}
+			return name, nil
 		}
 	}
-	return nil, ErrLLMConfigNotFound
+	return "", ErrLLMConfigNotFound
+}
+
+// GetMinPointsToChat 返回配置的“少于多少点数不可对话”的阈值，未配置或<=0 视为 0.
+func GetMinPointsToChat() float64 {
+	v := viper.GetFloat64("llms.min_points_to_chat")
+	if v <= 0 {
+		return 0
+	}
+	return v
+}
+
+// GetWhiteUsernames 返回配置的白名单用户名列表，这些用户不扣积分，扣费类型记为白名单用户.
+func GetWhiteUsernames() []string {
+	v := viper.GetStringSlice("llms.white_usernames")
+	if v == nil {
+		return nil
+	}
+	return v
 }

@@ -45,8 +45,8 @@ const (
 	DEFAULT_UPLOAD_SIZE int64 = 10 * 1024 * 1024
 
 	// 应用版本检查请求头
-	XProductKey             = "X-Product"
-	XPlatformKey            = "X-Platform"
-	XPlatformVersionCodeKey = "X-Platform-Version-Code"
-	XPlatformVersionNameKey = "X-Platform-Version-Name"
+	XProductKey           = "X-Product"
+	XPlatformKey          = "X-Platform"
+	XClientVersionCodeKey = "X-Client-Version-Code"
+	XClientVersionNameKey = "X-Client-Version-Name"
 )

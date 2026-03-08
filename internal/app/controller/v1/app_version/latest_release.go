@@ -28,7 +28,7 @@ func (ctrl *AppVersionController) LatestRelease(c *gin.Context) {
 		return
 	}
 
-	codeStr := c.GetHeader(known.XPlatformVersionCodeKey)
+	codeStr := c.GetHeader(known.XClientVersionCodeKey)
 	clientVersionCode := app_version.ParseClientVersionCode(codeStr)
 
 	resp, err := ctrl.b.AppVersions().GetLatestRelease(c, productName, platform, clientVersionCode)

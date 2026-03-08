@@ -7,13 +7,14 @@ package routes
 
 import (
 	"gotribe/internal/app/controller/v1/chat"
+	"gotribe/internal/app/store"
 
 	"github.com/gin-gonic/gin"
 )
 
-// ChatRoutes 注册 chat 路由（LLM 转发）.
+// ChatRoutes 注册 chat 路由（LLM 转发 + 对话扣费）.
 func ChatRoutes(g *gin.RouterGroup) gin.IRoutes {
-	ctrl := chat.New()
+	ctrl := chat.New(store.S)
 	v1 := g.Group("/v1")
 	{
 		chatv1 := v1.Group("/chat")
