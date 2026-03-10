@@ -23,6 +23,7 @@ type CreateOrderRequest struct {
 // CreateOrderResponse 指定了 `POST /v1/orders` 接口的返回参数.
 type CreateOrderResponse struct {
 	OrderNumber string `json:"orderNumber"`
+	CodeURL     string `json:"codeUrl"` // 支付二维码地址，用于生成二维码供用户扫码支付
 }
 
 // GetOrderResponse 指定了 `GET /v1/orders/{orderID}` 接口的返回参数.

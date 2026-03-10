@@ -32,6 +32,7 @@ require (
 	gorm.io/driver/mysql v1.5.4
 	gorm.io/driver/postgres v1.5.6
 	gorm.io/gorm v1.25.7
+	github.com/wechatpay-apiv3/wechatpay-go v0.2.21
 )
 
 require (

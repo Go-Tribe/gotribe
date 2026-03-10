@@ -8,10 +8,6 @@ package order
 import (
 	"context"
 	"fmt"
-	"github.com/dengmengmian/ghelper/gid"
-	"github.com/jinzhu/copier"
-	"github.com/pkg/errors"
-	"gorm.io/gorm"
 	"gotribe/internal/app/biz/point"
 	"gotribe/internal/app/store"
 	"gotribe/internal/pkg/errno"
@@ -20,7 +16,14 @@ import (
 	"gotribe/internal/pkg/model"
 	"gotribe/pkg/amount"
 	"gotribe/pkg/api/v1"
+	"gotribe/pkg/pay"
+	"gotribe/pkg/pay/weixin"
 	"time"
+
+	"github.com/dengmengmian/ghelper/gid"
+	"github.com/jinzhu/copier"
+	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // OrderBiz defines functions used to handle comment request.
@@ -58,7 +61,7 @@ func New(ds store.IStore, pt point.PointBiz) *orderBiz {
 //	string - 创建的订单号
 //	error - 错误信息，如果执行过程中发生错误
 func (b *orderBiz) CreateTx(ctx context.Context, username string, r *v1.CreateOrderRequest) (*v1.CreateOrderResponse, error) {
-	var orderNumber string
+	var orderNumber, codeURL string
 	err := b.ds.TX(ctx, func(ctx context.Context) error {
 		// 1. 获取用户信息
 		user, err := b.ds.Users().Get(ctx, v1.UserWhere{Username: username})
@@ -115,13 +118,29 @@ func (b *orderBiz) CreateTx(ctx context.Context, username string, r *v1.CreateOr
 		}); err != nil {
 			return err
 		}
+
+		// 调用微信支付生成二维码
+		wx, errPay := weixin.New(ctx)
+		if errPay != nil {
+			return errPay
+		}
+		resp, errPay := wx.GetQRCode(ctx, &pay.GetQRCodeRequest{
+			Description: orderM.ProductName,
+			OutTradeNo:  orderNumber,
+			AmountTotal: int64(createdOrder.AmountPay),
+		})
+		if errPay != nil {
+			return errPay
+		}
+		codeURL = resp.CodeURL
+
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &v1.CreateOrderResponse{OrderNumber: orderNumber}, nil
+	return &v1.CreateOrderResponse{OrderNumber: orderNumber, CodeURL: codeURL}, nil
 }
 
 // Get 通过订单号和用户名获取订单详情。
