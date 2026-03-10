@@ -65,4 +65,16 @@ var (
 		"en": "Insufficient points to continue the conversation.",
 		"zh": "点数不足，无法继续对话。",
 	}}
+
+	// ErrVerificationCodeInvalid 表示验证码错误或已失效.
+	ErrVerificationCodeInvalid = &Errno{HTTP: 400, Code: "InvalidParameter.VerificationCodeInvalid", Message: map[string]string{
+		"en": "Verification code is invalid or expired.",
+		"zh": "验证码错误或已过期。",
+	}}
+
+	// ErrEmailSendFailed 表示发送邮件失败.
+	ErrEmailSendFailed = &Errno{HTTP: 500, Code: "InternalError.EmailSendFailed", Message: map[string]string{
+		"en": "Failed to send email.",
+		"zh": "发送邮件失败。",
+	}}
 )

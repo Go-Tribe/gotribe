@@ -46,6 +46,7 @@ type IStore interface {
 	AppVersions() AppVersionStore
 	LLMModels() LLMModelStore
 	ConversationLogs() ConversationLogStore
+	VerificationCodes() VerificationCodeStore
 }
 
 // datastore 是 IStore 的一个具体实现.
@@ -202,4 +203,9 @@ func (ds *datastore) LLMModels() LLMModelStore {
 // ConversationLogs 返回一个实现了 ConversationLogStore 接口的实例.
 func (ds *datastore) ConversationLogs() ConversationLogStore {
 	return newConversationLogs(ds.db)
+}
+
+// VerificationCodes 返回一个实现了 VerificationCodeStore 接口的实例.
+func (ds *datastore) VerificationCodes() VerificationCodeStore {
+	return newVerificationCodes(ds.db)
 }

@@ -19,13 +19,15 @@ func UserRoutes(g *gin.RouterGroup) gin.IRoutes {
 	g.POST("/login", uc.Login)
 	g.POST("/wxmini/login", uc.WxMiniLogin)
 	g.POST("/wxmini/phone", uc.GetWxPhone)
+	g.POST("/send-verification-code", uc.SendVerificationCode)   // 发送验证码（邮箱）
+	g.POST("/verification-code-login", uc.VerificationCodeLogin) // 验证码登录（无账号则自动注册后登录），Target 仅支持邮箱
 	// 创建 v1 路由分组
 	v1 := g.Group("/v1")
 	{
 		// 创建 users 路由分组
 		userv1 := v1.Group("/users")
 		{
-			userv1.POST("", uc.Create)                             // 创建用户
+			userv1.POST("", uc.Create)                             // 创建用户（原有，无验证码）
 			userv1.PUT(":name/change-password", uc.ChangePassword) // 修改用户密码
 			userv1.Use(mw.Authn())
 			userv1.GET(":name", uc.Get)                // 获取用户详情

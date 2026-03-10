@@ -7,8 +7,16 @@ package user
 
 import (
 	"context"
+	"crypto/rand"
 	"errors"
+	"fmt"
+	"math/big"
+
 	"github.com/dengmengmian/ghelper/gconvert"
+	"github.com/jinzhu/copier"
+	"golang.org/x/sync/errgroup"
+	"gorm.io/gorm"
+
 	"gotribe/internal/app/store"
 	"gotribe/internal/pkg/errno"
 	"gotribe/internal/pkg/known"
@@ -16,14 +24,11 @@ import (
 	"gotribe/internal/pkg/model"
 	"gotribe/pkg/api/v1"
 	"gotribe/pkg/auth"
+	"gotribe/pkg/email"
 	"gotribe/pkg/token"
 	"regexp"
 	"sync"
 	"time"
-
-	"github.com/jinzhu/copier"
-	"golang.org/x/sync/errgroup"
-	"gorm.io/gorm"
 )
 
 // UserBiz 定义了 user 模块在 biz 层所实现的方法.
@@ -37,6 +42,9 @@ type UserBiz interface {
 	Delete(ctx context.Context, username string) error
 	DeleteToTx(ctx context.Context, username string) error
 	WxMiniLogin(ctx context.Context, r *v1.WechatMiniLoginRequest, openID string) (*v1.LoginResponse, error)
+	SendVerificationCode(ctx context.Context, r *v1.SendVerificationCodeRequest, opts *email.Options, expireMinutes int) error
+	Register(ctx context.Context, r *v1.RegisterRequest) error
+	VerificationCodeLogin(ctx context.Context, r *v1.VerificationCodeLoginRequest) (*v1.LoginResponse, error)
 }
 
 // UserBiz 接口的实现.
@@ -300,4 +308,179 @@ func (b *userBiz) WxMiniLogin(ctx context.Context, r *v1.WechatMiniLoginRequest,
 		return nil, errno.ErrSignToken
 	}
 	return &v1.LoginResponse{Token: t, Username: userInfo.Username}, nil
+}
+
+// genVerificationCode 生成 6 位数字验证码.
+func genVerificationCode() (string, error) {
+	n, err := rand.Int(rand.Reader, big.NewInt(1000000))
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%06d", n.Int64()), nil
+}
+
+// SendVerificationCode 发送验证码：落库并发邮件.
+func (b *userBiz) SendVerificationCode(ctx context.Context, r *v1.SendVerificationCodeRequest, opts *email.Options, expireMinutes int) error {
+	code, err := genVerificationCode()
+	if err != nil {
+		return errno.InternalServerError
+	}
+	if expireMinutes <= 0 {
+		expireMinutes = 10
+	}
+	expireAt := time.Now().Add(time.Duration(expireMinutes) * time.Minute)
+	projectID := ""
+	if v := ctx.Value(known.XProjectIDKey); v != nil {
+		if s, ok := v.(string); ok {
+			projectID = s
+		}
+	}
+	vc := &model.VerificationCodeM{
+		Channel:   "email",
+		Trigger:   r.Trigger,
+		Target:    r.Email,
+		Code:      code,
+		ProjectID: projectID,
+		ExpireAt:  expireAt,
+		Verified:  0,
+	}
+	if err := b.ds.VerificationCodes().Create(ctx, vc); err != nil {
+		return err
+	}
+	if opts != nil {
+		body := email.BuildVerificationMailBody(code, expireMinutes)
+		if err := email.Send(opts, r.Email, email.DefaultSubject, body); err != nil {
+			log.C(ctx).Errorw("Send verification email failed", "email", r.Email, "err", err)
+			return errno.ErrEmailSendFailed
+		}
+	}
+	return nil
+}
+
+// Register 校验邮箱验证码后注册用户.
+func (b *userBiz) Register(ctx context.Context, r *v1.RegisterRequest) error {
+	rec, err := b.ds.VerificationCodes().GetLatestUnverified(ctx, r.Email, "register")
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errno.ErrVerificationCodeInvalid
+		}
+		return err
+	}
+	if rec.Code != r.Code {
+		return errno.ErrVerificationCodeInvalid
+	}
+	rec.Verified = 1
+	if err := b.ds.VerificationCodes().Update(ctx, rec); err != nil {
+		return err
+	}
+	createReq := &v1.CreateUserRequest{
+		Username: r.Username,
+		Password: r.Password,
+		Nickname: r.Nickname,
+		Email:    r.Email,
+		Phone:    r.Phone,
+	}
+	return b.Create(ctx, createReq)
+}
+
+// VerificationCodeLogin 验证码登录：先校验验证码（trigger=login），有账号则登录，无则自动注册再登录. Target 目前仅支持邮箱.
+func (b *userBiz) VerificationCodeLogin(ctx context.Context, r *v1.VerificationCodeLoginRequest) (*v1.LoginResponse, error) {
+	rec, err := b.ds.VerificationCodes().GetLatestUnverified(ctx, r.Target, "login")
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errno.ErrVerificationCodeInvalid
+		}
+		return nil, err
+	}
+	if rec.Code != r.Code {
+		return nil, errno.ErrVerificationCodeInvalid
+	}
+	rec.Verified = 1
+	if err := b.ds.VerificationCodes().Update(ctx, rec); err != nil {
+		return nil, err
+	}
+
+	userM, err := b.ds.Users().Get(ctx, v1.UserWhere{Email: r.Target})
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+	if userM != nil {
+		t, err := token.Sign(userM.Username)
+		if err != nil {
+			return nil, errno.ErrSignToken
+		}
+		return &v1.LoginResponse{Token: t, Username: userM.Username}, nil
+	}
+
+	// 无账号：自动注册再登录（仅支持邮箱，生成用户名与随机密码）
+	username, err1 := genRandomPassword(15)
+	nickname := "用户" + codeSuffix(4)
+	passRaw, err := genRandomPassword(8)
+	if err != nil || err1 != nil {
+		return nil, errno.InternalServerError
+	}
+	createReq := &v1.CreateUserRequest{
+		Username: username,
+		Password: passRaw,
+		Nickname: nickname,
+		Email:    r.Target,
+		Phone:    "",
+	}
+	if err := b.Create(ctx, createReq); err != nil {
+		if err == errno.ErrUserAlreadyExist {
+			// 用户名冲突，重试一次加后缀
+			username = username + codeSuffix(4)
+			createReq.Username = username
+			if err := b.Create(ctx, createReq); err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
+	}
+	t, err := token.Sign(username)
+	if err != nil {
+		return nil, errno.ErrSignToken
+	}
+	return &v1.LoginResponse{Token: t, Username: username}, nil
+}
+
+// emailToUsername 将邮箱转为合法用户名（仅保留字母数字下划线）.
+func emailToUsername(email string) string {
+	var b []byte
+	for _, c := range email {
+		if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') {
+			b = append(b, byte(c))
+		} else if c == '@' || c == '.' {
+			b = append(b, '_')
+		}
+	}
+	s := string(b)
+	if len(s) > 18 {
+		s = s[:18]
+	}
+	if len(s) < 6 {
+		s = s + codeSuffix(6-len(s))
+	}
+	return s
+}
+
+func codeSuffix(n int) string {
+	max := new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(n)), nil)
+	x, _ := rand.Int(rand.Reader, max)
+	s := fmt.Sprintf("%0*d", n, x.Int64())
+	return s[:n]
+}
+
+func genRandomPassword(n int) (string, error) {
+	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	b := make([]byte, n)
+	for i := 0; i < n; i++ {
+		x, err := rand.Int(rand.Reader, big.NewInt(int64(len(chars))))
+		if err != nil {
+			return "", err
+		}
+		b[i] = chars[x.Int64()]
+	}
+	return string(b), nil
 }

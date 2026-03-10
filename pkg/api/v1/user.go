@@ -35,6 +35,22 @@ type CreateUserRequest struct {
 	Phone    string `json:"phone"`
 }
 
+// SendVerificationCodeRequest 发送验证码请求（如注册前发邮箱验证码）.
+type SendVerificationCodeRequest struct {
+	Email   string `json:"email" valid:"required,email"`
+	Trigger string `json:"trigger" valid:"required"` // 场景：register
+}
+
+// RegisterRequest 注册请求，需先通过邮箱验证码校验.
+type RegisterRequest struct {
+	Email    string `json:"email" valid:"required,email"`
+	Code     string `json:"code" valid:"required,stringlength(4|8)"` // 邮箱验证码
+	Username string `json:"username" valid:"alphanum,required,stringlength(6|18)"`
+	Password string `json:"password" valid:"required,stringlength(6|255)"`
+	Nickname string `json:"nickname" valid:"required,stringlength(2|30)"`
+	Phone    string `json:"phone"`
+}
+
 // GetUserResponse 指定了 `GET /v1/users/{name}` 接口的返回参数.
 type GetUserResponse UserInfo
 
@@ -78,10 +94,17 @@ type UpdateUserRequest struct {
 	Background *string `json:"background"`
 }
 
+// VerificationCodeLoginRequest 验证码登录请求（目前仅支持邮箱）.
+type VerificationCodeLoginRequest struct {
+	Target string `json:"target" valid:"required"` // 邮箱或手机号，目前仅支持邮箱
+	Code   string `json:"code" valid:"required"`
+}
+
 type UserWhere struct {
 	UserID    string
 	Username  string
 	ProjectID string
+	Email     string
 }
 
 type WechatMiniLoginRequest struct {
