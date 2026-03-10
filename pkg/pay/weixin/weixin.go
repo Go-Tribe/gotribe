@@ -11,9 +11,7 @@ import (
 
 	"github.com/spf13/viper"
 	"github.com/wechatpay-apiv3/wechatpay-go/core"
-	"github.com/wechatpay-apiv3/wechatpay-go/core/option"
 	"github.com/wechatpay-apiv3/wechatpay-go/services/partnerpayments/native"
-	"github.com/wechatpay-apiv3/wechatpay-go/utils"
 
 	"gotribe/pkg/pay"
 )
@@ -28,37 +26,20 @@ type WeixinPay struct {
 	notifyURL string
 }
 
-// New 从配置文件（viper）读取 pay.weixin 后创建微信支付实现（会加载证书，失败返回 error）.
+// New 从配置文件（viper）读取 pay.weixin 后创建微信支付实现（通过 weixin_client.NewClient 初始化 client）.
 func New(ctx context.Context) (pay.Pay, error) {
-	mchID := viper.GetString("pay.weixin.mch-id")
-	mchCertSerial := viper.GetString("pay.weixin.mch-cert-serial-number")
-	mchAPIv3Key := viper.GetString("pay.weixin.mch-api-v3-key")
+	client, err := NewClient(ctx)
+	if err != nil {
+		return nil, err
+	}
 	appID := viper.GetString("pay.weixin.app-id")
-	subAppID := viper.GetString("pay.weixin.sub-app-id")
-	subMchID := viper.GetString("pay.weixin.sub-mch-id")
+	mchID := viper.GetString("pay.weixin.mch-id")
 	notifyURL := viper.GetString("pay.weixin.notify-url")
-	privateKeyPath := viper.GetString("pay.weixin.private-key-path")
-	publicKeyPath := viper.GetString("pay.weixin.wechat-pay-public-key-path")
-
-	if mchID == "" || appID == "" || notifyURL == "" || privateKeyPath == "" || publicKeyPath == "" ||
-		mchCertSerial == "" || mchAPIv3Key == "" {
+	if appID == "" || mchID == "" || notifyURL == "" {
 		return nil, fmt.Errorf("weixin pay options incomplete (check config pay.weixin.*)")
 	}
-	mchPrivateKey, err := utils.LoadPrivateKeyWithPath(privateKeyPath)
-	if err != nil {
-		return nil, fmt.Errorf("load merchant private key: %w", err)
-	}
-	wechatPayPublicKey, err := utils.LoadPublicKeyWithPath(publicKeyPath)
-	if err != nil {
-		return nil, fmt.Errorf("load wechat pay public key: %w", err)
-	}
-	authOpt := option.WithWechatPayPublicKeyAuthCipher(
-		mchID, mchCertSerial, mchPrivateKey, mchAPIv3Key, wechatPayPublicKey,
-	)
-	client, err := core.NewClient(ctx, authOpt)
-	if err != nil {
-		return nil, fmt.Errorf("new wechat pay client: %w", err)
-	}
+	subAppID := viper.GetString("pay.weixin.sub-app-id")
+	subMchID := viper.GetString("pay.weixin.sub-mch-id")
 	return &WeixinPay{
 		client: client, appID: appID, mchID: mchID,
 		subAppID: subAppID, subMchID: subMchID, notifyURL: notifyURL,
