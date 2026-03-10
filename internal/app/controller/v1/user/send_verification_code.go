@@ -58,6 +58,7 @@ func emailOptionsFromViper() *email.Options {
 		Host:     host,
 		Port:     port,
 		From:     from,
+		FromName: viper.GetString("email.from-name"),
 		Password: viper.GetString("email.password"),
 		UseTLS:   viper.GetBool("email.use-tls"),
 	}

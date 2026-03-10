@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net"
 	"net/smtp"
+	"strings"
 )
 
 // Options 发件配置（SMTP）.
@@ -17,6 +18,7 @@ type Options struct {
 	Host     string `json:"host"`     // SMTP 主机，如 smtp.qq.com
 	Port     int    `json:"port"`     // 端口，如 587、465
 	From     string `json:"from"`     // 发件人邮箱
+	FromName string `json:"fromName"` // 发件人显示名称（如 "GoTribe"），空则仅显示邮箱
 	Password string `json:"password"` // 授权码或密码
 	UseTLS   bool   `json:"useTLS"`   // 是否使用 TLS（465 一般为 true）
 }
@@ -33,7 +35,8 @@ func Send(opts *Options, to, subject, body string) error {
 	}
 	addr := fmt.Sprintf("%s:%d", opts.Host, port)
 	auth := smtp.PlainAuth("", opts.From, opts.Password, opts.Host)
-	msg := []byte(fmt.Sprintf("To: %s\r\nSubject: %s\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n%s", to, subject, body))
+	fromHeader := formatAddr(opts.FromName, opts.From)
+	msg := []byte(fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n%s", fromHeader, to, subject, body))
 	// 端口 465 为 SMTPS，必须先 TLS 直连再发 SMTP（与 Python SMTP_SSL 一致）；标准库 SendMail 不会先握手 TLS，会导致 EOF
 	if port == 465 {
 		return sendMailSMTPS(addr, opts, auth, to, msg)
@@ -77,6 +80,18 @@ func sendMailSMTPS(addr string, opts *Options, auth smtp.Auth, to string, msg []
 		return err
 	}
 	return client.Quit()
+}
+
+// formatAddr 格式化为 "显示名" <邮箱>，显示名为空则只返回邮箱.
+func formatAddr(name, addr string) string {
+	name = strings.TrimSpace(name)
+	if name == "" {
+		return addr
+	}
+	// 名称中含双引号或反斜杠需转义
+	name = strings.ReplaceAll(name, "\\", "\\\\")
+	name = strings.ReplaceAll(name, "\"", "\\\"")
+	return fmt.Sprintf("\"%s\" <%s>", name, addr)
 }
 
 // BuildVerificationMailBody 生成验证码邮件正文（可复用）.

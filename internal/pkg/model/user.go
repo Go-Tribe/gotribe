@@ -22,7 +22,7 @@ type UserM struct {
 	Password   string     `gorm:"type:varchar(255);not null;example:Password" json:"-"`
 	Nickname   string     `gorm:"type:varchar(30);not null;example:Nickname" json:"nickname"`
 	Email      string     `gorm:"type:varchar(30);not null;uniqueIndex;example:Email" json:"email"`
-	Phone      string     `gorm:"type:varchar(21);not null;uniqueIndex;example:Phone" json:"phone"`
+	Phone      string     `gorm:"type:varchar(21);not null;comment:电话" json:"phone"`
 	Sex        string     `gorm:"type:char(1);not null;default:M;example:M:Male F:Female" json:"sex"`
 	Background string     `gorm:"type:varchar(255);comment:个人中心背景" json:"background"`
 	Ext        string     `gorm:"type:text;comment:扩展字段" json:"ext"`
