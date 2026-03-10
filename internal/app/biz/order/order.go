@@ -150,7 +150,11 @@ func (b *orderBiz) CreateTx(ctx context.Context, username string, r *v1.CreateOr
 // 如将金额从分转换为元，将日期时间格式化为已知的时间格式，最后返回该响应对象。
 func (b *orderBiz) Get(ctx context.Context, orderNumber, username string) (*v1.GetOrderResponse, error) {
 	// 从数据源获取特定订单号和用户名对应的订单信息。
-	order, err := b.ds.Order().Get(ctx, v1.OrderWhere{OrderNumber: orderNumber, Username: username})
+	where := v1.OrderWhere{OrderNumber: orderNumber}
+	if username != "" {
+		where.Username = username
+	}
+	order, err := b.ds.Order().Get(ctx, where)
 	if err != nil {
 		// 当订单记录不存在时，返回自定义的错误号。
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -255,7 +259,11 @@ func (b *orderBiz) List(ctx context.Context, username string, offset, limit int)
 func (b *orderBiz) Pay(ctx context.Context, orderNumber, username string) error {
 	err := b.ds.TX(ctx, func(ctx context.Context) error {
 		// 1. 获取当前订单信息
-		order, err := b.ds.Order().Get(ctx, v1.OrderWhere{OrderNumber: orderNumber, Username: username})
+		where := v1.OrderWhere{OrderNumber: orderNumber}
+		if username != "" {
+			where.Username = username
+		}
+		order, err := b.ds.Order().Get(ctx, where)
 		if err != nil {
 			log.C(ctx).Errorw("Failed to get order from storage", "err", err)
 			return err

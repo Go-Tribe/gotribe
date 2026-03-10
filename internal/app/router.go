@@ -31,6 +31,9 @@ func installRouters(g *gin.Engine) error {
 		core.WriteResponse(c, nil, map[string]string{"status": "ok"})
 	})
 
+	// 内部接口：不需鉴权、不需 X-Project-ID，供微信支付成功回调等使用
+	routes.InternalRoutes(apiGroup)
+
 	// project路由
 	routes.ProjectRoutes(apiGroup)
 	// healthz 不需要 projectID，在 healthz 之后添加 ProjectID 中间件
