@@ -98,6 +98,7 @@ type UpdateUserRequest struct {
 type VerificationCodeLoginRequest struct {
 	Target string `json:"target" valid:"required"` // 邮箱或手机号，目前仅支持邮箱
 	Code   string `json:"code" valid:"required"`
+	Key    string `json:"key"`
 }
 
 type UserWhere struct {
@@ -117,4 +118,8 @@ type GetUserWxPhoneRequest struct {
 
 type AccountWhere struct {
 	OpenID string `json:"openID"`
+}
+
+type GetVerificationCodeLoginResultRequest struct {
+	Key string `form:"key"`
 }

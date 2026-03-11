@@ -19,8 +19,9 @@ func UserRoutes(g *gin.RouterGroup) gin.IRoutes {
 	g.POST("/login", uc.Login)
 	g.POST("/wxmini/login", uc.WxMiniLogin)
 	g.POST("/wxmini/phone", uc.GetWxPhone)
-	g.POST("/send-verification-code", uc.SendVerificationCode)   // 发送验证码（邮箱）
-	g.POST("/verification-code-login", uc.VerificationCodeLogin) // 验证码登录（无账号则自动注册后登录），Target 仅支持邮箱
+	g.POST("/send-verification-code", uc.SendVerificationCode)                      // 发送验证码（邮箱）
+	g.POST("/verification-code-login", uc.VerificationCodeLogin)                    // 验证码登录（无账号则自动注册后登录），Target 仅支持邮箱
+	g.GET("/get-verification-code-login-result", uc.GetVerificationCodeLoginResult) // 获取登录结果
 	// 创建 v1 路由分组
 	v1 := g.Group("/v1")
 	{

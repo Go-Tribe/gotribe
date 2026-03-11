@@ -45,6 +45,7 @@ type UserBiz interface {
 	SendVerificationCode(ctx context.Context, r *v1.SendVerificationCodeRequest, opts *email.Options, expireMinutes int) error
 	Register(ctx context.Context, r *v1.RegisterRequest) error
 	VerificationCodeLogin(ctx context.Context, r *v1.VerificationCodeLoginRequest) (*v1.LoginResponse, error)
+	GetVerificationCodeLoginResult(ctx context.Context, r *v1.GetVerificationCodeLoginResultRequest) (*v1.LoginResponse, error)
 }
 
 // UserBiz 接口的实现.
@@ -52,8 +53,14 @@ type userBiz struct {
 	ds store.IStore
 }
 
+type UserTokenSave struct {
+	username string
+	token    string
+}
+
 // 确保 userBiz 实现了 UserBiz 接口.
 var _ UserBiz = (*userBiz)(nil)
+var tokenMap = make(map[string]*UserTokenSave)
 
 // New 创建一个实现了 UserBiz 接口的实例.
 func New(ds store.IStore) *userBiz {
@@ -409,6 +416,9 @@ func (b *userBiz) VerificationCodeLogin(ctx context.Context, r *v1.VerificationC
 		if err != nil {
 			return nil, errno.ErrSignToken
 		}
+		if r.Key != "" {
+			tokenMap[r.Key] = &UserTokenSave{token: t, username: userM.Username}
+		}
 		return &v1.LoginResponse{Token: t, Username: userM.Username}, nil
 	}
 
@@ -442,7 +452,19 @@ func (b *userBiz) VerificationCodeLogin(ctx context.Context, r *v1.VerificationC
 	if err != nil {
 		return nil, errno.ErrSignToken
 	}
+	if r.Key != "" {
+		tokenMap[r.Key] = &UserTokenSave{token: t, username: username}
+	}
 	return &v1.LoginResponse{Token: t, Username: username}, nil
+}
+
+func (b *userBiz) GetVerificationCodeLoginResult(ctx context.Context, r *v1.GetVerificationCodeLoginResultRequest) (*v1.LoginResponse, error) {
+	t, exist := tokenMap[r.Key]
+	log.C(ctx).Infow("Verification code login result", "t", t, "exist", exist, "key", r.Key)
+	if exist {
+		return &v1.LoginResponse{Token: t.token, Username: t.username}, nil
+	}
+	return &v1.LoginResponse{Token: "", Username: ""}, nil
 }
 
 // emailToUsername 将邮箱转为合法用户名（仅保留字母数字下划线）.
