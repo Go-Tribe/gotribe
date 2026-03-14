@@ -23,6 +23,8 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.11.1
+	github.com/tjfoc/gmsm v1.4.1
+	github.com/wechatpay-apiv3/wechatpay-go v0.2.21
 	go.uber.org/automaxprocs v1.5.3
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.40.0
@@ -32,7 +34,6 @@ require (
 	gorm.io/driver/mysql v1.5.4
 	gorm.io/driver/postgres v1.5.6
 	gorm.io/gorm v1.25.7
-	github.com/wechatpay-apiv3/wechatpay-go v0.2.21
 )
 
 require (
