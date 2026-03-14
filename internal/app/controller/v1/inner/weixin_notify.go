@@ -6,11 +6,13 @@
 package inner
 
 import (
-	"gotribe/pkg/pay/weixin"
+	"bytes"
+	"io"
 	"net/http"
 
 	"gotribe/internal/pkg/core"
 	"gotribe/internal/pkg/log"
+	"gotribe/pkg/pay/weixin"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wechatpay-apiv3/wechatpay-go/core/auth/verifiers"
@@ -26,6 +28,18 @@ var (
 // 使用 pkg/pay/weixin 的 NewNotifyHandler（NewRSANotifyHandler）验签并解密，从通知中取订单号并完成订单支付状态，username 传空字符串.
 func (ctrl *InnerController) WeixinPayNotify(c *gin.Context) {
 	log.C(c).Infow("weixin pay notify called")
+
+	// 先读 body 并备份，再恢复供后续 ParseNotifyRequest 使用，避免 body 只能读一遍导致业务失败
+	bodyBytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		log.C(c).Errorw("weixin notify read body failed", "err", err)
+		c.JSON(http.StatusBadRequest, gin.H{"code": "FAIL", "message": "读取请求体失败"})
+		return
+	}
+	c.Request.Body = io.NopCloser(bytes.NewReader(bodyBytes))
+
+	// 打印回调原始数据（header / query / body），便于排查，不影响后续业务
+	logWeixinNotifyRaw(c, bodyBytes)
 
 	transaction := new(payments.Transaction)
 
@@ -64,6 +78,23 @@ func (ctrl *InnerController) WeixinPayNotify(c *gin.Context) {
 	}
 
 	core.WriteResponse(c, nil, nil)
+}
+
+// logWeixinNotifyRaw 打印微信支付回调的 header、query、body 原始数据，仅做日志，不修改请求.
+func logWeixinNotifyRaw(c *gin.Context, bodyBytes []byte) {
+	headers := make(map[string]string)
+	for k, v := range c.Request.Header {
+		if len(v) > 0 {
+			headers[k] = v[0]
+		}
+	}
+	query := c.Request.URL.RawQuery
+	bodyStr := string(bodyBytes)
+	log.C(c).Infow("weixin pay notify raw",
+		"header", headers,
+		"query", query,
+		"body", bodyStr,
+	)
 }
 
 func GetNotifyHandler(c *gin.Context) (*notify.Handler, error) {

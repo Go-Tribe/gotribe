@@ -10,10 +10,11 @@ import (
 	"errors"
 	"gotribe/pkg/api/v1"
 
-	"gorm.io/gorm"
 	"gotribe/internal/pkg/known"
 	"gotribe/internal/pkg/log"
 	"gotribe/internal/pkg/model"
+
+	"gorm.io/gorm"
 )
 
 // UserStore 定义了 user 模块在 store 层所实现的方法.
@@ -24,6 +25,7 @@ type UserStore interface {
 	List(ctx context.Context, offset, limit int, userWhere v1.UserWhere) (int64, []*model.UserM, error)
 	Delete(ctx context.Context, username string) error
 	ListInUserID(ctx context.Context, userID []string) ([]*model.UserM, error)
+	ListByUsernameAndEmail(ctx context.Context, usernme, password string) ([]*model.UserM, error)
 }
 
 // UserStore 接口的实现.
@@ -96,6 +98,14 @@ func (u *users) Delete(ctx context.Context, username string) error {
 func (c *users) ListInUserID(ctx context.Context, userID []string) ([]*model.UserM, error) {
 	var usersM []*model.UserM
 	if err := c.db.WithContext(ctx).WithContext(ctx).Where("user_id IN ?", userID).Find(&usersM).Error; err != nil {
+		return nil, err
+	}
+	return usersM, nil
+}
+
+func (c *users) ListByUsernameAndEmail(ctx context.Context, username, email string) ([]*model.UserM, error) {
+	var usersM []*model.UserM
+	if err := c.db.WithContext(ctx).Where("username = ? or email = ?", username, email).Find(&usersM).Error; err != nil {
 		return nil, err
 	}
 	return usersM, nil

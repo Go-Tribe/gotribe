@@ -89,13 +89,26 @@ func (b *userBiz) ChangePassword(ctx context.Context, username string, r *v1.Cha
 // Login 是 UserBiz 接口中 `Login` 方法的实现.
 func (b *userBiz) Login(ctx context.Context, r *v1.LoginRequest) (*v1.LoginResponse, error) {
 	// 获取登录用户的所有信息
-	user, err := b.ds.Users().Get(ctx, v1.UserWhere{Username: r.Username})
+	users, err := b.ds.Users().ListByUsernameAndEmail(ctx, r.Username, r.Username)
 	if err != nil {
 		return nil, errno.ErrUserNotFound
 	}
 
+	var matchedUser *model.UserM
+	for _, user := range users {
+		// 对比传入的明文密码和数据库中已加密过的密码是否匹配
+		if err := auth.Compare(user.Password, r.Password); err == nil {
+			matchedUser = user
+			break
+		}
+	}
+
+	if matchedUser == nil {
+		return nil, errno.ErrPasswordIncorrect
+	}
+
 	// 对比传入的明文密码和数据库中已加密过的密码是否匹配
-	if err := auth.Compare(user.Password, r.Password); err != nil {
+	if err := auth.Compare(matchedUser.Password, r.Password); err != nil {
 		return nil, errno.ErrPasswordIncorrect
 	}
 
@@ -424,10 +437,19 @@ func (b *userBiz) VerificationCodeLogin(ctx context.Context, r *v1.VerificationC
 
 	// 无账号：自动注册再登录（仅支持邮箱，生成用户名与随机密码）
 	username, err1 := genRandomPassword(15)
-	nickname := "用户" + codeSuffix(4)
-	passRaw, err := genRandomPassword(8)
-	if err != nil || err1 != nil {
+	if err1 != nil {
 		return nil, errno.InternalServerError
+	}
+	nickname := r.Nickname
+	if nickname == "" {
+		nickname = "用户" + codeSuffix(4)
+	}
+	passRaw := r.Password
+	if passRaw == "" {
+		passRaw, err = genRandomPassword(8)
+		if err != nil {
+			return nil, errno.InternalServerError
+		}
 	}
 	createReq := &v1.CreateUserRequest{
 		Username: username,
@@ -437,16 +459,7 @@ func (b *userBiz) VerificationCodeLogin(ctx context.Context, r *v1.VerificationC
 		Phone:    "",
 	}
 	if err := b.Create(ctx, createReq); err != nil {
-		if err == errno.ErrUserAlreadyExist {
-			// 用户名冲突，重试一次加后缀
-			username = username + codeSuffix(4)
-			createReq.Username = username
-			if err := b.Create(ctx, createReq); err != nil {
-				return nil, err
-			}
-		} else {
-			return nil, err
-		}
+		return nil, err
 	}
 	t, err := token.Sign(username)
 	if err != nil {

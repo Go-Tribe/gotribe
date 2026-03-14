@@ -15,12 +15,6 @@ import (
 // ChatRoutes 注册 chat 路由（LLM 转发 + 对话扣费）.
 func ChatRoutes(g *gin.RouterGroup) gin.IRoutes {
 	ctrl := chat.New(store.S)
-	v1 := g.Group("/v1")
-	{
-		chatv1 := v1.Group("/chat")
-		{
-			chatv1.POST("/completions", ctrl.Completions) // 流式(stream=true) 或 非流式(stream=false)
-		}
-	}
+	g.POST("/chat/completions", ctrl.Completions)
 	return g
 }
